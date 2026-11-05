@@ -1,0 +1,33 @@
+.borrower-page { --line: #d1d1d1; }
+.borrower-page .panel { border-radius: 4px; }
+.borrower-tabs { display: flex; flex-wrap: wrap; gap: 12px; margin: 25px 0 20px; }
+.borrower-tabs .btn { min-width: 145px; }
+.borrower-filter-panel { padding: 18px; }
+.borrower-filters { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(180px, 1.2fr) auto auto; align-items: end; gap: 14px; }
+.borrower-filters label { display: grid; gap: 8px; font-size: 14px; }
+.borrower-filters .btn { min-width: 105px; }
+.borrower-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.borrower-section-heading h2 { margin: 0; }
+.borrower-section-heading small { color: #666; }
+.borrower-list-panel { min-height: 300px; }
+.borrower-table { font-size: 14px; margin-bottom: 0; }
+.borrower-table th { background: #ececec; color: #555; font-weight: 500; white-space: nowrap; }
+.borrower-table td { padding-top: 12px; padding-bottom: 12px; }
+.borrower-table td:first-child { min-width: 180px; }
+.borrower-table td:last-child { text-align: right; }
+.borrower-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 14px; }
+.borrower-detail { margin-top: 0; }
+.borrower-detail .panel { margin-bottom: 0; }
+.borrower-detail .panel h2 { margin-bottom: 18px; }
+.borrower-profile-form .form-label { font-size: 14px; margin-bottom: 6px; }
+.borrower-profile-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 34px; }
+.borrower-profile-actions .btn { min-width: 115px; }
+.borrower-profile-actions .btn-dark { min-width: 180px; }
+.borrower-readonly { display: grid; gap: 10px; margin: 0; }
+.borrower-readonly div { display: grid; grid-template-columns: 125px 1fr; }
+.borrower-readonly dt { color: #666; font-weight: 400; }
+.borrower-readonly dd { margin: 0; }
+.borrower-loan { padding: 13px 0; border-top: 1px solid var(--line); }
+.borrower-loan a { color: #333; font-size: 13px; margin-top: 5px; }
+@media (max-width: 900px) { .borrower-filters { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .borrower-filters { grid-template-columns: 1fr; } .borrower-filters .btn { width: 100%; } .borrower-table { min-width: 850px; } }

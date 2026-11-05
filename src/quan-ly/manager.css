@@ -1,0 +1,20 @@
+.manager-intro { color:#606060; margin:-4px 0 18px; }
+.manager-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.manager-cards .panel { min-height:150px; }
+.manager-cards p { color:#606060; }
+.manager-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.manager-form label { min-width:0; }
+.manager-form .wide { grid-column:1 / -1; }
+.manager-form textarea { display:block; width:100%; margin-top:4px; min-height:80px; padding:8px 12px; border:1px solid #aaa; border-radius:4px; }
+.manager-form fieldset { border:1px solid #ccc; padding:12px; }
+.manager-form legend { float:none; width:auto; font-size:14px; padding:0 5px; }
+.manager-form .room-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:7px; max-height:180px; overflow:auto; }
+.manager-form .room-options label { display:flex; align-items:center; gap:7px; }
+.manager-form .room-options input { width:auto; margin:0; }
+.manager-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:18px; }
+.manager-actions form { margin:0; }
+.manager-muted { color:#626262; font-size:13px; }
+.manager-error { padding:12px; background:#fff1f1; color:#8a2020; border:1px solid #d89; }
+.manager-table td:last-child { white-space:nowrap; }
+@media(max-width:900px) { .manager-cards { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .manager-cards,.manager-form { grid-template-columns:1fr; } }

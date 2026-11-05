@@ -1,0 +1,239 @@
+*{
+    box-sizing:border-box
+}
+body{
+    margin:0;
+    font:15px/1.5 "Segoe UI",sans-serif;
+    color:#272727;
+    background:#f7f7f7
+}
+aside{
+    position:fixed;
+    inset:0 auto 0 0;
+    width:208px;
+    background:#ededed;
+    border-right:1px solid #a3a3a3;
+    display:flex;
+    flex-direction:column;
+    padding:22px 14px;
+    gap:26px
+}
+.brand,.identity,header,.row-tools,.actions,.card-title{
+    display:flex;
+    align-items:center;
+    gap:12px
+}
+.brand{
+    padding-bottom:22px;
+    border-bottom:1px solid #ccc
+}
+.mark,.identity b{
+    padding:10px;
+    background:white;
+    border:1px solid #aaa
+}
+small{
+    display:block;
+    color:#606060
+}
+.identity b{
+    border-radius:100%;
+    background:#eee;
+    border:0
+}
+nav a{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    padding:9px 12px;
+    border-radius:4px
+}
+nav small{
+    margin-bottom:8px;
+    font-size:11px;
+    letter-spacing:.08em
+}
+nav a[aria-current],nav a:hover{
+    background:#d7d7d7
+}
+aside form{
+    margin-top:auto
+}
+aside button{
+    width:100%
+}
+.workspace{
+    margin-left:208px
+}
+header{
+    background:white;
+    border-bottom:1px solid #aaa;
+    padding:12px 24px;
+    justify-content:space-between
+}
+main{
+    max-width:1500px;
+    margin:auto;
+    padding:20px 24px
+}
+h1{
+    font-size:27px;
+    margin:0 0 15px
+}
+h2{
+    font-size:18px;
+    margin:0
+}
+.panel,.stat{
+    background:white;
+    border:1px solid #c7c7c7;
+    border-radius:4px;
+    padding:18px;
+    margin:0 0 16px
+}
+.stats,.fields,.columns{
+    display:grid;
+    gap:14px
+}
+.stats{
+    grid-template-columns:repeat(4,1fr)
+}
+.stat strong{
+    font-size:28px;
+    font-weight:500;
+    display:block
+}
+.columns{
+    grid-template-columns:3fr 2fr
+}
+.fields{
+    grid-template-columns:repeat(2,minmax(0,1fr))
+}
+.row-tools,.actions,.card-title{
+    flex-wrap:wrap
+}
+.card-title{
+    justify-content:space-between;
+    margin-bottom:14px
+}
+.row-tools{
+    align-items:end
+}
+.row-tools label:first-child{
+    flex:1;
+    min-width:180px
+}
+label{
+    display:block;
+    font-size:14px
+}
+input,select,button,.button{
+    font:inherit;
+    border:1px solid #aaa;
+    border-radius:4px;
+    background:white;
+    color:inherit;
+    padding:7px 12px
+}
+input,select{
+    width:100%;
+    margin-top:4px
+}
+button,.button{
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+    text-align:center
+}
+.primary{
+    background:#4a4a4a;
+    color:white;
+    border-color:#444
+}
+.actions{
+    margin-top:16px
+}
+.scroll{
+    overflow:auto
+}
+table{
+    width:100%;
+    border-collapse:collapse
+}
+th,td{
+    font-size:14px;
+    text-align:left;
+    padding:10px;
+    border-bottom:1px solid #ddd
+}
+th{
+    background:#eee
+}
+tr.selected td{
+    background:#e5e5e5
+}
+.notice{
+    padding:10px;
+    background:#eef5ee;
+    border:1px solid #a4bba4
+}
+.error{
+    color:#8a2020;
+    background:#fff1f1;
+    padding:12px
+}
+@media(max-width:760px){
+    aside{
+        position:static;
+        width:auto;
+        padding:10px;
+        flex-direction:row;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:10px
+    }
+    .brand{
+        border:0;
+        padding:0
+    }
+    nav{
+        display:flex;
+        flex-wrap:wrap
+    }
+    nav small{
+        display:none
+    }
+    aside form{
+        margin:0 0 0 auto
+    }
+    .workspace{
+        margin:0
+    }
+    main,header{
+        padding:12px
+    }
+    .columns,.fields{
+        grid-template-columns:1fr
+    }
+    .stats{
+        grid-template-columns:1fr 1fr
+    }
+}
+.borrower-tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:16px
+}
+.borrower-tabs a{
+    min-width:95px
+}
+.borrower-detail{
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))
+}
+.borrower-detail h2{
+    margin-bottom:14px
+}
+.loan-detail{
+    padding:12px 0;
+    border-top:1px solid #ddd
+}

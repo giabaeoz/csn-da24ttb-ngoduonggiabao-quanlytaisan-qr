@@ -1,0 +1,9 @@
+.transfer-preview p { margin-bottom: 10px; }
+.transfer-assets { min-height: 145px; max-height: 320px; overflow: auto; border-top: 1px solid #ddd; }
+.transfer-asset { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 11px 2px; border-bottom: 1px solid #ddd; }
+.transfer-asset > input { position: absolute; opacity: 0; pointer-events: none; }
+.transfer-submit { min-width: 280px; }
+.transfer-cancel { min-width: 130px; }
+.transfer-detail { border-left: 4px solid #777; }
+.transfer-recent th { white-space: nowrap; }
+@media (max-width: 600px) { .transfer-submit, .transfer-cancel { min-width: 0; flex: 1; } .transfer-recent { min-width: 750px; } }
