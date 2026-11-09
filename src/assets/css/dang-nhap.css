@@ -1,0 +1,25 @@
+/**
+ * CSS Riêng cho trang Đăng nhập hệ thống
+ */
+
+.bg-dang-nhap {
+    background: linear-gradient(135deg, #1E3A8A 0%, #1A56DB 50%, #3B82F6 100%);
+    position: relative;
+    overflow-x: hidden;
+}
+
+.bg-dang-nhap::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.card {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
