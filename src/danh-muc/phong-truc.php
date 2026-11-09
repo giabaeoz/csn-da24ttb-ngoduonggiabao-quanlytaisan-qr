@@ -67,3 +67,4 @@ $danhSachPhongTruc = phong_truc_danh_sach();
 
 // Nạp giao diện
 require dirname(__DIR__) . '/app/views/danh-muc/phong-truc.php';
+

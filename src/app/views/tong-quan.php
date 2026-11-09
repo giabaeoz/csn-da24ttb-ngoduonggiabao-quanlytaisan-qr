@@ -53,70 +53,78 @@ require __DIR__ . '/layout/menu.php';
     </div>
 </div>
 
-<!-- Khung thống kê nhanh (Placeholder cho G2) -->
+<!-- Khung thống kê nhanh số liệu -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 bg-primary bg-opacity-10 text-primary rounded-3 p-3 fs-3 me-3">
-                        💻
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-semibold">Tổng tài sản</div>
-                        <h4 class="fw-bold mb-0 text-dark">--</h4>
+        <a href="<?= url('tai-san/index.php') ?>" class="text-decoration-none">
+            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-primary bg-opacity-10 text-primary rounded-3 p-3 fs-3 me-3">
+                            💻
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-semibold">Tổng tài sản</div>
+                            <h4 class="fw-bold mb-0 text-dark"><?= (int)($thongKe['tong_so'] ?? 0) ?></h4>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 bg-success bg-opacity-10 text-success rounded-3 p-3 fs-3 me-3">
-                        ✅
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-semibold">Đang sẵn sàng</div>
-                        <h4 class="fw-bold mb-0 text-dark">--</h4>
+        <a href="<?= url('tai-san/index.php?trang_thai=SAN_SANG') ?>" class="text-decoration-none">
+            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-success bg-opacity-10 text-success rounded-3 p-3 fs-3 me-3">
+                            ✅
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-semibold">Đang sẵn sàng</div>
+                            <h4 class="fw-bold mb-0 text-success"><?= (int)($thongKe['san_sang'] ?? 0) ?></h4>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 bg-warning bg-opacity-10 text-warning rounded-3 p-3 fs-3 me-3">
-                        📤
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-semibold">Đang được mượn</div>
-                        <h4 class="fw-bold mb-0 text-dark">--</h4>
+        <a href="<?= url('tai-san/index.php?trang_thai=DANG_MUON') ?>" class="text-decoration-none">
+            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-warning bg-opacity-10 text-warning rounded-3 p-3 fs-3 me-3">
+                            📤
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-semibold">Đang được mượn</div>
+                            <h4 class="fw-bold mb-0 text-warning"><?= (int)($thongKe['dang_muon'] ?? 0) ?></h4>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-3 h-100">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 bg-danger bg-opacity-10 text-danger rounded-3 p-3 fs-3 me-3">
-                        ⚠️
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-semibold">Sự cố / Báo hỏng</div>
-                        <h4 class="fw-bold mb-0 text-dark">--</h4>
+        <a href="<?= url('tai-san/index.php?trang_thai=BAO_TRI') ?>" class="text-decoration-none">
+            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-danger bg-opacity-10 text-danger rounded-3 p-3 fs-3 me-3">
+                            ⚠️
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-semibold">Bảo trì / Hư hỏng</div>
+                            <h4 class="fw-bold mb-0 text-danger"><?= (int)($thongKe['bao_tri_hu_hong'] ?? 0) ?></h4>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 

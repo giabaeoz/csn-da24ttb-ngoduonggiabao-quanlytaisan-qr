@@ -132,3 +132,4 @@ kiem_thu('Chặn xóa loại Máy chiếu do đang có tài sản liên kết', 
 
 // Tổng kết
 tong_ket_kiem_thu('Quản lý Danh mục (G3)');
+

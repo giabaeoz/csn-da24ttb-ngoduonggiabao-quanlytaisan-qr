@@ -66,3 +66,4 @@ $danhSachLoai = loai_tai_san_danh_sach();
 
 // Nạp giao diện
 require dirname(__DIR__) . '/app/views/danh-muc/loai-tai-san.php';
+

@@ -22,3 +22,4 @@ $lichSuMuon = nguoi_muon_lich_su_muon($id);
 
 $tieuDeTrang = 'Hồ sơ người mượn: ' . ($nguoiMuon['ho_ten'] ?? '');
 require dirname(__DIR__) . '/app/views/nguoi-muon/chi-tiet.php';
+

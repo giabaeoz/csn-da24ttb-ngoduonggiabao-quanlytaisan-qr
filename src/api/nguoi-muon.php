@@ -40,3 +40,4 @@ phan_hoi_json([
     'so_luong'   => count($danhSach),
     'du_lieu'    => $danhSach,
 ]);
+

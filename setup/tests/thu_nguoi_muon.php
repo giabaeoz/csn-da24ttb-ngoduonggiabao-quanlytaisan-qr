@@ -97,3 +97,4 @@ kiem_thu('Xóa người mượn an toàn khi chưa phát sinh giao dịch', $res
 
 // Tổng kết
 tong_ket_kiem_thu('Quản lý Người mượn (G3)');
+

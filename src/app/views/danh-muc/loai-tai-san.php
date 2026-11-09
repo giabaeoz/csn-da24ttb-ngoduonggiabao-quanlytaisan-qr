@@ -201,3 +201,4 @@ function moModalSua(loai) {
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
+
