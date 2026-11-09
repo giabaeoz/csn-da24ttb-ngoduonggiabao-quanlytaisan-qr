@@ -32,3 +32,4 @@ if ($thongBao !== null):
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
 </div>
 <?php endif; ?>
+

@@ -24,3 +24,4 @@ if (!defined('APP_KHOI_DONG')) {
 <script src="<?= url('assets/js/app.js') ?>"></script>
 </body>
 </html>
+

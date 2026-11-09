@@ -67,3 +67,4 @@ function lay_thong_bao(): ?array {
     unset($_SESSION['__thong_bao']);
     return $thongBao;
 }
+

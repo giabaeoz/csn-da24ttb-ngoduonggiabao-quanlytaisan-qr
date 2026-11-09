@@ -111,3 +111,4 @@ function dinh_dang_ngay_gio(?string $chuoiNgayGio, string $dinhDang = 'd/m/Y H:i
 function dinh_dang_ngay(?string $chuoiNgay, string $dinhDang = 'd/m/Y'): string {
     return dinh_dang_ngay_gio($chuoiNgay, $dinhDang);
 }
+

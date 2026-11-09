@@ -28,3 +28,4 @@ require_once $thuMucCore . '/phan-quyen.php';
 
 // Tự động khởi động phiên làm việc bảo mật
 phien_khoi_dong();
+

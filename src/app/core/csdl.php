@@ -50,3 +50,4 @@ function db(): mysqli {
 
     return $ketNoi;
 }
+

@@ -62,3 +62,4 @@ function csrf_kiem_tra(): bool {
 
     return hash_equals($tokenTrongPhien, $tokenGuiLen);
 }
+

@@ -68,3 +68,4 @@ kiem_thu('Đăng xuất thành công, thông tin cán bộ bị xóa sạch kh�
 
 // Tổng kết
 tong_ket_kiem_thu('Xác thực & Phiên');
+

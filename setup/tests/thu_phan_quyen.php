@@ -60,3 +60,4 @@ kiem_thu('Chưa đăng nhập KHÔNG có bất kỳ quyền nào', co_quyen('xem
 
 // Tổng kết
 tong_ket_kiem_thu('Phân quyền RBAC');
+

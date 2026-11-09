@@ -12,3 +12,4 @@ $tieuDeTrang = '403 - Truy cập bị từ chối';
 $noiDungLoi = 'Bạn không có đủ quyền hạn để truy cập vào chức năng hoặc tài nguyên này.';
 
 require __DIR__ . '/app/views/403.php';
+

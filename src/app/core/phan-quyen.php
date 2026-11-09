@@ -96,3 +96,4 @@ function yeu_cau_quyen(string $quyen): void {
         phan_hoi_loi_403('Bạn không có quyền thực hiện chức năng này (yêu cầu quyền: ' . htmlspecialchars($quyen, ENT_QUOTES, 'UTF-8') . ').');
     }
 }
+

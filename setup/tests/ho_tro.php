@@ -42,3 +42,4 @@ function tong_ket_kiem_thu(string $tenBoKiemThu): void {
         exit(1);
     }
 }
+

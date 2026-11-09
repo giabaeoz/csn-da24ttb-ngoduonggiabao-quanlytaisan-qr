@@ -12,3 +12,4 @@ $tieuDeTrang = '404 - Không tìm thấy trang';
 $noiDungLoi = 'Trang bạn yêu cầu không tồn tại hoặc đã được di chuyển.';
 
 require __DIR__ . '/app/views/404.php';
+

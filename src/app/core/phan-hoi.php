@@ -87,3 +87,4 @@ function phan_hoi_loi_404(string $thongDiep = 'Trang hoặc tài nguyên không 
     }
     exit;
 }
+

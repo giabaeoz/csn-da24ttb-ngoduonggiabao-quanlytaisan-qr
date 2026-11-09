@@ -23,3 +23,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Nếu người dùng truy cập trực tiếp bằng phương thức GET thì không đăng xuất mà chuyển về Tổng quan
 chuyen_huong(nguoi_dung_hien_tai() !== null ? 'tong-quan.php' : 'login.php');
+

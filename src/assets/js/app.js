@@ -33,3 +33,4 @@ async function fetchWithCsrf(url, options = {}) {
 
     return fetch(url, options);
 }
+
