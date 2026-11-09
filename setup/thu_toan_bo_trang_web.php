@@ -43,6 +43,18 @@ if ($kkId === 0) {
     $kkId = (int)($kqM['id'] ?? 1);
 }
 
+$scId = (int)($db->query("SELECT id FROM su_co_tai_san LIMIT 1")->fetch_row()[0] ?? 0);
+if ($scId === 0) {
+    require_once dirname(__DIR__) . '/src/app/services/su-co-service.php';
+    $nvId = (int)($db->query("SELECT id FROM nhan_vien LIMIT 1")->fetch_row()[0] ?? 1);
+    $kqSc = su_co_bao_cao([
+        'tai_san_id' => $tsId,
+        'loai_su_co' => 'HU_HONG',
+        'mo_ta'      => 'Sự cố demo kiểm tra giao diện',
+    ], $nvId);
+    $scId = (int)($kqSc['id'] ?? 1);
+}
+
 $trangCanKiemTra = [
     '/tong-quan.php',
     '/muon-tra/muon.php',
@@ -67,6 +79,9 @@ $trangCanKiemTra = [
     '/kiem-ke/tao.php',
     '/kiem-ke/thuc-hien.php?id=' . $kkId,
     '/kiem-ke/chi-tiet.php?id=' . $kkId,
+    '/su-co/index.php',
+    '/su-co/bao-cao.php',
+    '/su-co/chi-tiet.php?id=' . $scId,
 ];
 
 $loi = 0;

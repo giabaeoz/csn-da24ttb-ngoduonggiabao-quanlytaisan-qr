@@ -10,7 +10,7 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$trangHienTai = basename($_SERVER['PHP_SELF'] ?? '');
+$tepHienTai = basename($_SERVER['PHP_SELF'] ?? '');
 ?>
 <!-- Sidebar điều hướng bên trái -->
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar shadow-sm py-3">
@@ -20,7 +20,7 @@ $trangHienTai = basename($_SERVER['PHP_SELF'] ?? '');
             <!-- Mục Tổng quan -->
             <?php if (co_quyen('xem_tong_quan')): ?>
             <li class="nav-item">
-                <a class="nav-link <?= ($trangHienTai === 'tong-quan.php') ? 'active fw-bold' : '' ?>" href="<?= url('tong-quan.php') ?>">
+                <a class="nav-link <?= ($tepHienTai === 'tong-quan.php') ? 'active fw-bold' : '' ?>" href="<?= url('tong-quan.php') ?>">
                     <span class="nav-icon">📊</span> Tổng quan
                 </a>
             </li>
@@ -32,12 +32,12 @@ $trangHienTai = basename($_SERVER['PHP_SELF'] ?? '');
             
             <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
             <li class="nav-item">
-                <a class="nav-link <?= ($trangHienTai === 'muon.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/muon.php') ?>">
+                <a class="nav-link <?= ($tepHienTai === 'muon.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/muon.php') ?>">
                     <span class="nav-icon">📤</span> Mượn tài sản
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= ($trangHienTai === 'tra.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/tra.php') ?>">
+                <a class="nav-link <?= ($tepHienTai === 'tra.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/tra.php') ?>">
                     <span class="nav-icon">📥</span> Trả tài sản
                 </a>
             </li>
@@ -45,7 +45,7 @@ $trangHienTai = basename($_SERVER['PHP_SELF'] ?? '');
 
             <?php if (co_quyen('xem_lich_su_muon_tra')): ?>
             <li class="nav-item">
-                <a class="nav-link <?= (str_contains($_SERVER['PHP_SELF'] ?? '', 'muon-tra') && $trangHienTai === 'index.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/index.php') ?>">
+                <a class="nav-link <?= (str_contains($_SERVER['PHP_SELF'] ?? '', 'muon-tra') && $tepHienTai === 'index.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/index.php') ?>">
                     <span class="nav-icon">📋</span> Lịch sử mượn - trả
                 </a>
             </li>

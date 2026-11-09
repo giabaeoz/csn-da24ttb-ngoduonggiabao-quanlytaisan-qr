@@ -47,6 +47,7 @@ const BANG_QUYEN = [
     'xem_kiem_ke'         => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY, VAI_TRO_NHAN_VIEN],
 
     // 8. Báo cáo sự cố tài sản
+    'xem_su_co'           => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY, VAI_TRO_NHAN_VIEN],
     'ghi_nhan_su_co'      => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY, VAI_TRO_NHAN_VIEN],
     'xu_ly_su_co'         => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY],
 

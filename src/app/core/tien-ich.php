@@ -179,4 +179,52 @@ function nhan_ket_qua_kiem_ke(?string $ketQua, ?string $tinhTrang = null): strin
     };
 }
 
+/**
+ * Trả về nhãn tiếng Việt cho loại sự cố tài sản.
+ */
+function nhan_loai_su_co(?string $loai): string {
+    return match ($loai) {
+        'HU_HONG'    => 'Hư hỏng',
+        'MAT'        => 'Mất / Thất lạc',
+        'SAI_VI_TRI' => 'Sai vị trí',
+        default      => $loai ?? 'Khác',
+    };
+}
+
+/**
+ * Trả về nhãn tiếng Việt cho trạng thái xử lý sự cố tài sản.
+ */
+function nhan_trang_thai_su_co(?string $trangThai): string {
+    return match ($trangThai) {
+        'CHUA_XU_LY' => 'Chưa xử lý',
+        'DANG_XU_LY' => 'Đang xử lý',
+        'DA_XU_LY'   => 'Đã xử lý xong',
+        default      => $trangThai ?? 'Không xác định',
+    };
+}
+
+/**
+ * Trả về nhãn tiếng Việt cho trạng thái tài sản.
+ */
+function nhan_trang_thai_tai_san(?string $trangThai): string {
+    return match ($trangThai) {
+        'SAN_SANG'      => 'Sẵn sàng',
+        'DANG_MUON'     => 'Đang cho mượn',
+        'BAO_TRI'       => 'Đang bảo trì',
+        'NGUNG_SU_DUNG' => 'Ngừng sử dụng',
+        default         => $trangThai ?? 'Không xác định',
+    };
+}
+
+/**
+ * Trả về nhãn tiếng Việt cho tình trạng tài sản.
+ */
+function nhan_tinh_trang_tai_san(?string $tinhTrang): string {
+    return match ($tinhTrang) {
+        'TOT'     => 'Tốt',
+        'HU_HONG' => 'Hư hỏng',
+        default   => $tinhTrang ?? 'Không rõ',
+    };
+}
+
 
