@@ -63,3 +63,22 @@ function csrf_kiem_tra(): bool {
     return hash_equals($tokenTrongPhien, $tokenGuiLen);
 }
 
+/**
+ * Bí danh cho csrf_token().
+ */
+function tao_csrf_token(): string {
+    return csrf_token();
+}
+
+/**
+ * Bí danh cho csrf_kiem_tra().
+ */
+function kiem_tra_csrf(?string $token = null): bool {
+    if ($token !== null) {
+        phien_khoi_dong();
+        $tokenTrongPhien = $_SESSION['__csrf_token'] ?? '';
+        return is_string($tokenTrongPhien) && $tokenTrongPhien !== '' && hash_equals($tokenTrongPhien, $token);
+    }
+    return csrf_kiem_tra();
+}
+

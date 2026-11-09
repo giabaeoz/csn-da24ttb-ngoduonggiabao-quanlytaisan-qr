@@ -199,6 +199,15 @@ function phong_hoc_danh_sach(bool $chiHoatDong = false, ?string $tuKhoa = null):
 }
 
 /**
+ * Lấy danh sách tất cả các phòng học đang hoạt động.
+ *
+ * @return array
+ */
+function phong_hoc_danh_sach_tat_ca(): array {
+    return phong_hoc_danh_sach(true);
+}
+
+/**
  * Tìm phòng học theo ID.
  */
 function phong_hoc_tim_theo_id(int $id): ?array {

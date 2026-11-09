@@ -136,4 +136,11 @@ function f_ngay(?string $chuoiNgay, string $dinhDang = 'd/m/Y'): string {
     return dinh_dang_ngay($chuoiNgay, $dinhDang);
 }
 
+/**
+ * Kiểm tra xem yêu cầu hiện tại có phải là HTTP POST hay không.
+ */
+function la_post(): bool {
+    return (strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === 'POST');
+}
+
 

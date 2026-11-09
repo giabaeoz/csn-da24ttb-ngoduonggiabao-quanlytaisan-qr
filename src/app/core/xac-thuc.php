@@ -139,3 +139,25 @@ function yeu_cau_dang_nhap(): array {
     }
     return $nguoiDung;
 }
+
+/**
+ * Bí danh cho nguoi_dung_hien_tai().
+ */
+function tai_khoan_hien_tai(): ?array {
+    return nguoi_dung_hien_tai();
+}
+
+/**
+ * Lấy thông tin phòng trực của cán bộ đang đăng nhập.
+ */
+function phong_truc_hien_tai(): ?array {
+    $nd = nguoi_dung_hien_tai();
+    if (!$nd || empty($nd['phong_truc_id'])) {
+        return null;
+    }
+    return [
+        'id'             => (int)$nd['phong_truc_id'],
+        'ten_phong_truc' => (string)($nd['ten_phong_truc'] ?? ''),
+        'ma_phong_truc'  => (string)($nd['ma_phong_truc'] ?? ''),
+    ];
+}

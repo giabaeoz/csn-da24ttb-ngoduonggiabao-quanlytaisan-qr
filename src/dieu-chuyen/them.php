@@ -52,3 +52,4 @@ if (la_post()) {
 
 $tieuDeTrang = 'Lập phiếu điều chuyển thiết bị';
 require dirname(__DIR__) . '/app/views/dieu-chuyen/form.php';
+

@@ -28,3 +28,4 @@ if ($phieu === null) {
 
 $tieuDeTrang = 'Chi tiết phiếu điều chuyển: ' . ($phieu['ma_dieu_chuyen'] ?? '');
 require dirname(__DIR__) . '/app/views/dieu-chuyen/chi-tiet.php';
+

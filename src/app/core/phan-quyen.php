@@ -97,3 +97,18 @@ function yeu_cau_quyen(string $quyen): void {
     }
 }
 
+/**
+ * Chặn truy cập nếu người dùng không có ít nhất một trong các quyền chỉ định.
+ *
+ * @param array $cacQuyen Danh sách các mã quyền (chỉ cần thỏa mãn 1 quyền)
+ */
+function yeu_cau_mot_trong_cac_quyen(array $cacQuyen): void {
+    yeu_cau_dang_nhap();
+    foreach ($cacQuyen as $quyen) {
+        if (co_quyen((string)$quyen)) {
+            return;
+        }
+    }
+    phan_hoi_loi_403('Bạn không có quyền thực hiện chức năng này.');
+}
+
