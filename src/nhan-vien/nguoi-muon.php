@@ -28,7 +28,7 @@ if ($isPost) {
         if (($_POST['action'] ?? '') !== 'update') throw new DomainException('Thao tác không hợp lệ.');
         staff_borrower_update($db, (int)$nguoiDung['id'], $id, $_POST);
         set_flash('success', 'Đã cập nhật thông tin người mượn.');
-        header('Location: nguoi-muon.php?tab=all&id=' . $id . '#borrower-profile', true, 303);
+        header('Location: nguoi-muon.php?tab=all', true, 303);
         exit;
     } catch (DomainException $exception) {
         http_response_code(422);

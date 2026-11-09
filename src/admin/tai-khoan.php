@@ -24,9 +24,9 @@ if ($post) {
         $db->commit();
         set_flash('success', match($action) {
             'create'=>'Đã tạo tài khoản.', 'password'=>'Đã đặt lại mật khẩu.',
-            'status'=>'Đã cập nhật trạng thái tài khoản.', default=>'Đã lưu thông tin tài khoản.'
+            'status'=>'Đã cập nhật trạng thái tài khoản.', default=>'Đã cập nhật tài khoản thành công.'
         });
-        header('Location: tai-khoan.php?id='.$id, true, 303);
+        header('Location: tai-khoan.php', true, 303);
         exit;
     } catch (DomainException | mysqli_sql_exception $ex) {
         $db->rollback();

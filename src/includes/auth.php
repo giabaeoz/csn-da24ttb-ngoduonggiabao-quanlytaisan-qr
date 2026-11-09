@@ -82,7 +82,6 @@ function auth_dang_nhap(string $tenDangNhap, string $matKhau): array
 
     $db = db_ket_noi();
 
-    // Chuẩn bị truy vấn bằng MySQLi Prepared Statement
     $sql = 'SELECT id, ma_nhan_vien, ho_ten, so_dien_thoai, ten_dang_nhap, mat_khau_hash, vai_tro, phong_truc_id, dang_hoat_dong 
             FROM nhan_vien 
             WHERE ten_dang_nhap = ? 
@@ -103,7 +102,6 @@ function auth_dang_nhap(string $tenDangNhap, string $matKhau): array
     $nhanVien = $ketQua ? $ketQua->fetch_assoc() : null;
     $stmt->close();
 
-    // Kiểm tra tài khoản có tồn tại hay không
     if (!$nhanVien) {
         return [
             'thanh_cong' => false,
@@ -111,7 +109,6 @@ function auth_dang_nhap(string $tenDangNhap, string $matKhau): array
         ];
     }
 
-    // Kiểm tra mật khẩu bằng hàm chuẩn an toàn password_verify()
     if (!password_verify($matKhau, (string) $nhanVien['mat_khau_hash'])) {
         return [
             'thanh_cong' => false,
@@ -119,7 +116,6 @@ function auth_dang_nhap(string $tenDangNhap, string $matKhau): array
         ];
     }
 
-    // Kiểm tra trạng thái hoạt động: Không cho tài khoản bị khóa (dang_hoat_dong = 0) đăng nhập
     if ((int) $nhanVien['dang_hoat_dong'] !== 1) {
         return [
             'thanh_cong' => false,
@@ -127,12 +123,10 @@ function auth_dang_nhap(string $tenDangNhap, string $matKhau): array
         ];
     }
 
-    // Tạo lại Session ID để chống Session Fixation (nếu headers chưa gửi)
     if (!headers_sent()) {
         session_regenerate_id(true);
     }
 
-    // Lưu thông tin tối thiểu cần thiết vào session (không lưu mật khẩu băm)
     $_SESSION['nguoi_dung'] = [
         'id'            => (int) $nhanVien['id'],
         'ma_nhan_vien'  => (string) $nhanVien['ma_nhan_vien'],

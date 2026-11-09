@@ -38,7 +38,6 @@ function inventory_start(mysqli $db, int $staffId, array $input): int
     $note = inventory_text($input['ghi_chu'] ?? '', 2000);
     $db->begin_transaction();
     try {
-        // Exclusive desk lock serializes opening a round with new loans.
         $deskId = staff_assigned_desk($db, $staffId, true);
         if ($db->execute_query("SELECT id FROM dot_kiem_ke WHERE phong_truc_id = ? AND trang_thai = 'DANG_KIEM_KE' LIMIT 1", [$deskId])->fetch_row()) {
             throw new DomainException('Phòng trực đã có đợt kiểm kê đang thực hiện.');
@@ -146,6 +145,38 @@ function inventory_finish(mysqli $db, int $staffId, int $roundId): array
         $db->execute_query("UPDATE dot_kiem_ke SET trang_thai = 'HOAN_TAT', thoi_gian_ket_thuc = NOW() WHERE id = ?", [$roundId]);
         $db->commit();
         return ['incidents' => $incidents, 'assets' => count($details)];
+    } catch (Throwable $error) {
+        $db->rollback();
+        throw $error;
+    }
+}
+
+function inventory_cancel(mysqli $db, int $staffId, int $roundId, mixed $rawReason): int
+{
+    $reason = inventory_text($rawReason, 500, true);
+
+    $db->begin_transaction();
+    try {
+        $deskId = staff_assigned_desk($db, $staffId, true);
+        $round = $db->execute_query(
+            'SELECT id, trang_thai FROM dot_kiem_ke WHERE id = ? AND phong_truc_id = ? FOR UPDATE',
+            [$roundId, $deskId]
+        )->fetch_assoc();
+        if (!$round) {
+            throw new DomainException('Không tìm thấy đợt kiểm kê trong phòng trực của bạn.');
+        }
+        if ($round['trang_thai'] !== 'DANG_KIEM_KE') {
+            throw new DomainException('Chỉ có thể hủy đợt kiểm kê đang thực hiện.');
+        }
+
+        $db->execute_query(
+            "UPDATE dot_kiem_ke
+             SET trang_thai = 'DA_HUY', thoi_gian_ket_thuc = NOW(), ly_do_huy = ?, nhan_vien_huy_id = ?
+             WHERE id = ?",
+            [$reason, $staffId, $roundId]
+        );
+        $db->commit();
+        return $roundId;
     } catch (Throwable $error) {
         $db->rollback();
         throw $error;

@@ -19,6 +19,7 @@ if (!isset($loiDangNhap, $tenDangNhapNhap, $tiepTuc)) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
     <title>Đăng nhập · Tài sản QR</title>
     <link rel="stylesheet" href="<?= e(app_url('shared/login.css')) ?>">
 </head>
@@ -26,9 +27,8 @@ if (!isset($loiDangNhap, $tenDangNhapNhap, $tiepTuc)) {
 <main class="login-layout">
     <section class="login-brand" aria-label="Giới thiệu hệ thống">
         <div class="login-brand-content">
-            <div class="login-mark" aria-hidden="true">QR</div>
+            <div class="login-mark" aria-hidden="true">LOGO</div>
             <h1>QUẢN LÝ TÀI SẢN BẰNG MÃ QR</h1>
-            <p>Hệ thống quản lý mượn – trả và kiểm kê tài sản bằng mã QR</p>
             <span>Phòng trực thiết bị</span>
         </div>
     </section>
@@ -55,7 +55,7 @@ if (!isset($loiDangNhap, $tenDangNhapNhap, $tiepTuc)) {
                 </div>
                 <button class="login-submit" type="submit">Đăng nhập</button>
             </form>
-            <p class="login-help">Quên mật khẩu? Liên hệ Quản trị viên để được cấp lại.</p>
+            <p class="login-help"><a href="#" onclick="alert('Vui lòng liên hệ Quản trị viên để được cấp lại mật khẩu.'); return false;" class="forgot-link">Quên mật khẩu?</a></p>
         </div>
     </section>
 </main>

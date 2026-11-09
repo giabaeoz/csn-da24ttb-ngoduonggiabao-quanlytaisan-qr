@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 /**
  * Quản lý Session an toàn, chống tấn công CSRF và các tiện ích hỗ trợ
  */
@@ -25,7 +27,6 @@ function khoi_dong_session(): void
     }
 }
 
-// Luôn đảm bảo session được kích hoạt khi nạp tệp này
 khoi_dong_session();
 
 /**

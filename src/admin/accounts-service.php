@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 
-const ACCOUNT_ROLES = ['NHAN_VIEN' => 'Nhân viên', 'QUAN_LY' => 'Quản lý', 'QUAN_TRI' => 'Quản trị viên'];
+const ACCOUNT_ROLES = [
+    'NHAN_VIEN' => 'Nhân viên',
+    'QUAN_LY' => 'Quản lý',
+    'QUAN_TRI' => 'Quản trị viên',
+];
 
 function account_field(array $input, string $key, int $limit, bool $required = true): string
 {
@@ -25,10 +29,15 @@ function account_password(array $input): string
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
-// Gọi trong transaction. Khóa người thực hiện cùng tài khoản đích trước khi kiểm tra quyền.
+/**
+ * Gọi trong transaction. Khóa người thực hiện cùng tài khoản đích trước khi kiểm tra quyền.
+ */
 function account_save(mysqli $db, int $actor, string $action, int $id, array $input): void
 {
-    $rows = $db->execute_query('SELECT id, vai_tro, dang_hoat_dong FROM nhan_vien WHERE id IN (?, ?) ORDER BY id FOR UPDATE', [$actor, $id]);
+    $rows = $db->execute_query(
+        'SELECT id, vai_tro, dang_hoat_dong FROM nhan_vien WHERE id IN (?, ?) ORDER BY id FOR UPDATE',
+        [$actor, $id]
+    );
     $accounts = array_column($rows->fetch_all(MYSQLI_ASSOC), null, 'id');
     if (($accounts[$actor]['vai_tro'] ?? '') !== 'QUAN_TRI' || !(int)$accounts[$actor]['dang_hoat_dong']) {
         throw new DomainException('Quyền quản trị của phiên này đã thay đổi.');
@@ -38,37 +47,56 @@ function account_save(mysqli $db, int $actor, string $action, int $id, array $in
     }
     if ($action === 'status') {
         $status = $input['status'] ?? '';
-        if (!in_array($status, ['0','1'], true) || ($actor === $id && $status === '0')) {
+        if (!in_array($status, ['0', '1'], true) || ($actor === $id && $status === '0')) {
             throw new DomainException('Không thể thực hiện thay đổi trạng thái này.');
         }
-        $db->execute_query('UPDATE nhan_vien SET dang_hoat_dong=? WHERE id=?', [$status,$id]);
+        $db->execute_query('UPDATE nhan_vien SET dang_hoat_dong = ? WHERE id = ?', [$status, $id]);
         return;
     }
     if ($action === 'password') {
-        $db->execute_query('UPDATE nhan_vien SET mat_khau_hash=? WHERE id=?', [account_password($input),$id]);
+        $db->execute_query('UPDATE nhan_vien SET mat_khau_hash = ? WHERE id = ?', [account_password($input), $id]);
         return;
     }
-    if (!in_array($action, ['edit','create'], true)) {
+    if (!in_array($action, ['edit', 'create'], true)) {
         throw new DomainException('Thao tác không hợp lệ.');
     }
-    $role = account_field($input,'vai_tro',20);
+
+    $role = account_field($input, 'vai_tro', 20);
     if (!isset(ACCOUNT_ROLES[$role]) || ($actor === $id && $role !== 'QUAN_TRI')) {
         throw new DomainException('Vai trò không hợp lệ hoặc bạn đang đổi quyền của chính mình.');
     }
-    $room = account_field($input,'phong_truc_id',10,false);
+    $room = account_field($input, 'phong_truc_id', 10, false);
     if ($room === '' && $role === 'NHAN_VIEN') {
         throw new DomainException('Nhân viên phải được phân công phòng trực.');
     }
-    if ($room !== '' && (!ctype_digit($room) || !$db->execute_query('SELECT id FROM phong_truc WHERE id=? AND dang_hoat_dong=1 FOR SHARE', [$room])->fetch_row())) {
+    if ($room !== '' && (!ctype_digit($room) || !$db->execute_query('SELECT id FROM phong_truc WHERE id = ? AND dang_hoat_dong = 1 FOR SHARE', [$room])->fetch_row())) {
         throw new DomainException('Hãy chọn phòng trực đang hoạt động.');
     }
-    $values = [account_field($input,'ma_nhan_vien',30),account_field($input,'ho_ten',100),
-        account_field($input,'ten_dang_nhap',50),account_field($input,'so_dien_thoai',20,false),$role,$room === '' ? null : $room];
+
+    $values = [
+        account_field($input, 'ma_nhan_vien', 30),
+        account_field($input, 'ho_ten', 100),
+        account_field($input, 'ten_dang_nhap', 50),
+        account_field($input, 'so_dien_thoai', 20, false),
+        $role,
+        $room === '' ? null : $room,
+    ];
+
     if ($action === 'create') {
         $values[] = account_password($input);
-        $db->execute_query('INSERT INTO nhan_vien (ma_nhan_vien,ho_ten,ten_dang_nhap,so_dien_thoai,vai_tro,phong_truc_id,mat_khau_hash) VALUES (?,?,?,NULLIF(?,\'\'),?,?,?)',$values);
+        $db->execute_query(
+            'INSERT INTO nhan_vien (ma_nhan_vien, ho_ten, ten_dang_nhap, so_dien_thoai, vai_tro, phong_truc_id, mat_khau_hash)
+             VALUES (?, ?, ?, NULLIF(?, \'\'), ?, ?, ?)',
+            $values
+        );
     } else {
         $values[] = $id;
-        $db->execute_query('UPDATE nhan_vien SET ma_nhan_vien=?,ho_ten=?,ten_dang_nhap=?,so_dien_thoai=NULLIF(?,\'\'),vai_tro=?,phong_truc_id=? WHERE id=?',$values);
+        $db->execute_query(
+            'UPDATE nhan_vien
+             SET ma_nhan_vien = ?, ho_ten = ?, ten_dang_nhap = ?, so_dien_thoai = NULLIF(?, \'\'), vai_tro = ?, phong_truc_id = ?
+             WHERE id = ?',
+            $values
+        );
     }
 }
+

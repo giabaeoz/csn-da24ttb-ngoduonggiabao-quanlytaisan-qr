@@ -88,15 +88,25 @@ $staffPageCss = 'transfer.css';
 require __DIR__ . '/staff-head.php';
 ?>
 <h1>Điều chuyển tài sản</h1>
+
 <?php if (!$canOperate): ?>
     <div class="alert alert-warning">Tài khoản cần được gán một phòng trực đang hoạt động trước khi điều chuyển.</div>
 <?php else: ?>
-    <?php if ($error !== ''): ?><div class="alert alert-danger" role="alert"><?= e($error) ?></div><?php endif; ?>
+    <?php if ($error !== ''): ?>
+        <div class="alert alert-danger" role="alert"><?= e($error) ?></div>
+    <?php endif; ?>
+
     <?php require __DIR__ . '/views/transfer-form.php'; ?>
-    <?php if ($selectedTransfer): require __DIR__ . '/views/transfer-detail.php'; endif; ?>
+
+    <?php if ($selectedTransfer): ?>
+        <?php require __DIR__ . '/views/transfer-detail.php'; ?>
+    <?php endif; ?>
+
     <?php require __DIR__ . '/views/transfer-recent.php'; ?>
 <?php endif; ?>
+
 <script src="../vendor/jsQR.js"></script>
 <script src="../shared/qr-scanner.js"></script>
 <script src="transfer.js"></script>
+
 <?php require __DIR__ . '/staff-foot.php'; ?>

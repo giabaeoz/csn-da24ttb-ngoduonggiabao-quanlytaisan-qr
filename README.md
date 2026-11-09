@@ -131,6 +131,11 @@ Các bài thử tạo dữ liệu tạm và tự dọn hoặc hoàn tác sau khi
 
 ```powershell
 C:\xampp\php\php.exe setup/kiem_thu_he_thong.php
+C:\xampp\php\php.exe setup/verify_admin_dashboard.php
+C:\xampp\php\php.exe setup/verify_admin_accounts.php
+C:\xampp\php\php.exe setup/verify_admin_borrowers.php
+C:\xampp\php\php.exe setup/verify_assets.php
+C:\xampp\php\php.exe setup/verify_manager.php
 C:\xampp\php\php.exe setup/verify_borrow.php
 C:\xampp\php\php.exe setup/verify_inventory.php
 C:\xampp\php\php.exe setup/verify_transfer.php
@@ -141,7 +146,7 @@ C:\xampp\php\php.exe setup/verify_staff_borrowers.php
 
 | Vai trò | Phân hệ khởi đầu | Trách nhiệm và quyền hạn chính |
 | :--- | :--- | :--- |
-| **QUAN_TRI** | `/admin/` | Chỉ quản lý tài khoản nhân viên, tài sản, phòng trực và phòng học. Không quản lý người mượn, loại tài sản hoặc trực tiếp thực hiện nghiệp vụ mượn–trả, kiểm kê, điều chuyển. |
+| **QUAN_TRI** | `/admin/` | Quản lý tài khoản nhân viên, tài sản, hồ sơ người mượn, phòng trực và phòng học. Không quản lý loại tài sản hoặc trực tiếp thực hiện nghiệp vụ mượn–trả, kiểm kê, điều chuyển. |
 | **QUAN_LY** | `/quan-ly/` | Quản lý loại tài sản, thêm/sửa/xóa hồ sơ người mượn, thông tin và mã QR tài sản, phòng trực và phòng học. |
 | **NHAN_VIEN** | `/nhan-vien/` | Vận hành mượn–trả và kiểm kê trong phòng trực; tra cứu người mượn, cập nhật thông tin cơ bản của người đã có phiếu tại phòng trực mình. |
 

@@ -7,7 +7,6 @@ const ASSET_STATES = [
 ];
 const ASSET_CONDITIONS = ['TOT' => 'Tốt', 'HU_HONG' => 'Hư hỏng', 'MAT' => 'Mất'];
 
-// Dùng lượt mượn chưa trả để phản ánh người đang giữ tài sản.
 const ASSET_SELECT = "SELECT t.*, l.ten_loai, p.ten_phong_truc,
     h.ma_phong AS phong_hien_tai, f.ma_phong AS phong_cu,
     CASE WHEN EXISTS (

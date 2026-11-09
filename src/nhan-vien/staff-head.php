@@ -10,6 +10,7 @@ $menu = app_navigation($nguoiDung['vai_tro']);
 <html lang="vi">
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
     <title><?= e($title) ?> · Tài sản QR</title>
     <link rel="stylesheet" href="vendor/bootstrap.min.css">
     <link rel="stylesheet" href="staff.css">
@@ -17,14 +18,24 @@ $menu = app_navigation($nguoiDung['vai_tro']);
 </head>
 <body>
 <aside class="staff-sidebar">
-    <div class="brand"><b class="mark">QR</b><div><strong>TÀI SẢN QR</strong><small>Phòng trực thiết bị</small></div></div>
+    <div class="brand"><b class="mark">LOGO</b><div><strong>TÀI SẢN QR</strong><small>Phòng trực thiết bị</small></div></div>
     <nav aria-label="Chức năng"><small>CHỨC NĂNG</small>
-        <?php foreach ($menu as $item): ?>
-            <a href="<?= e($item['href']) ?>" <?= $title === $item['page'] ? 'aria-current="page"' : '' ?>><?= e($item['label']) ?></a>
+        <?php foreach ($menu as $navItem): ?>
+            <a href="<?= e($navItem['href']) ?>" <?= $title === $navItem['page'] ? 'aria-current="page"' : '' ?>><?= e($navItem['label']) ?></a>
         <?php endforeach; ?>
     </nav>
-    <form method="post" action="<?= e(app_url('logout.php')) ?>"><?= csrf_input() ?><button type="submit" class="btn btn-outline-secondary w-100">Đăng xuất</button></form>
+    <form method="post" action="<?= e(app_url('logout.php')) ?>"><?= csrf_input() ?><button type="submit" class="btn-logout">Đăng xuất</button></form>
 </aside>
-<div class="staff-workspace"><header class="staff-top"><span>Trang chủ / <?= e($title) ?></span><div class="identity"><b>NV</b><div><small>Nhân viên phòng trực</small><?= e($nguoiDung['ho_ten']) ?></div></div></header>
-<main class="staff-main">
+<div class="staff-workspace">
+    <header class="staff-top">
+        <span class="breadcrumb-title">Trang chủ / <?= e($title) ?></span>
+        <div class="identity">
+            <span class="avatar">NV</span>
+            <div>
+                <small>Tài khoản</small>
+                <strong>Nhân viên phòng trực</strong>
+            </div>
+        </div>
+    </header>
+    <main class="staff-main">
 <?php if ($flash): ?><div class="alert alert-<?= e($flash['loai'] ?? 'info') ?>" role="status"><?= e($flash['noiDung'] ?? '') ?></div><?php endif; ?>

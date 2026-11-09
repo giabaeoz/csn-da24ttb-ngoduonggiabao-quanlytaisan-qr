@@ -9,12 +9,12 @@ require_once __DIR__ . '/../src/includes/database.php';
 $db = db_ket_noi();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $samples = require __DIR__ . '/assets_word_samples.php';
-$deskName = 'Phòng trực thiết bị khu 1 (khu B)';
+$deskName = 'Phòng trực thiết bị Khu 1';
 $db->begin_transaction();
 try {
     $desk = $db->execute_query('SELECT id FROM phong_truc WHERE ten_phong_truc = ? ORDER BY id LIMIT 1', [$deskName])->fetch_row();
     if (!$desk) {
-        $db->execute_query('INSERT INTO phong_truc (ma_phong_truc, ten_phong_truc) VALUES (?, ?)', ['PT_K1B', $deskName]);
+        $db->execute_query('INSERT INTO phong_truc (ma_phong_truc, ten_phong_truc) VALUES (?, ?)', ['PT_K1', $deskName]);
         $desk = [$db->insert_id];
     }
     $created = 0;
@@ -42,7 +42,6 @@ try {
             }
             $roomIds[] = (int)$room[0];
         }
-        // Cột FK cũ chỉ được điền khi có đúng một phòng tương thích.
         $singleRoom = count($roomIds) === 1 ? $roomIds[0] : null;
         $db->execute_query('INSERT INTO tai_san
             (ma_tai_san, ma_qr, ten_tai_san, loai_tai_san_id, phong_truc_id,

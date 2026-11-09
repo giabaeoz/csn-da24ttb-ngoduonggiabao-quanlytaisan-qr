@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-// 1. Cấu hình hiển thị lỗi khi kiểm tra môi trường
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
-// 2. Cấu hình kết nối cơ sở dữ liệu mặc định
 $cauHinhDb = [
     'host'     => '127.0.0.1',
     'port'     => 3306,
@@ -15,7 +13,6 @@ $cauHinhDb = [
     'database' => 'dacsn_qlts_qr',
 ];
 
-// Nạp cấu hình cục bộ nếu có (config.local.php)
 $tepCauHinhCucBo = __DIR__ . '/config.local.php';
 if (is_file($tepCauHinhCucBo)) {
     $cauHinhCucBo = require $tepCauHinhCucBo;
@@ -24,7 +21,6 @@ if (is_file($tepCauHinhCucBo)) {
     }
 }
 
-// 3. Thực hiện kiểm tra các dịch vụ
 $coMysqli   = extension_loaded('mysqli');
 $ketNoi     = null;
 $loiKetNoi  = '';
@@ -56,7 +52,6 @@ if ($coMysqli) {
 
 $coDbMucTieu = in_array($cauHinhDb['database'], $dsDb, true);
 
-// 4. Tổng hợp danh sách tiêu chí kiểm tra
 $danhSachKiemTra = [
     [
         'ten'      => 'Môi trường PHP',
@@ -92,7 +87,6 @@ $danhSachKiemTra = [
     ],
 ];
 
-// Kiểm tra toàn bộ hệ thống đã đạt chuẩn chưa
 $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
 ?>
 <!DOCTYPE html>
@@ -142,8 +136,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             margin: 0 auto;
         }
 
-        /* Tiêu đề ứng dụng */
-        .header {
+                .header {
             margin-bottom: 28px;
             text-align: center;
         }
@@ -173,8 +166,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             font-size: 0.95rem;
         }
 
-        /* Banner thông báo trạng thái chung */
-        .status-banner {
+                .status-banner {
             border-radius: var(--radius-md);
             padding: 16px 20px;
             margin-bottom: 24px;
@@ -214,8 +206,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             opacity: 0.95;
         }
 
-        /* Thẻ nội dung chính */
-        .card {
+                .card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
@@ -239,8 +230,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             color: var(--text-main);
         }
 
-        /* Bảng kiểm tra */
-        .table-wrap {
+                .table-wrap {
             overflow-x: auto;
         }
 
@@ -287,8 +277,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             margin-top: 3px;
         }
 
-        /* Nhãn trạng thái (Pill) */
-        .pill {
+                .pill {
             display: inline-flex;
             align-items: center;
             gap: 5px;
@@ -312,8 +301,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             border: 1px solid var(--danger-border);
         }
 
-        /* Danh sách cơ sở dữ liệu hiện có */
-        .db-box {
+                .db-box {
             padding: 18px 20px;
         }
 
@@ -347,8 +335,7 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             font-weight: 600;
         }
 
-        /* Chân trang */
-        .footer {
+                .footer {
             text-align: center;
             font-size: 0.84rem;
             color: var(--text-muted);
@@ -364,14 +351,12 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
 
 <body>
     <div class="container">
-        <!-- Phần tiêu đề -->
         <header class="header">
             <span class="badge">Đồ Án Cơ Sở Ngành</span>
             <h1>Hệ Thống Quản Lý Tài Sản Bằng Mã QR</h1>
             <p>Kiểm tra cấu hình môi trường máy chủ và kết nối cơ sở dữ liệu</p>
         </header>
 
-        <!-- Banner thông báo tổng quan -->
         <?php if ($tatCaHopLe): ?>
             <div class="status-banner success">
                 <div class="icon">&#10004;</div>
@@ -390,7 +375,6 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             </div>
         <?php endif; ?>
 
-        <!-- Bảng danh sách kiểm tra -->
         <div class="card">
             <div class="card-header">
                 <h2>Kết Quả Kiểm Tra Hệ Thống</h2>
@@ -428,7 +412,6 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             </div>
         </div>
 
-        <!-- Khối hiển thị các Database hiện có trên MySQL -->
         <div class="card">
             <div class="card-header">
                 <h2>Thông Tin Cơ Sở Dữ Liệu Máy Chủ</h2>
@@ -452,7 +435,6 @@ $tatCaHopLe = $coMysqli && (bool) $ketNoi && $coDbMucTieu;
             </div>
         </div>
 
-        <!-- Chân trang -->
         <footer class="footer">
             <p>Sinh viên thực hiện: <span>Ngô Dương Gia Bảo</span> &bull; MSSV: <span>110124008</span> &bull; Lớp: <span>DA24TTB</span></p>
             <p style="margin-top: 4px; font-size: 0.78rem;">Đồ án Quản lý tài sản bằng mã QR &bull; Giảng viên hướng dẫn: Th.S Nguyễn Ngọc Đan Thanh</p>

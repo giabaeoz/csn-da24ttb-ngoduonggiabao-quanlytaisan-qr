@@ -10,6 +10,17 @@ const BORROWER_FIELDS = [
     'so_dien_thoai'  => ['Số điện thoại', 20, false],
 ];
 
+function borrower_check_actor(mysqli $db, int $actor, array $allowedRoles = ['QUAN_LY']): void
+{
+    $row = $db->execute_query(
+        'SELECT vai_tro, dang_hoat_dong FROM nhan_vien WHERE id = ? FOR SHARE',
+        [$actor]
+    )->fetch_assoc();
+    if (!$row || !(int)$row['dang_hoat_dong'] || !in_array($row['vai_tro'], $allowedRoles, true)) {
+        throw new DomainException('Quyền quản lý người mượn của phiên này đã thay đổi.');
+    }
+}
+
 function borrower_text(array $input, string $key): string
 {
     return is_string($input[$key] ?? null) ? trim($input[$key]) : '';
@@ -18,7 +29,6 @@ function borrower_text(array $input, string $key): string
 function borrower_write(mysqli $db, string $action, int $id, array $input): int
 {
     if ($action === 'delete' && $id > 0) {
-        // FK RESTRICT của phieu_muon bảo vệ cả trường hợp có người lập phiếu đồng thời.
         $db->execute_query('DELETE FROM nguoi_muon WHERE id = ?', [$id]);
         if (!$db->affected_rows) {
             throw new DomainException('Hồ sơ không còn tồn tại.');
@@ -70,7 +80,6 @@ function borrower_pattern(string $value): string
 
 function borrower_list(mysqli $db, string $tab, string $keyword, string $room, ?int $desk, int $page): array
 {
-    // Tổng hợp theo người trước khi nối hồ sơ để mỗi người chỉ xuất hiện một dòng.
     $from = " FROM nguoi_muon n LEFT JOIN (
         SELECT p.nguoi_muon_id, COUNT(*) AS open_count, MIN(p.han_tra) AS due,
                GROUP_CONCAT(DISTINCT h.ma_phong ORDER BY h.ma_phong SEPARATOR ', ') AS rooms

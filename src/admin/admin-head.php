@@ -18,8 +18,9 @@ $menu = app_navigation($headerRole);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
     <title><?= e($title) ?> · Tài sản QR</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../vendor/bootstrap.min.css">
     <link rel="stylesheet" href="../shared/management.css">
     <?php if ($title === 'Tài sản'): ?>
         <link rel="stylesheet" href="../shared/assets.css">
@@ -37,8 +38,8 @@ $menu = app_navigation($headerRole);
     </div>
     <nav aria-label="Chức năng">
         <small>CHỨC NĂNG</small>
-        <?php foreach ($menu as $item): ?>
-            <a href="<?= e($item['href']) ?>" <?= $title === $item['page'] ? 'aria-current="page"' : '' ?>><?= e($item['label']) ?></a>
+        <?php foreach ($menu as $navItem): ?>
+            <a href="<?= e($navItem['href']) ?>" <?= $title === $navItem['page'] ? 'aria-current="page"' : '' ?>><?= e($navItem['label']) ?></a>
         <?php endforeach; ?>
     </nav>
     <form method="post" action="<?= e(app_url('logout.php')) ?>">

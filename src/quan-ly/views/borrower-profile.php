@@ -67,16 +67,20 @@ $history = isset($history) ? $history : null;
                 <?php else: ?>
                     <dl>
                         <?php foreach (BORROWER_FIELDS as $key => [$label]): ?>
-                            <dt><?= e($label) ?></dt><dd><?= e($profile[$key] ?? '—') ?></dd>
+                            <dt><?= e($label) ?></dt>
+                            <dd><?= e($profile[$key] ?? '—') ?></dd>
                         <?php endforeach; ?>
-                        <dt>Loại người mượn</dt><dd><?= e(BORROWER_TYPES[$profile['loai_nguoi_muon']]) ?></dd>
+                        <dt>Loại người mượn</dt>
+                        <dd><?= e(BORROWER_TYPES[$profile['loai_nguoi_muon']]) ?></dd>
                     </dl>
                 <?php endif; ?>
 
                 <?php if ($history): ?>
                     <hr class="my-4">
                     <h6 class="fw-bold mb-3">Lịch sử mượn của <?= e($profile['ho_ten'] ?? '') ?></h6>
-                    <?php if (!$history->num_rows): ?><p class="text-muted">Chưa có tài sản mượn trong phạm vi tra cứu.</p><?php endif; ?>
+                    <?php if (!$history->num_rows): ?>
+                        <p class="text-muted">Chưa có tài sản mượn trong phạm vi tra cứu.</p>
+                    <?php endif; ?>
                     <?php foreach ($history as $loan): ?>
                         <article class="loan-detail">
                             <strong><?= e($loan['ma_phieu_muon']) ?> · <?= e($loan['ma_tai_san']) ?></strong>

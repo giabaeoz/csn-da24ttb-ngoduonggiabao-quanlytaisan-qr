@@ -372,6 +372,8 @@ CREATE TABLE phieu_muon (
 
     nhan_vien_lap_id INT UNSIGNED NOT NULL,
 
+    nhan_vien_huy_id INT UNSIGNED NULL,
+
     thoi_gian_muon DATETIME NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
 
@@ -653,10 +655,13 @@ CREATE TABLE dot_kiem_ke (
 
     trang_thai ENUM(
         'DANG_KIEM_KE',
-        'HOAN_TAT'
+        'HOAN_TAT',
+        'DA_HUY'
     ) NOT NULL DEFAULT 'DANG_KIEM_KE',
 
     ghi_chu TEXT NULL,
+
+    ly_do_huy VARCHAR(500) NULL,
 
     tao_luc DATETIME NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
@@ -683,6 +688,12 @@ CREATE TABLE dot_kiem_ke (
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
 
+    CONSTRAINT fk_dot_kiem_ke_nhan_vien_huy
+        FOREIGN KEY (nhan_vien_huy_id)
+        REFERENCES nhan_vien(id)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT,
+
     CONSTRAINT ck_dot_kiem_ke_ma
         CHECK (
             CHAR_LENGTH(TRIM(ma_dot_kiem_ke)) > 0
@@ -704,11 +715,22 @@ CREATE TABLE dot_kiem_ke (
             (
                 trang_thai = 'DANG_KIEM_KE'
                 AND thoi_gian_ket_thuc IS NULL
+                AND nhan_vien_huy_id IS NULL
+                AND ly_do_huy IS NULL
             )
             OR
             (
                 trang_thai = 'HOAN_TAT'
                 AND thoi_gian_ket_thuc IS NOT NULL
+                AND nhan_vien_huy_id IS NULL
+                AND ly_do_huy IS NULL
+            )
+            OR
+            (
+                trang_thai = 'DA_HUY'
+                AND thoi_gian_ket_thuc IS NOT NULL
+                AND nhan_vien_huy_id IS NOT NULL
+                AND CHAR_LENGTH(TRIM(ly_do_huy)) > 0
             )
         )
 

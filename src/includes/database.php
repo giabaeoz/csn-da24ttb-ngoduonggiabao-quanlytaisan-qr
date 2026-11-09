@@ -22,7 +22,6 @@ function db_ket_noi(): mysqli
         'database' => 'dacsn_qlts_qr',
     ];
 
-    // Nạp cấu hình ghi đè cục bộ nếu có
     $tepCauHinhCucBo = __DIR__ . '/../config.local.php';
     if (is_file($tepCauHinhCucBo)) {
         $cauHinhCucBo = require $tepCauHinhCucBo;
@@ -31,7 +30,6 @@ function db_ket_noi(): mysqli
         }
     }
 
-    // Tắt báo cáo lỗi mặc định để xử lý an toàn
     mysqli_report(MYSQLI_REPORT_OFF);
 
     $ketNoi = @new mysqli(
@@ -43,14 +41,12 @@ function db_ket_noi(): mysqli
     );
 
     if ($ketNoi->connect_errno) {
-        // Ghi log chi tiết vào log máy chủ, không hiển thị mật khẩu/chi tiết cho người dùng cuối
         error_log(sprintf(
             '[DB_ERROR] Kết nối CSDL thất bại (Mã: %d): %s',
             $ketNoi->connect_errno,
             $ketNoi->connect_error
         ));
 
-        // Trả về trang thông báo thân thiện, an toàn
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');
         echo '<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>Lỗi kết nối</title>'
@@ -63,8 +59,9 @@ function db_ket_noi(): mysqli
         exit;
     }
 
-    // Thiết lập bảng mã UTF-8 đầy đủ
     $ketNoi->set_charset('utf8mb4');
+    $ketNoi->query("SET time_zone = '+07:00'");
+    date_default_timezone_set('Asia/Ho_Chi_Minh');
 
     return $ketNoi;
 }

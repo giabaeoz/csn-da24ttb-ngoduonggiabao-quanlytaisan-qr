@@ -20,7 +20,6 @@ function yeu_cau_dang_nhap(): array
         exit;
     }
 
-    // Áp dụng thay đổi quyền, phòng và trạng thái ngay ở yêu cầu tiếp theo.
     $ketQua = db_ket_noi()->execute_query(
         'SELECT ma_nhan_vien, ho_ten, ten_dang_nhap, so_dien_thoai, vai_tro, phong_truc_id
          FROM nhan_vien WHERE id = ? AND dang_hoat_dong = 1',
@@ -55,16 +54,13 @@ function kiem_tra_quyen(string|array $vaiTroChoPhep): array
     $vaiTroHienTai = (string) ($nguoiDung['vai_tro'] ?? '');
 
     if (!in_array($vaiTroHienTai, $vaiTroDanhSach, true)) {
-        // Trả về mã lỗi 403 Forbidden
         http_response_code(403);
 
-        // Lưu ngữ cảnh lỗi để hiển thị trên trang 403
         $thongTinLoi = [
             'vai_tro_hien_tai' => $vaiTroHienTai,
             'vai_tro_yeu_cau'  => $vaiTroDanhSach,
         ];
 
-        // Nạp trang giao diện 403
         require __DIR__ . '/../403.php';
         exit;
     }
@@ -76,7 +72,7 @@ function kiem_tra_quyen(string|array $vaiTroChoPhep): array
  * Các hàm tiện ích kiểm tra nghiệp vụ theo ma trận phân quyền đề tài:
  * - NHAN_VIEN: vận hành mượn–trả, kiểm kê và điều chuyển trong phạm vi phòng trực
  * - QUAN_LY: quản lý danh mục, tài sản và giám sát nghiệp vụ
- * - QUAN_TRI: quản lý tài khoản, tài sản, phòng trực và phòng học; không trực tiếp quản lý người mượn, mượn–trả, kiểm kê, điều chuyển
+ * - QUAN_TRI: quản lý tài khoản, tài sản, người mượn, phòng trực và phòng học; không trực tiếp thực hiện mượn–trả, kiểm kê, điều chuyển
  */
 
 function co_the_van_hanh_muon_tra(): bool

@@ -24,11 +24,13 @@ if ($post) {
         $saved=manager_asset_save($db,$action,$id,$_POST);
         $db->commit();
         set_flash('success',match($action) {
+            'create'=>'Đã thêm tài sản thành công.',
+            'edit'=>'Đã cập nhật tài sản thành công.',
             'stop'=>'Tài sản đã ngừng sử dụng.',
             'delete'=>'Đã xóa tài sản chưa có lịch sử nghiệp vụ.',
-            default=>'Đã lưu tài sản và mã QR.',
+            default=>'Đã lưu tài sản và mã QR thành công.',
         });
-        header('Location: tai-san.php'.($action==='delete'?'':'?id='.$saved.'#asset-profile'),true,303);
+        header('Location: tai-san.php', true, 303);
         exit;
     } catch (DomainException | mysqli_sql_exception $ex) {
         $db->rollback();
@@ -61,7 +63,7 @@ try {
         FROM (".ASSET_SELECT.") a")->fetch_assoc();
     $types=$db->query('SELECT id,ten_loai,dang_hoat_dong FROM loai_tai_san ORDER BY ten_loai')->fetch_all(MYSQLI_ASSOC);
     $desks=$db->query('SELECT id,ten_phong_truc,dang_hoat_dong FROM phong_truc ORDER BY ten_phong_truc')->fetch_all(MYSQLI_ASSOC);
-    $rooms=$db->query('SELECT id,ma_phong,dang_hoat_dong FROM phong_hoc ORDER BY ma_phong')->fetch_all(MYSQLI_ASSOC);
+    $rooms=$db->query('SELECT id,ma_phong,ten_phong,dang_hoat_dong FROM phong_hoc ORDER BY ma_phong')->fetch_all(MYSQLI_ASSOC);
     $asset=$id?$db->execute_query(ASSET_SELECT.' WHERE t.id=?',[$id])->fetch_assoc():null;
     if ($id && !$asset) { http_response_code(404); exit('Không tìm thấy tài sản.'); }
     $history=$asset?asset_history($db,$id):[];
@@ -79,7 +81,8 @@ if (!$formData && $asset) {
 }
 $link=static fn(array $changes): string => '?'.http_build_query(array_replace($filters,['page'=>$page],$changes));
 $canEditAsset=true;
-$canViewBorrower=false;
+$canViewBorrower=true;
+$borrowerProfileUrl=app_url('admin/nguoi-muon.php');
 $canEditTypes=false;
 $canEditRooms=true;
 $title='Tài sản';
@@ -91,16 +94,4 @@ require __DIR__.'/admin-head.php';
 <?php if ($showForm): require __DIR__.'/../quan-ly/views/asset-form.php'; endif; ?>
 <script src="../vendor/qrcode.js"></script><script src="../vendor/qrcode_UTF8.js"></script><script src="../shared/assets.js"></script>
 <script src="../vendor/jsQR.js"></script><script src="../shared/qr-scanner.js"></script><script src="../shared/asset-qr-search.js"></script>
-<script>
-const scope = document.querySelector('[name="pham_vi_tuong_thich"]');
-const roomChecks = document.querySelectorAll('#compatible-rooms input');
-if (scope) {
-    const sync = () => {
-        const flexible = scope.value === 'LINH_HOAT';
-        roomChecks.forEach((check) => { if (flexible) check.checked = false; check.disabled = flexible; });
-    };
-    scope.addEventListener('change', sync);
-    sync();
-}
-</script>
 <?php require __DIR__.'/../shared/views/end.php';

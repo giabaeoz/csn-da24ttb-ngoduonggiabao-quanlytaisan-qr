@@ -1,9 +1,94 @@
-.transfer-preview p { margin-bottom: 10px; }
-.transfer-assets { min-height: 145px; max-height: 320px; overflow: auto; border-top: 1px solid #ddd; }
-.transfer-asset { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 11px 2px; border-bottom: 1px solid #ddd; }
-.transfer-asset > input { position: absolute; opacity: 0; pointer-events: none; }
-.transfer-submit { min-width: 280px; }
-.transfer-cancel { min-width: 130px; }
-.transfer-detail { border-left: 4px solid #777; }
-.transfer-recent th { white-space: nowrap; }
-@media (max-width: 600px) { .transfer-submit, .transfer-cancel { min-width: 0; flex: 1; } .transfer-recent { min-width: 750px; } }
+.transfer-layout {
+    display: grid;
+    grid-template-columns: 46% 54%;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 992px) {
+    .transfer-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.sketch-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+}
+
+.sketch-card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 16px;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.form-grid-2 label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+}
+
+.transfer-reason-wrap {
+    margin-bottom: 12px;
+}
+
+.transfer-reason-wrap label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.transfer-time-hint {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 8px;
+}
+
+.scanned-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.scanned-table th {
+    background: #f8fafc;
+    padding: 12px 14px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #475569;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.scanned-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.transfer-actions-bottom {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 20px;
+}

@@ -13,10 +13,12 @@ function app_navigation(string $role): array
     $items = match ($role) {
         VAI_TRO_NHAN_VIEN => [
             ['nhan-vien/index.php', 'Tổng quan', 'Tổng quan'],
+            ['nhan-vien/tai-san.php', 'Tài sản', 'Tài sản'],
+            ['nhan-vien/nguoi-muon.php', 'Người mượn', 'Người mượn'],
             ['nhan-vien/muon-tra.php?tab=muon', 'Mượn – trả', 'Mượn – trả tài sản'],
             ['nhan-vien/dieu-chuyen.php', 'Điều chuyển', 'Điều chuyển tài sản'],
             ['nhan-vien/kiem-ke.php', 'Kiểm kê', 'Kiểm kê tài sản'],
-            ['nhan-vien/nguoi-muon.php', 'Người mượn', 'Người mượn'],
+            ['nhan-vien/tra-cuu.php', 'Tra cứu, thống kê', 'Tra cứu, thống kê'],
         ],
         VAI_TRO_QUAN_LY => [
             ['quan-ly/index.php', 'Tổng quan', 'Tổng quan'],
@@ -30,6 +32,7 @@ function app_navigation(string $role): array
             ['admin/index.php', 'Tổng quan', 'Tổng quan'],
             ['admin/tai-khoan.php', 'Tài khoản', 'Tài khoản'],
             ['admin/tai-san.php', 'Tài sản', 'Tài sản'],
+            ['admin/nguoi-muon.php', 'Người mượn', 'Người mượn'],
             ['admin/danh-muc.php?kind=phong-truc', 'Phòng trực', 'Phòng trực'],
             ['admin/danh-muc.php?kind=phong-hoc', 'Phòng học', 'Phòng học'],
         ],

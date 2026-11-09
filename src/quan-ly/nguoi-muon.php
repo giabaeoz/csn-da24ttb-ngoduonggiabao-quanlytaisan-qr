@@ -5,7 +5,8 @@ require_once __DIR__ . '/../includes/rbac.php';
 require_once __DIR__ . '/../includes/borrowers.php';
 
 $isPost = $_SERVER['REQUEST_METHOD'] === 'POST';
-$nguoiDung = kiem_tra_quyen(VAI_TRO_QUAN_LY);
+$borrowerRole = defined('BORROWER_ROLE') ? BORROWER_ROLE : VAI_TRO_QUAN_LY;
+$nguoiDung = kiem_tra_quyen($borrowerRole);
 $canEdit = true;
 $desk = null;
 
@@ -26,17 +27,16 @@ if ($isPost) {
     }
     try {
         $db->begin_transaction();
-        $manager = $db->execute_query("SELECT id FROM nhan_vien WHERE id = ?
-            AND vai_tro = 'QUAN_LY' AND dang_hoat_dong = 1 FOR SHARE", [$nguoiDung['id']])->fetch_row();
-        if (!$manager) {
-            $db->rollback();
-            http_response_code(403);
-            exit('Quyền quản lý đã thay đổi.');
-        }
+        borrower_check_actor($db, (int)$nguoiDung['id'], [$borrowerRole]);
         $id = borrower_write($db, $action, $id, $_POST);
         $db->commit();
-        set_flash('success', $action === 'delete' ? 'Đã xóa hồ sơ chưa có phiếu mượn.' : 'Đã lưu hồ sơ người mượn.');
-        header('Location: nguoi-muon.php?tab=all' . ($id ? '&id=' . $id : ''), true, 303);
+        set_flash('success', match ($action) {
+            'create' => 'Đã thêm người mượn thành công.',
+            'edit' => 'Đã cập nhật người mượn thành công.',
+            'delete' => 'Đã xóa hồ sơ chưa có phiếu mượn.',
+            default => 'Đã lưu hồ sơ người mượn thành công.',
+        });
+        header('Location: nguoi-muon.php?tab=all', true, 303);
         exit;
     } catch (DomainException | mysqli_sql_exception $exception) {
         $db->rollback();
@@ -77,7 +77,7 @@ if ($error && in_array($action, ['create', 'edit'], true)) {
 $filters = ['tab' => $tab, 'q' => $keyword, 'room' => $room, 'page' => $page];
 $link = static fn(array $changes): string => '?' . http_build_query(array_replace($filters, $changes));
 $title = 'Người mượn';
-require __DIR__ . '/manager-head.php';
+require $borrowerRole === VAI_TRO_QUAN_TRI ? __DIR__ . '/../admin/admin-head.php' : __DIR__ . '/manager-head.php';
 require __DIR__ . '/views/borrowers-list.php';
 if ($id || $new) {
     require __DIR__ . '/views/borrower-profile.php';
