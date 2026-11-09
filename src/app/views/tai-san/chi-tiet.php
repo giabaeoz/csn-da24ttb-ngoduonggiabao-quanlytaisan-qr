@@ -41,7 +41,7 @@ require dirname(__DIR__) . '/layout/menu.php';
             <h5 class="fw-bold text-primary mb-3">TEM ĐỊNH DANH QR</h5>
             
             <div class="d-flex justify-content-center mb-3">
-                <div id="qrcode" class="p-3 bg-white border rounded-3 shadow-sm" style="display: inline-block;"></div>
+                <div id="qrcode" data-qr="<?= e($taiSan['ma_qr']) ?>" data-qr-size="160" class="p-3 bg-white border rounded-3 shadow-sm" style="display: inline-block; min-width: 170px; min-height: 170px;"></div>
             </div>
 
             <div class="font-monospace fs-5 fw-bold text-dark mb-1">
@@ -212,18 +212,12 @@ require dirname(__DIR__) . '/layout/menu.php';
 
 <!-- Nạp thư viện tạo mã QR offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
+<script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
+<script src="<?= url('assets/js/qr-tao.js') ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Sinh mã QR cục bộ offline
     const maQr = <?= json_encode($taiSan['ma_qr']) ?>;
-    new QRCode(document.getElementById('qrcode'), {
-        text: maQr,
-        width: 160,
-        height: 160,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    taoMaQr('qrcode', maQr, { size: 160, level: 'M' });
 });
 </script>
 

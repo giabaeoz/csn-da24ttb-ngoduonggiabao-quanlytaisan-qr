@@ -20,7 +20,7 @@ if ($taiSan === null) {
 $db = db();
 
 // 1. Lấy lịch sử mượn trả gần nhất của tài sản này
-$sqlMuon = "SELECT ctm.*, pm.ma_phieu, pm.thoi_gian_muon, pm.han_tra,
+$sqlMuon = "SELECT ctm.*, pm.ma_phieu_muon AS ma_phieu, pm.thoi_gian_muon, pm.han_tra,
                    nm.ho_ten AS ten_nguoi_muon, nm.ma_so_truong,
                    ph.ten_phong AS ten_phong_hoc, ph.ma_phong AS ma_phong_hoc
             FROM chi_tiet_muon ctm
@@ -39,9 +39,9 @@ $stmtMuon->close();
 // 2. Lấy danh sách sự cố đã phát sinh
 $sqlSc = "SELECT sc.*, nv.ho_ten AS ten_nhan_vien_bao
           FROM su_co_tai_san sc
-          LEFT JOIN nhan_vien nv ON sc.nhan_vien_bao_id = nv.id
+          LEFT JOIN nhan_vien nv ON sc.nhan_vien_lap_id = nv.id
           WHERE sc.tai_san_id = ?
-          ORDER BY sc.thoi_gian_bao DESC";
+          ORDER BY sc.thoi_gian_phat_hien DESC";
 $stmtSc = $db->prepare($sqlSc);
 $stmtSc->bind_param('i', $id);
 $stmtSc->execute();

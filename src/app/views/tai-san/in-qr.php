@@ -120,7 +120,7 @@ if (!defined('APP_KHOI_DONG')) {
 
             <div class="d-flex align-items-center gap-3">
                 <!-- Mã QR Render -->
-                <div id="qr_box_<?= $idx ?>" class="flex-shrink-0"></div>
+                <div id="qr_box_<?= $idx ?>" data-qr="<?= e($ts['ma_qr']) ?>" data-qr-size="95" class="flex-shrink-0" style="min-width: 95px; min-height: 95px;"></div>
 
                 <!-- Thông tin thiết bị -->
                 <div class="flex-grow-1 overflow-hidden">
@@ -149,21 +149,13 @@ if (!defined('APP_KHOI_DONG')) {
 
 <!-- Thư viện QRCode.js offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
+<script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
+<script src="<?= url('assets/js/qr-tao.js') ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const danhSach = <?= json_encode($danhSachIn, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     danhSach.forEach((ts, idx) => {
-        const el = document.getElementById('qr_box_' + idx);
-        if (el) {
-            new QRCode(el, {
-                text: ts.ma_qr,
-                width: 95,
-                height: 95,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        }
+        taoMaQr('qr_box_' + idx, ts.ma_qr, { size: 95, margin: 1 });
     });
 });
 </script>

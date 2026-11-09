@@ -66,7 +66,18 @@ require dirname(__DIR__) . '/layout/menu.php';
                         <input type="text" class="form-control font-monospace" id="ma_qr" name="ma_qr" 
                                value="<?= e($taiSan['ma_qr'] ?? '') ?>" 
                                placeholder="Tự động sinh (Ví dụ: QR-D6-MC0001)">
-                        <div class="form-text small">Để trống để hệ thống tự động sinh theo mẫu chuẩn.</div>
+                        <div class="form-text small mb-2">Để trống để hệ thống tự động sinh theo mẫu chuẩn.</div>
+
+                        <!-- Khung xem trước mã QR tự động -->
+                        <div class="p-2 border rounded bg-light d-flex align-items-center gap-3">
+                            <div id="preview_qr_box" class="bg-white p-1 border rounded flex-shrink-0" style="width: 84px; height: 84px; display: flex; align-items: center; justify-content: center;">
+                                <span class="text-muted small" style="font-size: 10px; text-align: center;">Chưa có QR</span>
+                            </div>
+                            <div class="small overflow-hidden">
+                                <div class="fw-semibold text-secondary" style="font-size: 11px;">Xem trước tem mã QR:</div>
+                                <div id="preview_qr_val" class="font-monospace text-primary fw-bold" style="word-break: break-all; font-size: 12px;">---</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-12 col-md-4">
@@ -238,6 +249,11 @@ require dirname(__DIR__) . '/layout/menu.php';
     </div>
 </div>
 
+<!-- Nạp thư viện tạo mã QR offline -->
+<script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
+<script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
+<script src="<?= url('assets/js/qr-tao.js') ?>"></script>
+
 <script>
 function doiPhamViTuongThich(val) {
     const box = document.getElementById('khuVucTheoPhong');
@@ -247,6 +263,50 @@ function doiPhamViTuongThich(val) {
         box.classList.add('d-none');
     }
 }
+
+// Xử lý xem trước mã QR tự động thời gian thực
+function capNhatXemTruocQr() {
+    const inputMaQr = document.getElementById('ma_qr');
+    const inputMaTs = document.getElementById('ma_tai_san');
+    const selectPhongTruc = document.getElementById('phong_truc_id');
+    const boxQr = document.getElementById('preview_qr_box');
+    const textQr = document.getElementById('preview_qr_val');
+
+    let maQrDuKien = inputMaQr ? inputMaQr.value.trim() : '';
+
+    if (!maQrDuKien && inputMaTs && inputMaTs.value.trim()) {
+        const maTs = inputMaTs.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+        let maPt = 'D6';
+        if (selectPhongTruc && selectPhongTruc.selectedIndex > 0) {
+            const txt = selectPhongTruc.options[selectPhongTruc.selectedIndex].text;
+            const match = txt.match(/\(([^)]+)\)/);
+            if (match) {
+                maPt = match[1];
+            }
+        }
+        maQrDuKien = 'QR-' + maPt + '-' + maTs.replace(/[^A-Z0-9]/g, '');
+    }
+
+    if (maQrDuKien) {
+        textQr.textContent = maQrDuKien;
+        taoMaQr(boxQr, maQrDuKien, { size: 76, margin: 1 });
+    } else {
+        textQr.textContent = '---';
+        boxQr.innerHTML = '<span class="text-muted small" style="font-size: 10px; text-align: center;">Chưa có QR</span>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const inputMaQr = document.getElementById('ma_qr');
+    const inputMaTs = document.getElementById('ma_tai_san');
+    const selectPhongTruc = document.getElementById('phong_truc_id');
+
+    if (inputMaQr) inputMaQr.addEventListener('input', capNhatXemTruocQr);
+    if (inputMaTs) inputMaTs.addEventListener('input', capNhatXemTruocQr);
+    if (selectPhongTruc) selectPhongTruc.addEventListener('change', capNhatXemTruocQr);
+
+    capNhatXemTruocQr();
+});
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

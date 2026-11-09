@@ -244,3 +244,4 @@ kiem_thu(
 $db->query("DELETE FROM dot_kiem_ke WHERE id = $dotKkId");
 
 tong_ket_kiem_thu('TIẾP NHẬN TRẢ TÀI SẢN & GHI NHẬN SỰ CỐ (G6)');
+
