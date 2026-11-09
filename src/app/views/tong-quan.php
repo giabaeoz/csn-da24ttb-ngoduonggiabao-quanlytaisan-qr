@@ -1,6 +1,6 @@
 <?php
 /**
- * Giao diện Bảng điều khiển Tổng quan (Dashboard Frame) tích hợp biểu đồ Chart.js (G10).
+ * Giao diện Bảng điều khiển Tổng quan - Khớp chính xác Trang tổng quan - Dashboard.pdf
  */
 
 declare(strict_types=1);
@@ -10,170 +10,147 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$tieuDeTrang = 'Tổng quan hệ thống';
+$tieuDeTrang = 'Tổng quan';
 require __DIR__ . '/layout/dau-trang.php';
-require __DIR__ . '/layout/menu.php';
+
+// Tính toán các tỷ lệ trạng thái
+$tongTs = max(1, (int)($thongKe['tong_so'] ?? 0));
+$coTheMuon = (int)($thongKe['san_sang'] ?? 0);
+$dangMuon = (int)($thongKe['dang_muon'] ?? 0);
+$trangThaiKhac = max(0, $tongTs - $coTheMuon - $dangMuon);
+
+$pctCoTheMuon = round(($coTheMuon / $tongTs) * 100, 1);
+$pctDangMuon = round(($dangMuon / $tongTs) * 100, 1);
+$pctKhac = round(($trangThaiKhac / $tongTs) * 100, 1);
+
+$tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
 ?>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
-    <h1 class="h3 fw-bold text-dark mb-0">Bảng điều khiển Tổng quan</h1>
-    <div class="btn-toolbar mb-2 mb-md-0 gap-2 align-items-center">
-        <?php if (co_quyen('xem_thong_ke')): ?>
-            <a href="<?= url('thong-ke/index.php') ?>" class="btn btn-outline-primary btn-sm shadow-sm fw-semibold">
-                <i class="bi bi-bar-chart-line me-1"></i> Báo cáo chuyên sâu
-            </a>
-        <?php endif; ?>
-        <span class="badge bg-primary fs-6 px-3 py-2 shadow-sm">
-            <i class="bi bi-calendar3 me-1"></i> <?= date('d/m/Y') ?>
-        </span>
+<!-- Tiêu đề trang & Lời chào cán bộ -->
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="tieu-de-trang">Tổng quan</h1>
+        <div class="mo-ta-phu">Tình hình tài sản và mượn – trả tại phòng trực.</div>
     </div>
-</div>
-
-<!-- Lời chào cán bộ đang trực -->
-<div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
-    <div class="card-body p-4">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div>
-                <h4 class="fw-bold text-primary mb-1">
-                    Xin chào, <?= e($nguoiDung['ho_ten']) ?>! 👋
-                </h4>
-                <p class="text-secondary mb-0">
-                    Vai trò hiện tại: <strong><?= e(TEN_VAI_TRO[$nguoiDung['vai_tro']] ?? $nguoiDung['vai_tro']) ?></strong>
-                    <?php if (!empty($nguoiDung['ten_phong_truc'])): ?>
-                        &bull; Phụ trách: <strong><?= e($nguoiDung['ten_phong_truc']) ?></strong>
-                    <?php endif; ?>
-                </p>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
-                <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-primary fw-semibold shadow-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i> Tạo phiếu mượn QR
-                </a>
-                <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-success fw-semibold shadow-sm">
-                    <i class="bi bi-box-arrow-in-left me-1"></i> Nhận trả thiết bị
-                </a>
-                <?php endif; ?>
-            </div>
+    <div class="d-flex align-items-center gap-3 text-end">
+        <div>
+            <div class="fw-semibold text-dark">Xin chào "<?= e($nguoiDung['ho_ten'] ?? 'Nhân viên phòng trực') ?>"</div>
+            <div class="mo-ta-phu">Hôm nay ngày <?= date('d/m/Y') ?></div>
         </div>
+        <button class="btn btn-phu">
+            Tuần này
+        </button>
     </div>
 </div>
 
-<!-- Khung thống kê nhanh 4 thẻ số liệu -->
+<!-- 4 Thẻ số liệu chính -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <a href="<?= url('tai-san/index.php') ?>" class="text-decoration-none">
-            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-primary bg-opacity-10 text-primary rounded-3 p-3 fs-3 me-3">
-                            💻
-                        </div>
-                        <div>
-                            <div class="text-muted small fw-semibold">Tổng tài sản</div>
-                            <h4 class="fw-bold mb-0 text-dark"><?= (int)($thongKe['tong_so'] ?? 0) ?></h4>
-                            <small class="text-muted">Khai thác: <?= $kpi['ty_le_su_dung'] ?? 0 ?>%</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
+        <div class="the-so-lieu">
+            <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['tong_so'] ?? 0)) ?></div>
+            <div class="nhan-so-lieu">Tổng tài sản</div>
+        </div>
     </div>
-
     <div class="col-12 col-sm-6 col-xl-3">
-        <a href="<?= url('tai-san/index.php?trang_thai=SAN_SANG') ?>" class="text-decoration-none">
-            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-success bg-opacity-10 text-success rounded-3 p-3 fs-3 me-3">
-                            ✅
-                        </div>
-                        <div>
-                            <div class="text-muted small fw-semibold">Đang sẵn sàng</div>
-                            <h4 class="fw-bold mb-0 text-success"><?= (int)($thongKe['san_sang'] ?? 0) ?></h4>
-                            <small class="text-muted">Phục vụ giảng dạy</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
+        <div class="the-so-lieu">
+            <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['san_sang'] ?? 0)) ?></div>
+            <div class="nhan-so-lieu">Tài sản có thể mượn</div>
+        </div>
     </div>
-
     <div class="col-12 col-sm-6 col-xl-3">
-        <a href="<?= url('tai-san/index.php?trang_thai=DANG_MUON') ?>" class="text-decoration-none">
-            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-warning bg-opacity-10 text-warning rounded-3 p-3 fs-3 me-3">
-                            📤
-                        </div>
-                        <div>
-                            <div class="text-muted small fw-semibold">Đang được mượn</div>
-                            <h4 class="fw-bold mb-0 text-warning"><?= (int)($thongKe['dang_muon'] ?? 0) ?></h4>
-                            <small class="text-muted"><?= (int)($kpi['phieu_dang_muon'] ?? 0) ?> phiếu mượn</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
+        <div class="the-so-lieu">
+            <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['dang_muon'] ?? 0)) ?></div>
+            <div class="nhan-so-lieu">Tài sản đang mượn</div>
+        </div>
     </div>
-
     <div class="col-12 col-sm-6 col-xl-3">
-        <a href="<?= url('su-co/index.php') ?>" class="text-decoration-none">
-            <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-danger bg-opacity-10 text-danger rounded-3 p-3 fs-3 me-3">
-                            ⚠️
-                        </div>
-                        <div>
-                            <div class="text-muted small fw-semibold">Bảo trì / Sự cố</div>
-                            <h4 class="fw-bold mb-0 text-danger"><?= (int)($thongKe['bao_tri_hu_hong'] ?? 0) ?></h4>
-                            <small class="text-danger"><?= (int)($kpi['su_co_chua_xu_ly'] ?? 0) ?> sự cố chờ xử lý</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
+        <div class="the-so-lieu">
+            <div class="so-lieu text-danger"><?= sprintf('%02d', (int)($kpi['phieu_qua_han'] ?? 0)) ?></div>
+            <div class="nhan-so-lieu">Lượt mượn quá hạn</div>
+        </div>
     </div>
 </div>
 
-<!-- BIỂU ĐỒ TRỰC QUAN CHART.JS (7 NGÀY GẦN NHẤT & CƠ CẤU TRẠNG THÁI) -->
+<!-- Thao tác nhanh -->
+<div class="card mb-4">
+    <div class="card-body py-3 d-flex align-items-center gap-3 flex-wrap">
+        <span class="text-phu fw-semibold me-2">Thao tác nhanh</span>
+        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-phu">Lập phiếu mượn</a>
+        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">Nhận trả tài sản</a>
+        <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">Quét mã QR</a>
+    </div>
+</div>
+
+<!-- Biểu đồ: Xu hướng mượn – trả trong tuần -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="tieu-de-khoi">Xu hướng mượn – trả trong tuần</h2>
+                <div class="mo-ta-phu">Đơn vị: lượt giao dịch • Dữ liệu thời gian thực</div>
+            </div>
+            <div class="d-flex align-items-center gap-3 small">
+                <span class="d-flex align-items-center gap-1">
+                    <span style="display:inline-block;width:16px;height:2px;background-color:#1E4E8C;"></span> Mượn
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #6B7280;"></span> Trả
+                </span>
+            </div>
+        </div>
+        <div style="height: 220px; position: relative;">
+            <canvas id="chartDashboardXuHuong"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Hàng 2 Biểu đồ: Nhóm tài sản & Tình trạng tài sản -->
 <div class="row g-4 mb-4">
-    <!-- Cột trái: Biểu đồ xu hướng mượn trả 7 ngày -->
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-graph-up text-primary"></i> Xu hướng Mượn & Trả (7 ngày gần nhất)
-                </h6>
-                <span class="badge bg-light text-secondary border small">Thời gian thực</span>
-            </div>
-            <div class="card-body p-3">
-                <div style="height: 260px; position: relative;">
-                    <canvas id="chartDashboardMuonTra"></canvas>
+    <!-- Cột trái: Lượt mượn theo nhóm tài sản -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4 d-flex flex-column">
+                <h2 class="tieu-de-khoi">Lượt mượn theo nhóm tài sản</h2>
+                <div class="mo-ta-phu mb-3">Cùng thời gian • Đơn vị: lượt</div>
+                <div style="height: 200px; position: relative;" class="flex-grow-1">
+                    <canvas id="chartDashboardNhomTaiSan"></canvas>
                 </div>
+                <div class="mo-ta-phu text-end mt-2">Tổng: <?= (int)$tongNhomMuon ?> lượt mượn</div>
             </div>
         </div>
     </div>
 
-    <!-- Cột phải: Biểu đồ trạng thái thiết bị -->
-    <div class="col-lg-4">
-        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-pie-chart text-success"></i> Tỷ lệ trạng thái thiết bị
-                </h6>
-            </div>
-            <div class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
-                <div style="width: 190px; height: 190px; position: relative;">
-                    <canvas id="chartDashboardTrangThai"></canvas>
-                </div>
-                <div class="mt-3 w-100">
-                    <div class="row g-1 text-center small">
-                        <div class="col-6"><span class="badge bg-success w-100 py-1">Sẵn sàng: <?= (int)$taiSanTrangThai['data'][0] ?></span></div>
-                        <div class="col-6"><span class="badge bg-warning text-dark w-100 py-1">Đang mượn: <?= (int)$taiSanTrangThai['data'][1] ?></span></div>
-                        <div class="col-6"><span class="badge bg-danger w-100 py-1">Bảo trì: <?= (int)$taiSanTrangThai['data'][2] ?></span></div>
-                        <div class="col-6"><span class="badge bg-secondary w-100 py-1">Ngừng SD: <?= (int)$taiSanTrangThai['data'][3] ?></span></div>
+    <!-- Cột phải: Tình trạng tài sản -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h2 class="tieu-de-khoi">Tình trạng tài sản</h2>
+                <div class="mo-ta-phu mb-3">Cơ cấu <?= (int)($thongKe['tong_so'] ?? 0) ?> tài sản</div>
+                <div class="row align-items-center">
+                    <div class="col-sm-6 text-center">
+                        <div style="width: 170px; height: 170px; margin: 0 auto; position: relative;">
+                            <canvas id="chartDashboardTinhTrang"></canvas>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                                <div class="fw-bold fs-5 text-dark"><?= (int)($thongKe['tong_so'] ?? 0) ?></div>
+                                <div class="mo-ta-phu" style="font-size: 11px;">tài sản</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mt-3 mt-sm-0">
+                        <div class="d-flex flex-column gap-2 small">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><span style="display:inline-block;width:10px;height:10px;background-color:#1E7A46;border-radius:2px;margin-right:6px;"></span>Có thể mượn</span>
+                                <span class="fw-semibold"><?= $coTheMuon ?> • <?= $pctCoTheMuon ?>%</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><span style="display:inline-block;width:10px;height:10px;background-color:#1E4E8C;border-radius:2px;margin-right:6px;"></span>Đang mượn</span>
+                                <span class="fw-semibold"><?= $dangMuon ?> • <?= $pctDangMuon ?>%</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><span style="display:inline-block;width:10px;height:10px;background-color:#6B7280;border-radius:2px;margin-right:6px;"></span>Trạng thái khác</span>
+                                <span class="fw-semibold"><?= $trangThaiKhac ?> • <?= $pctKhac ?>%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -181,60 +158,69 @@ require __DIR__ . '/layout/menu.php';
     </div>
 </div>
 
-<!-- HOẠT ĐỘNG MƯỢN TRẢ GẦN ĐÂY -->
-<div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-            <i class="bi bi-clock-history text-secondary"></i> Phiếu mượn thiết bị gần đây
-        </h6>
-        <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-sm btn-outline-primary">
-            Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+<!-- Bảng: Lượt mượn cần theo dõi -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="tieu-de-khoi mb-0">Lượt mượn cần theo dõi</h2>
+        </div>
+        <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-phu btn-sm">
+            Xem tất cả
         </a>
     </div>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light text-secondary text-uppercase small">
+        <table class="table">
+            <thead>
                 <tr>
-                    <th style="width: 140px;" class="ps-3">Mã phiếu</th>
+                    <th>Mã phiếu</th>
                     <th>Người mượn</th>
-                    <th style="width: 120px;">Phòng học</th>
-                    <th style="width: 110px;">Số thiết bị</th>
-                    <th style="width: 150px;">Thời gian mượn</th>
-                    <th style="width: 130px;">Trạng thái</th>
-                    <th style="width: 80px;" class="text-end pe-3">Chi tiết</th>
+                    <th>Tài sản</th>
+                    <th>Hạn trả</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($hoatDongGanDay)): ?>
+                <?php if (empty($phieuTheoDoi)): ?>
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">Chưa có hoạt động mượn trả nào.</td>
+                        <td colspan="6" class="text-center py-4 text-phu">Không có lượt mượn nào cần theo dõi.</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($hoatDongGanDay as $hd): ?>
+                    <?php foreach ($phieuTheoDoi as $p): 
+                        $laQuaHan = (strtotime($p['han_tra']) < time());
+                        $laHomNay = (date('Y-m-d', strtotime($p['han_tra'])) === date('Y-m-d'));
+                    ?>
                         <tr>
-                            <td class="ps-3 font-monospace fw-bold text-primary">
-                                <a href="<?= url('muon-tra/chi-tiet.php?id=' . $hd['id']) ?>" class="text-decoration-none">
-                                    <?= e($hd['ma_phieu_muon']) ?>
-                                </a>
+                            <td class="fw-semibold text-primary">
+                                <?= e($p['ma_phieu_muon']) ?>
                             </td>
+                            <td><?= e($p['ho_ten_nguoi_muon']) ?></td>
+                            <td><?= e($p['ten_cac_thiet_bi'] ?? ($p['so_thiet_bi'] . ' thiết bị')) ?></td>
                             <td>
-                                <div class="fw-semibold text-dark"><?= e($hd['ho_ten_nguoi_muon']) ?></div>
-                                <small class="text-muted"><?= e($hd['loai_nguoi_muon'] === 'GIANG_VIEN' ? 'Giảng viên' : 'Sinh viên') ?></small>
-                            </td>
-                            <td><span class="badge bg-light text-dark border"><?= e($hd['ma_phong']) ?></span></td>
-                            <td><span class="badge bg-secondary"><?= (int)$hd['so_thiet_bi'] ?> thiết bị</span></td>
-                            <td class="small text-muted"><?= dinh_dang_ngay_gio($hd['thoi_gian_muon']) ?></td>
-                            <td>
-                                <?php if ($hd['trang_thai'] === 'DANG_MUON'): ?>
-                                    <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i> Đang mượn</span>
-                                <?php else: ?>
-                                    <span class="badge bg-success"><i class="bi bi-check2 me-1"></i> Đã trả đủ</span>
+                                <?= ($laHomNay ? 'Hôm nay, ' : '') . date('H:i', strtotime($p['han_tra'])) ?>
+                                <?php if (!$laHomNay): ?>
+                                    <span class="text-phu">(<?= date('d/m', strtotime($p['han_tra'])) ?>)</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end pe-3">
-                                <a href="<?= url('muon-tra/chi-tiet.php?id=' . $hd['id']) ?>" class="btn btn-sm btn-outline-primary" title="Xem chi tiết phiếu">
-                                    <i class="bi bi-eye"></i>
-                                </a>
+                            <td>
+                                <?php if ($laQuaHan): ?>
+                                    <?php $ma = 'QUA_HAN'; $nhan = 'Quá hạn'; require __DIR__ . '/partials/huy-hieu-trang-thai.php'; ?>
+                                <?php elseif ($laHomNay): ?>
+                                    <?php $ma = 'DEN_HAN_HOM_NAY'; $nhan = 'Đến hạn hôm nay'; require __DIR__ . '/partials/huy-hieu-trang-thai.php'; ?>
+                                <?php else: ?>
+                                    <?php $ma = 'DANG_MUON'; $nhan = 'Đang mượn'; require __DIR__ . '/partials/huy-hieu-trang-thai.php'; ?>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-end">
+                                <?php if ($laQuaHan || $laHomNay): ?>
+                                    <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode($p['ma_phieu_muon'])) ?>" class="btn btn-phu btn-sm">
+                                        Nhận trả
+                                    </a>
+                                <?php else: ?>
+                                    <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$p['id']) ?>" class="btn btn-phu btn-sm">
+                                        Chi tiết
+                                    </a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -244,62 +230,94 @@ require __DIR__ . '/layout/menu.php';
     </div>
 </div>
 
-<!-- SCRIPTS KHỞI TẠO BIỂU ĐỒ DASHBOARD TỔNG QUAN -->
+<!-- SCRIPTS KHỞI TẠO 3 BIỂU ĐỒ CHART.JS -->
 <script src="<?= url('assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Line Chart Dashboard: Mượn & Trả 7 ngày
-    const ctxM = document.getElementById('chartDashboardMuonTra').getContext('2d');
-    new Chart(ctxM, {
+    // 1. Line Chart: Xu hướng mượn - trả trong tuần
+    const ctxXh = document.getElementById('chartDashboardXuHuong').getContext('2d');
+    new Chart(ctxXh, {
         type: 'line',
         data: {
             labels: <?= json_encode($muonTra7Ngay['labels'], JSON_UNESCAPED_UNICODE) ?>,
             datasets: [
                 {
-                    label: 'Lượt mượn',
+                    label: 'Mượn',
                     data: <?= json_encode($muonTra7Ngay['so_luot_muon']) ?>,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderColor: '#1E4E8C',
+                    backgroundColor: 'rgba(30, 78, 140, 0.05)',
                     borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
+                    pointBackgroundColor: '#1E4E8C',
+                    pointRadius: 3,
+                    fill: false,
+                    tension: 0.2
                 },
                 {
-                    label: 'Lượt trả',
+                    label: 'Trả',
                     data: <?= json_encode($muonTra7Ngay['so_luot_tra']) ?>,
-                    borderColor: '#198754',
-                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    borderColor: '#6B7280',
+                    borderDash: [5, 5],
                     borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
+                    pointBackgroundColor: '#6B7280',
+                    pointRadius: 3,
+                    fill: false,
+                    tension: 0.2
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'top' } },
-            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#E5E7EB' }, ticks: { precision: 0 } },
+                x: { grid: { display: false } }
+            }
         }
     });
 
-    // 2. Doughnut Chart Dashboard: Trạng thái thiết bị
-    const ctxT = document.getElementById('chartDashboardTrangThai').getContext('2d');
-    new Chart(ctxT, {
-        type: 'doughnut',
+    // 2. Bar Chart: Lượt mượn theo nhóm tài sản
+    const ctxNhom = document.getElementById('chartDashboardNhomTaiSan').getContext('2d');
+    new Chart(ctxNhom, {
+        type: 'bar',
         data: {
-            labels: <?= json_encode($taiSanTrangThai['labels'], JSON_UNESCAPED_UNICODE) ?>,
+            labels: <?= json_encode($nhomTaiSan['labels'], JSON_UNESCAPED_UNICODE) ?>,
             datasets: [{
-                data: <?= json_encode($taiSanTrangThai['data']) ?>,
-                backgroundColor: <?= json_encode($taiSanTrangThai['colors']) ?>,
-                borderWidth: 1,
+                data: <?= json_encode($nhomTaiSan['data']) ?>,
+                backgroundColor: '#6B7280',
+                borderRadius: 4,
+                maxBarThickness: 36
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            cutout: '65%'
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#E5E7EB' }, ticks: { precision: 0 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. Doughnut Chart: Tình trạng tài sản
+    const ctxTt = document.getElementById('chartDashboardTinhTrang').getContext('2d');
+    new Chart(ctxTt, {
+        type: 'doughnut',
+        data: {
+            labels: ['Có thể mượn', 'Đang mượn', 'Trạng thái khác'],
+            datasets: [{
+                data: [<?= $coTheMuon ?>, <?= $dangMuon ?>, <?= $trangThaiKhac ?>],
+                backgroundColor: ['#1E7A46', '#1E4E8C', '#6B7280'],
+                borderWidth: 2,
+                borderColor: '#FFFFFF'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            cutout: '72%'
         }
     });
 });

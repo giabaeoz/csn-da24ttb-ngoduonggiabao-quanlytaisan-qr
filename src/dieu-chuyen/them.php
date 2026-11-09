@@ -22,6 +22,9 @@ $dangKiemKe = ($phongTrucId > 0 && dieu_chuyen_kiem_tra_khoa_kiem_ke($phongTrucI
 $danhSachPhongHoc = phong_hoc_danh_sach_tat_ca();
 $loi = '';
 
+$ketQuaGanDay = dieu_chuyen_danh_sach(['phong_truc_id' => $phongTrucId > 0 ? $phongTrucId : null], 1, 3);
+$dieuChuyenGanDay = $ketQuaGanDay['danh_sach'] ?? [];
+
 $duLieu = [
     'phong_hoc_di_id'       => doc_so_nguyen('phong_hoc_di_id', 0, $_POST ?: $_GET),
     'phong_hoc_den_id'      => doc_so_nguyen('phong_hoc_den_id', 0, $_POST ?: $_GET),

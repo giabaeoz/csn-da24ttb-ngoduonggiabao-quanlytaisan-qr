@@ -1,100 +1,555 @@
 /**
- * CSS Dùng chung toàn hệ thống (Application Design System)
- * Bảng màu chuẩn theo tài liệu hướng dẫn đề tài:
- * - Primary: #1A56DB (Xanh dương đậm quản trị)
- * - Success: #0E9F6E (Xanh lá - Sẵn sàng / Tốt / Trả thành công)
- * - Danger:  #E02424 (Đỏ - Hư hỏng / Quá hạn / Cảnh báo)
- * - Warning: #F59E0B (Vàng hổ phách - Đang mượn / Chờ xử lý)
- * - Background: #F9FAFB (Nền xám sáng hiện đại)
+ * Hệ thống thiết kế chuẩn - Bám sát bản phác thảo giao diện
+ * Bảng màu cố định, kiểu chữ hệ thống, thành phần tinh gọn
  */
 
 :root {
-    --bs-primary: #1A56DB;
-    --bs-primary-rgb: 26, 86, 219;
-    --bs-success: #0E9F6E;
-    --bs-success-rgb: 14, 159, 110;
-    --bs-danger: #E02424;
-    --bs-danger-rgb: 224, 36, 36;
-    --bs-warning: #F59E0B;
-    --bs-warning-rgb: 245, 158, 11;
-    --bs-body-bg: #F9FAFB;
-    --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Màu chủ đạo (xanh dương đậm) */
+  --mau-chinh:        #1E4E8C;
+  --mau-chinh-dam:    #173D6D;   /* hover, nhấn */
+  --mau-chinh-nhat:   #E8EFF8;   /* nền nhẹ, hàng được chọn, huy hiệu */
+
+  /* Trung tính */
+  --chu-chinh:        #1F2937;
+  --chu-phu:          #6B7280;
+  --vien:             #E5E7EB;
+  --nen-trang:        #F5F7FA;   /* nền trang */
+  --nen-the:          #FFFFFF;   /* nền thẻ, bảng, biểu mẫu */
+  --nen-tieu-de-bang: #F9FAFB;
+
+  /* Ngữ nghĩa (chỉ dùng cho trạng thái/cảnh báo) */
+  --thanh-cong:       #1E7A46;  
+  --thanh-cong-nhat:  #E6F4EC;
+  --canh-bao:         #8A5A00;  
+  --canh-bao-nhat:    #FFF4DB;
+  --nguy-hiem:        #B42318;  
+  --nguy-hiem-nhat:   #FDECEA;
+
+  /* Ghi đè biến Bootstrap */
+  --bs-primary:       #1E4E8C;
+  --bs-primary-rgb:   30, 78, 140;
+  --bs-body-bg:       #F5F7FA;
+  --bs-body-color:    #1F2937;
+  --bs-border-color:  #E5E7EB;
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Kiểu chữ toàn trang */
 body {
-    background-color: var(--bs-body-bg);
-    color: #1F2A37;
-    min-height: 100vh;
-    display: flex;
+  font-family: var(--bs-body-font-family);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--chu-chinh);
+  background-color: var(--nen-trang);
+  margin: 0;
+  padding: 0;
+}
+
+/* Tiêu đề trang và khối */
+h1, .tieu-de-trang {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  margin-bottom: 2px;
+}
+
+h2, .tieu-de-khoi {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  margin-bottom: 4px;
+}
+
+.mo-ta-phu, .text-phu {
+  font-size: 13px;
+  color: var(--chu-phu);
+}
+
+/* Thẻ (Card) */
+.card, .the-noi-dung {
+  background-color: var(--nen-the);
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.card-header {
+  background-color: var(--nen-the);
+  border-bottom: 1px solid var(--vien);
+  padding: 12px 16px;
+}
+
+.card-body {
+  padding: 16px;
+}
+
+/* Nút bấm (Buttons) */
+.btn {
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 6px 14px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 150ms ease-in-out;
+}
+
+.btn-primary, .btn-chinh {
+  background-color: var(--mau-chinh);
+  border-color: var(--mau-chinh);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-chinh:hover {
+  background-color: var(--mau-chinh-dam);
+  border-color: var(--mau-chinh-dam);
+  color: #FFFFFF;
+}
+
+.btn-outline-secondary, .btn-phu {
+  background-color: #FFFFFF;
+  border-color: var(--vien);
+  color: var(--chu-chinh);
+}
+
+.btn-outline-secondary:hover, .btn-phu:hover {
+  background-color: var(--mau-chinh-nhat);
+  border-color: var(--vien);
+  color: var(--mau-chinh);
+}
+
+.btn-danger, .btn-nguy-hiem {
+  background-color: var(--nguy-hiem);
+  border-color: var(--nguy-hiem);
+  color: #FFFFFF;
+}
+
+.btn-danger:hover, .btn-nguy-hiem:hover {
+  background-color: #911D13;
+  border-color: #911D13;
+  color: #FFFFFF;
+}
+
+.btn:focus, .btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--mau-chinh-nhat);
+}
+
+/* Ô nhập liệu (Forms) */
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  margin-bottom: 4px;
+}
+
+.form-control, .form-select {
+  font-size: 14px;
+  color: var(--chu-chinh);
+  background-color: #FFFFFF;
+  border: 1px solid var(--vien);
+  border-radius: 6px;
+  padding: 6px 12px;
+  min-height: 38px;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--mau-chinh);
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--mau-chinh-nhat);
+}
+
+.form-control::placeholder {
+  color: #9CA3AF;
+  font-size: 14px;
+}
+
+.loi-truong {
+  font-size: 13px;
+  color: var(--nguy-hiem);
+  margin-top: 4px;
+}
+
+/* Bảng dữ liệu (Tables) */
+.table-responsive {
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  background-color: #FFFFFF;
+}
+
+.table {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: var(--chu-chinh);
+}
+
+.table thead th {
+  background-color: var(--nen-tieu-de-bang);
+  color: var(--chu-phu);
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--vien);
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--vien);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover td {
+  background-color: rgba(232, 239, 248, 0.4);
+}
+
+/* Huy hiệu trạng thái (Badges) */
+.huy-hieu {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.huy-hieu-thanh-cong {
+  background-color: var(--thanh-cong-nhat);
+  color: var(--thanh-cong);
+}
+
+.huy-hieu-chinh {
+  background-color: var(--mau-chinh-nhat);
+  color: var(--mau-chinh);
+}
+
+.huy-hieu-canh-bao {
+  background-color: var(--canh-bao-nhat);
+  color: var(--canh-bao);
+}
+
+.huy-hieu-nguy-hiem {
+  background-color: var(--nguy-hiem-nhat);
+  color: var(--nguy-hiem);
+}
+
+.huy-hieu-xam {
+  background-color: var(--nen-tieu-de-bang);
+  color: var(--chu-phu);
+}
+
+/* Thông báo Flash */
+.alert {
+  border-radius: 6px;
+  border: 1px solid var(--vien);
+  border-left: 3px solid transparent;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+.alert-success {
+  background-color: var(--thanh-cong-nhat);
+  border-left-color: var(--thanh-cong);
+  color: var(--thanh-cong);
+}
+
+.alert-warning {
+  background-color: var(--canh-bao-nhat);
+  border-left-color: var(--canh-bao);
+  color: var(--canh-bao);
+}
+
+.alert-danger {
+  background-color: var(--nguy-hiem-nhat);
+  border-left-color: var(--nguy-hiem);
+  color: var(--nguy-hiem);
+}
+
+.alert-primary, .alert-info {
+  background-color: var(--mau-chinh-nhat);
+  border-left-color: var(--mau-chinh);
+  color: var(--mau-chinh);
+}
+
+/* Khung Bố cục Ứng dụng (App Layout - Sidebar & Topbar) */
+.khung-ung-dung {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar-app {
+  width: 240px;
+  background-color: #FFFFFF;
+  border-right: 1px solid var(--vien);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+.sidebar-dau {
+  padding: 20px 16px 16px 16px;
+  border-bottom: 1px solid var(--vien);
+}
+
+.logo-box {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--vien);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--chu-phu);
+  background-color: #FFFFFF;
+  margin-right: 12px;
+}
+
+.ten-he-thong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  line-height: 1.2;
+}
+
+.ten-phong-truc {
+  font-size: 12px;
+  color: var(--chu-phu);
+  margin-top: 2px;
+}
+
+.sidebar-menu {
+  padding: 16px 12px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.menu-tieu-de {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--chu-phu);
+  letter-spacing: 0.05em;
+  padding: 0 10px;
+  margin-bottom: 8px;
+}
+
+.menu-item {
+  display: block;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--chu-chinh);
+  text-decoration: none;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  transition: all 150ms ease;
+}
+
+.menu-item:hover {
+  background-color: var(--mau-chinh-nhat);
+  color: var(--mau-chinh);
+}
+
+.menu-item.active {
+  background-color: #E5E7EB;
+  color: var(--chu-chinh);
+  font-weight: 600;
+}
+
+.sidebar-chan {
+  padding: 14px 16px;
+  border-top: 1px solid var(--vien);
+}
+
+.sidebar-chan .btn-dang-xuat {
+  width: 100%;
+  border: 1px solid var(--vien);
+  background-color: #FFFFFF;
+  color: var(--chu-chinh);
+  font-size: 13px;
+  padding: 7px;
+  border-radius: 6px;
+}
+
+.sidebar-chan .btn-dang-xuat:hover {
+  background-color: var(--nguy-hiem-nhat);
+  color: var(--nguy-hiem);
+  border-color: var(--nguy-hiem);
+}
+
+/* Vùng nội dung chính & Topbar */
+.vung-noi-dung {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--nen-trang);
+}
+
+.topbar-app {
+  height: 56px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--vien);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.breadcrumb-app {
+  font-size: 13px;
+  color: var(--chu-phu);
+  margin: 0;
+}
+
+.breadcrumb-app a {
+  color: var(--chu-phu);
+  text-decoration: none;
+}
+
+.breadcrumb-app a:hover {
+  color: var(--mau-chinh);
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-tron {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--mau-chinh-nhat);
+  color: var(--mau-chinh);
+  font-weight: 600;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-info {
+  line-height: 1.2;
+}
+
+.user-label {
+  font-size: 11px;
+  color: var(--chu-phu);
+}
+
+.user-role {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+}
+
+.noi-dung-chinh {
+  padding: 24px;
+  flex-grow: 1;
+}
+
+/* Thẻ số liệu KPI (Metric Card) */
+.the-so-lieu {
+  background-color: #FFFFFF;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.the-so-lieu .so-lieu {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.the-so-lieu .nhan-so-lieu {
+  font-size: 13px;
+  color: var(--chu-phu);
+}
+
+/* Khung camera quét QR */
+.khung-quet-camera {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: #F3F4F6;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.khung-quet-camera video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay-ngam {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border: 2px dashed #9CA3AF;
+  border-radius: 8px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--chu-phu);
+  font-size: 13px;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Responsive cho thiết bị di động */
+@media (max-width: 991.98px) {
+  .khung-ung-dung {
     flex-direction: column;
+  }
+  .sidebar-app {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .noi-dung-chinh {
+    padding: 16px;
+  }
 }
 
-/* Sidebar Navigation */
-.sidebar {
-    min-height: calc(100vh - 56px);
-    border-right: 1px solid #E5E7EB;
+/* Khi in ấn */
+@media print {
+  .sidebar-app, .topbar-app, .btn, .breadcrumb-app {
+    display: none !important;
+  }
+  .khung-ung-dung {
+    display: block !important;
+  }
+  .vung-noi-dung {
+    background-color: #FFFFFF !important;
+  }
+  .noi-dung-chinh {
+    padding: 0 !important;
+  }
 }
-
-.sidebar .nav-link {
-    color: #4B5563;
-    font-size: 0.925rem;
-    padding: 0.6rem 1rem;
-    border-radius: 0.375rem;
-    display: flex;
-    align-items: center;
-    transition: all 0.15s ease-in-out;
-}
-
-.sidebar .nav-link:hover {
-    color: #1A56DB;
-    background-color: #EFF6FF;
-}
-
-.sidebar .nav-link.active {
-    color: #FFFFFF;
-    background-color: #1A56DB;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar .nav-icon {
-    font-size: 1.1rem;
-    margin-right: 0.65rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-header {
-    letter-spacing: 0.05em;
-    font-size: 0.75rem;
-}
-
-/* Cards & Containers */
-.card {
-    border-color: #E5E7EB;
-    transition: box-shadow 0.2s ease;
-}
-
-/* Table styling */
-.table th {
-    background-color: #F9FAFB;
-    color: #4B5563;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 600;
-    border-bottom: 2px solid #E5E7EB;
-}
-
-/* Badge rounding */
-.badge {
-    padding: 0.4em 0.65em;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-}
-
-/* Utilities */
-.cursor-pointer {
-    cursor: pointer;
-}
-

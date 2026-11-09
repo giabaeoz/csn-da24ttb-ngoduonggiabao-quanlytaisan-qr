@@ -1,6 +1,6 @@
 <?php
 /**
- * Giao diện trang Đăng nhập hệ thống.
+ * Giao diện trang Đăng nhập hệ thống - Khớp chính xác Trang đăng nhập.pdf
  */
 
 declare(strict_types=1);
@@ -10,90 +10,76 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$tieuDe = 'Đăng nhập hệ thống';
+$tieuDe = 'Đăng nhập';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($tieuDe) ?> - <?= e(cau_hinh('ung_dung.ten', 'QLTS-QR')) ?></title>
+    <title><?= e($tieuDe) ?> - <?= e(cau_hinh('ung_dung.ten', 'Quản lý tài sản bằng mã QR')) ?></title>
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
     <link rel="stylesheet" href="<?= url('assets/css/dang-nhap.css') ?>">
 </head>
-<body class="bg-dang-nhap d-flex align-items-center min-vh-100 py-4">
+<body>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
-            
-            <div class="card shadow border-0 rounded-4 overflow-hidden">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <div class="fs-1 mb-2">📦</div>
-                    <h4 class="fw-bold mb-1">HỆ THỐNG QUẢN LÝ TÀI SẢN</h4>
-                    <p class="small mb-0 opacity-75">Mượn - Trả & Kiểm kê bằng mã QR</p>
-                </div>
+<div class="trang-dang-nhap-khung">
+    <!-- Cột bên trái: Thương hiệu & Thông tin hệ thống -->
+    <div class="cot-thuong-hieu">
+        <div></div>
+        <div class="vung-giua">
+            <div class="logo-lon">LOGO</div>
+            <div class="tieu-de-thuong-hieu">QUẢN LÝ TÀI SẢN BẰNG MÃ QR</div>
+            <div class="mo-ta-thuong-hieu">Hệ thống quản lý mượn - trả và kiểm kê tài sản bằng mã QR</div>
+        </div>
+        <div class="chan-thuong-hieu">Phòng trực thiết bị</div>
+    </div>
 
-                <div class="card-body p-4">
-                    <?php require __DIR__ . '/partials/thong-bao.php'; ?>
+    <!-- Cột bên phải: Khung đăng nhập -->
+    <div class="cot-bieu-mau">
+        <div class="hop-dang-nhap">
+            <div class="tieu-de-dang-nhap">Đăng nhập</div>
 
-                    <?php if (!empty($thongBaoLoi)): ?>
-                    <div class="alert alert-danger alert-dismissible fade show small mb-3" role="alert">
-                        <span><?= e($thongBaoLoi) ?></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php endif; ?>
-
-                    <form action="<?= url('login.php') ?>" method="POST" autocomplete="off">
-                        <?= csrf_field() ?>
-
-                        <div class="mb-3">
-                            <label for="ten_dang_nhap" class="form-label fw-semibold small text-secondary">
-                                Tên đăng nhập
-                            </label>
-                            <input type="text" 
-                                   class="form-control form-control-lg fs-6" 
-                                   id="ten_dang_nhap" 
-                                   name="ten_dang_nhap" 
-                                   value="<?= e($tenDangNhapCu ?? '') ?>" 
-                                   placeholder="Nhập tên đăng nhập" 
-                                   required 
-                                   autofocus>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="mat_khau" class="form-label fw-semibold small text-secondary">
-                                Mật khẩu
-                            </label>
-                            <input type="password" 
-                                   class="form-control form-control-lg fs-6" 
-                                   id="mat_khau" 
-                                   name="mat_khau" 
-                                   placeholder="Nhập mật khẩu" 
-                                   required>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold fs-6 shadow-sm">
-                            Đăng nhập
-                        </button>
-                    </form>
-                </div>
-
-                <div class="card-footer bg-light border-0 text-center py-3">
-                    <div class="text-muted small">
-                        <strong>Tài khoản mẫu thử nghiệm:</strong><br>
-                        <code>admin</code> / <code>admin123</code> (Quản trị)<br>
-                        <code>nhanvien01</code> / <code>nhanvien123</code> (Trực D6)<br>
-                        <code>quanly01</code> / <code>quanly123</code> (Quản lý)
-                    </div>
-                </div>
+            <?php if (!empty($thongBaoLoi)): ?>
+            <div class="alert alert-danger small mb-3" role="alert">
+                <?= e($thongBaoLoi) ?>
             </div>
+            <?php endif; ?>
 
-            <div class="text-center text-muted small mt-4">
-                Đồ án Cơ sở ngành &bull; Kế thừa & Rebuild 2026
-            </div>
+            <form action="<?= url('login.php') ?>" method="POST" autocomplete="off">
+                <?= csrf_field() ?>
 
+                <div class="mb-3">
+                    <label for="ten_dang_nhap" class="form-label">Tên đăng nhập</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="ten_dang_nhap" 
+                           name="ten_dang_nhap" 
+                           value="<?= e($tenDangNhapCu ?? '') ?>" 
+                           placeholder="Nhập tên đăng nhập" 
+                           required 
+                           autofocus>
+                </div>
+
+                <div class="mb-4">
+                    <label for="mat_khau" class="form-label">Mật khẩu</label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="mat_khau" 
+                           name="mat_khau" 
+                           placeholder="Nhập mật khẩu" 
+                           required>
+                </div>
+
+                <button type="submit" class="btn btn-chinh w-100">
+                    Đăng nhập
+                </button>
+            </form>
+
+            <a class="lien-ket-quen-mat-khau" onclick="alert('Vui lòng liên hệ Quản trị viên hệ thống để được hỗ trợ cấp lại mật khẩu.')">
+                Quên mật khẩu?
+            </a>
         </div>
     </div>
 </div>
@@ -101,4 +87,3 @@ $tieuDe = 'Đăng nhập hệ thống';
 <script src="<?= url('assets/vendor/bootstrap/bootstrap.bundle.min.js') ?>"></script>
 </body>
 </html>
-

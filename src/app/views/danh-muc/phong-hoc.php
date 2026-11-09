@@ -12,7 +12,6 @@ if (!defined('APP_KHOI_DONG')) {
 
 $tieuDeTrang = 'Quản lý Phòng học & Thiết bị phòng';
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
 ?>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3 border-bottom">

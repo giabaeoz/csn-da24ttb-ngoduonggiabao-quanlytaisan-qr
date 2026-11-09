@@ -6,8 +6,6 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
-
 $chuaXuLy = ($suCo['trang_thai'] === 'CHUA_XU_LY');
 $dangXuLy = ($suCo['trang_thai'] === 'DANG_XU_LY');
 $daXuLy = ($suCo['trang_thai'] === 'DA_XU_LY');

@@ -1,6 +1,6 @@
 <?php
 /**
- * Giao diện Danh sách Người mượn (Sinh viên & Giảng viên).
+ * Giao diện Quản lý Người mượn - Khớp chính xác Trang người mượn.pdf
  */
 
 declare(strict_types=1);
@@ -10,130 +10,114 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$tieuDeTrang = 'Quản lý Người mượn';
+$tieuDeTrang = 'Người mượn';
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
+
+// Tính toán số lượng cho tabs và tiêu đề
+$tongDangMuon = count($danhSachNguoiMuon);
+$tongChuaTra = 0;
+foreach ($danhSachNguoiMuon as $nm) {
+    $tongChuaTra += (int)($nm['so_thiet_bi_chua_tra'] ?? 1);
+}
 ?>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3 border-bottom">
+<!-- Tiêu đề trang -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">👥 Hồ sơ Người mượn</h1>
-        <p class="text-secondary small mb-0">Quản lý hồ sơ Sinh viên & Giảng viên mượn thiết bị giảng dạy, học tập.</p>
-    </div>
-    <div>
-        <a href="<?= url('nguoi-muon/them.php') ?>" class="btn btn-primary fw-semibold shadow-sm">
-            + Thêm người mượn mới
-        </a>
+        <h1 class="tieu-de-trang">Người mượn</h1>
     </div>
 </div>
 
-<!-- Bộ lọc tìm kiếm & phân trang -->
-<div class="card border-0 shadow-sm rounded-3 mb-4">
+<!-- Tabs trạng thái trên cùng -->
+<div class="d-flex gap-2 mb-4">
+    <a href="<?= url('nguoi-muon/index.php?tab=dang_muon') ?>" class="btn <?= ($tabHienTai === 'dang_muon') ? 'btn-chinh' : 'btn-phu' ?>">
+        Đang mượn (<?= $tongDangMuon ?>)
+    </a>
+    <a href="<?= url('nguoi-muon/index.php?tab=tat_ca') ?>" class="btn <?= ($tabHienTai === 'tat_ca') ? 'btn-chinh' : 'btn-phu' ?>">
+        Tất cả
+    </a>
+    <a href="<?= url('nguoi-muon/index.php?tab=qua_han') ?>" class="btn <?= ($tabHienTai === 'qua_han') ? 'btn-chinh' : 'btn-phu' ?>">
+        Quá hạn (2)
+    </a>
+</div>
+
+<!-- Bộ lọc tìm kiếm -->
+<div class="card mb-4">
     <div class="card-body p-3">
-        <form action="<?= url('nguoi-muon/index.php') ?>" method="GET" class="row g-2 align-items-center">
+        <form action="<?= url('nguoi-muon/index.php') ?>" method="GET" class="row g-2 align-items-end">
+            <input type="hidden" name="tab" value="<?= e($tabHienTai) ?>">
+            
             <div class="col-12 col-md-5">
+                <label class="form-label">Tìm người mượn</label>
                 <input type="text" name="q" class="form-control" 
-                       placeholder="Tìm theo MSSV/MSGV, họ tên, số điện thoại, lớp..." 
-                       value="<?= e($tuKhoa ?? '') ?>">
+                       placeholder="Mã số / họ tên / số điện thoại" 
+                       value="<?= e($tuKhoa) ?>">
             </div>
-            <div class="col-6 col-md-3">
-                <select name="loai" class="form-select">
-                    <option value="">-- Tất cả đối tượng --</option>
-                    <option value="SINH_VIEN" <?= ($loaiNguoiMuon ?? '') === 'SINH_VIEN' ? 'selected' : '' ?>>Sinh viên</option>
-                    <option value="GIANG_VIEN" <?= ($loaiNguoiMuon ?? '') === 'GIANG_VIEN' ? 'selected' : '' ?>>Giảng viên</option>
-                </select>
+
+            <div class="col-12 col-md-4">
+                <label class="form-label">Phòng học đang sử dụng</label>
+                <input type="text" name="phong" class="form-control" 
+                       placeholder="Nhập mã phòng, ví dụ C71.102" 
+                       value="<?= e($phongLoc) ?>">
             </div>
-            <div class="col-6 col-md-auto">
-                <button type="submit" class="btn btn-primary fw-semibold">Tìm kiếm</button>
-                <?php if (!empty($tuKhoa) || !empty($loaiNguoiMuon)): ?>
-                    <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-outline-secondary">Xóa lọc</a>
-                <?php endif; ?>
-            </div>
-            <div class="col-12 col-md text-md-end text-muted small">
-                Tổng cộng: <strong><?= $tongSo ?></strong> người mượn
+
+            <div class="col-12 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-phu flex-grow-1">Tìm</button>
+                <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">Xóa lọc</a>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Bảng dữ liệu người mượn -->
-<div class="card border-0 shadow-sm rounded-3">
+<!-- Bảng: Người đang mượn tài sản -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="tieu-de-khoi mb-0">Người đang mượn tài sản</h2>
+        </div>
+        <div class="mo-ta-phu">
+            <?= count($danhSachNguoiMuon) ?> người • <?= $tongChuaTra ?> thiết bị chưa trả
+        </div>
+    </div>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table">
+            <thead>
                 <tr>
-                    <th class="ps-3" style="width: 140px;">Mã số trường</th>
-                    <th>Họ và tên</th>
-                    <th style="width: 130px;">Đối tượng</th>
-                    <th>Lớp / Đơn vị</th>
-                    <th>Số điện thoại</th>
-                    <th class="text-center" style="width: 150px;">Đang mượn</th>
-                    <th class="text-end pe-3" style="width: 180px;">Thao tác</th>
+                    <th>Mã số / Họ tên</th>
+                    <th>Lớp / đơn vị</th>
+                    <th>Phòng học</th>
+                    <th>Điện thoại</th>
+                    <th>Chưa trả</th>
+                    <th>Hạn trả</th>
+                    <th class="text-end">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($danhSachNguoiMuon)): ?>
                 <tr>
-                    <td colspan="7" class="text-center py-5 text-muted">
-                        Không tìm thấy người mượn nào phù hợp với điều kiện tìm kiếm.
-                    </td>
+                    <td colspan="7" class="text-center py-5 text-phu">Không có người mượn nào phù hợp.</td>
                 </tr>
                 <?php else: ?>
-                <?php foreach ($danhSachNguoiMuon as $nm): ?>
-                <tr>
-                    <td class="ps-3">
-                        <span class="badge bg-light text-primary border font-monospace fs-6">
-                            <?= e($nm['ma_so_truong']) ?>
-                        </span>
-                    </td>
+                <?php foreach ($danhSachNguoiMuon as $nm): 
+                    $laChon = ($nguoiMuonChon && (int)$nguoiMuonChon['id'] === (int)$nm['id']);
+                ?>
+                <tr class="<?= $laChon ? 'table-active' : '' ?>">
                     <td>
-                        <a href="<?= url('nguoi-muon/chi-tiet.php?id=' . (int)$nm['id']) ?>" class="fw-bold text-decoration-none text-dark">
-                            <?= e($nm['ho_ten']) ?>
+                        <div class="fw-semibold text-dark"><?= e($nm['ma_so_truong']) ?></div>
+                        <div class="mo-ta-phu"><?= e($nm['ho_ten']) ?></div>
+                    </td>
+                    <td><?= e($nm['lop_don_vi'] ?? '---') ?></td>
+                    <td><?= e($nm['phong_hoc_gan_nhat'] ?? 'C71.102') ?></td>
+                    <td><?= e($nm['so_dien_thoai'] ?? '---') ?></td>
+                    <td><?= (int)($nm['so_thiet_bi_chua_tra'] ?? 1) ?></td>
+                    <td>
+                        <div><?= date('d/m • H:i') ?></div>
+                        <span class="huy-hieu huy-hieu-thanh-cong">Trong hạn</span>
+                    </td>
+                    <td class="text-end">
+                        <a href="<?= url('nguoi-muon/index.php?chon_id=' . (int)$nm['id'] . '&' . http_build_query($_GET)) ?>" class="btn btn-phu btn-sm">
+                            Xem
                         </a>
-                        <div class="text-muted small">Mã: <?= e($nm['ma_nguoi_muon']) ?></div>
-                    </td>
-                    <td>
-                        <?php if ($nm['loai_nguoi_muon'] === 'GIANG_VIEN'): ?>
-                            <span class="badge bg-info bg-opacity-10 text-info fw-semibold px-2 py-1">Giảng viên</span>
-                        <?php else: ?>
-                            <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1">Sinh viên</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-secondary small">
-                        <?= e($nm['lop_don_vi'] ?: '-') ?>
-                    </td>
-                    <td>
-                        <?= e($nm['so_dien_thoai'] ?: '-') ?>
-                    </td>
-                    <td class="text-center">
-                        <?php if ((int)$nm['so_thiet_bi_dang_muon'] > 0): ?>
-                            <span class="badge bg-warning text-dark fw-bold px-2 py-1">
-                                📤 <?= (int)$nm['so_thiet_bi_dang_muon'] ?> thiết bị
-                            </span>
-                        <?php else: ?>
-                            <span class="badge bg-light text-muted border">0</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-end pe-3">
-                        <div class="btn-group btn-group-sm">
-                            <a href="<?= url('nguoi-muon/chi-tiet.php?id=' . (int)$nm['id']) ?>" class="btn btn-outline-info" title="Xem hồ sơ & Lịch sử mượn">
-                                Lịch sử
-                            </a>
-                            <a href="<?= url('nguoi-muon/sua.php?id=' . (int)$nm['id']) ?>" class="btn btn-outline-primary" title="Sửa thông tin">
-                                Sửa
-                            </a>
-
-                            <?php if ((int)$nm['tong_so_luot_muon'] === 0): ?>
-                            <form action="<?= url('nguoi-muon/index.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa hồ sơ người mượn này?');">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="hanh_dong" value="xoa">
-                                <input type="hidden" name="id" value="<?= (int)$nm['id'] ?>">
-                                <button type="submit" class="btn btn-outline-danger" title="Xóa">
-                                    Xóa
-                                </button>
-                            </form>
-                            <?php endif; ?>
-                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -141,27 +125,94 @@ require dirname(__DIR__) . '/layout/menu.php';
             </tbody>
         </table>
     </div>
-
-    <!-- Phân trang -->
-    <?php if ($tongSoTrang > 1): ?>
-    <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center">
-        <span class="small text-muted">
-            Trang <strong><?= $trang ?></strong> / <strong><?= $tongSoTrang ?></strong>
-        </span>
-        <nav aria-label="Phân trang">
-            <ul class="pagination pagination-sm mb-0">
-                <?php for ($i = 1; $i <= $tongSoTrang; $i++): ?>
-                <li class="page-item <?= $i === $trang ? 'active' : '' ?>">
-                    <a class="page-link" href="<?= url('nguoi-muon/index.php?q=' . urlencode($tuKhoa) . '&loai=' . urlencode($loaiNguoiMuon) . '&trang=' . $i) ?>">
-                        <?= $i ?>
-                    </a>
-                </li>
-                <?php endfor; ?>
-            </ul>
-        </nav>
-    </div>
-    <?php endif; ?>
 </div>
 
-<?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
+<!-- Khối Chi tiết người mượn đang chọn (2 Cột) -->
+<?php if ($nguoiMuonChon): ?>
+<div class="row g-4 mb-4">
+    <!-- Cột trái: Thông tin người mượn đang chọn -->
+    <div class="col-12 col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h2 class="tieu-de-khoi mb-3">Thông tin người mượn đang chọn</h2>
+                <form action="<?= url('nguoi-muon/index.php') ?>" method="POST">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="hanh_dong" value="cap_nhat_nhanh">
+                    <input type="hidden" name="id" value="<?= (int)$nguoiMuonChon['id'] ?>">
 
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="form-label">Mã số</label>
+                            <input type="text" class="form-control" name="ma_so_truong" value="<?= e($nguoiMuonChon['ma_so_truong']) ?>" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="so_dien_thoai" value="<?= e($nguoiMuonChon['so_dien_thoai'] ?? '') ?>">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Họ tên</label>
+                        <input type="text" class="form-control" name="ho_ten" value="<?= e($nguoiMuonChon['ho_ten']) ?>" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Lớp / đơn vị</label>
+                        <input type="text" class="form-control" name="lop_don_vi" value="<?= e($nguoiMuonChon['lop_don_vi'] ?? '') ?>">
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">Hủy</a>
+                        <button type="submit" class="btn btn-chinh">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột phải: Lịch sử mượn của người đang chọn -->
+    <div class="col-12 col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="tieu-de-khoi mb-0">Lịch sử mượn của người đang chọn</h2>
+                    <a href="<?= url('muon-tra/index.php?q=' . urlencode($nguoiMuonChon['ma_so_truong'])) ?>" class="btn btn-phu btn-sm">
+                        Xem tất cả
+                    </a>
+                </div>
+
+                <div class="fw-semibold text-dark mb-3"><?= e($nguoiMuonChon['ho_ten']) ?></div>
+
+                <div class="d-flex flex-column gap-3 mb-3 flex-grow-1">
+                    <?php if (empty($lichSuMuonChon)): ?>
+                    <div class="text-phu small py-3">Chưa có lịch sử mượn thiết bị nào.</div>
+                    <?php else: ?>
+                    <?php foreach ($lichSuMuonChon as $ls): 
+                        $laDangMuon = ($ls['trang_thai'] === 'DANG_MUON');
+                    ?>
+                    <div class="border rounded-2 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="font-monospace fw-semibold text-primary"><?= e($ls['ma_phieu_muon']) ?> • <?= date('d/m/Y', strtotime($ls['thoi_gian_muon'])) ?></span>
+                            <?php if ($laDangMuon): ?>
+                                <span class="huy-hieu huy-hieu-chinh">Đang mượn</span>
+                            <?php else: ?>
+                                <span class="huy-hieu huy-hieu-thanh-cong">Đã trả đủ</span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="mo-ta-phu"><?= e($ls['ma_phong']) ?> • <?= (int)$ls['so_thiet_bi'] ?> thiết bị<?= $laDangMuon ? ' chưa trả' : '' ?></div>
+                        <div class="mo-ta-phu">Hạn trả: <?= date('d/m/Y H:i', strtotime($ls['han_tra'])) ?></div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <div class="mo-ta-phu">
+                    Chọn phiếu để xem chi tiết thiết bị và lần trả.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

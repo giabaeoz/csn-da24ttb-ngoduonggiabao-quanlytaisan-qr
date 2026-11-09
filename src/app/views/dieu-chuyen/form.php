@@ -1,568 +1,473 @@
 <?php
 /**
- * Giao diện: Lập phiếu điều chuyển thiết bị mới (G7).
+ * Giao diện Lập phiếu Điều chuyển tài sản - Khớp chính xác Tra điều chuyển.pdf
  */
 
 declare(strict_types=1);
 
+if (!defined('APP_KHOI_DONG')) {
+    http_response_code(403);
+    exit;
+}
+
+$tieuDeTrang = 'Điều chuyển';
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
 ?>
 
-<div class="container-fluid py-3">
-    <!-- Breadcrumb & Tiêu đề -->
-    <div class="row align-items-center mb-3">
-        <div class="col-md-8">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="<?= url('tong-quan.php') ?>" class="text-decoration-none">Tổng quan</a></li>
-                    <li class="breadcrumb-item"><a href="<?= url('dieu-chuyen/index.php') ?>" class="text-decoration-none">Điều chuyển</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Lập phiếu mới</li>
-                </ol>
-            </nav>
-            <h1 class="h3 mb-0 text-gray-800 fw-bold d-flex align-items-center gap-2">
-                <span>🔄 Lập phiếu điều chuyển thiết bị</span>
-            </h1>
-            <p class="text-muted small mb-0">Chuyển giao và cập nhật vị trí thiết bị giữa các phòng học có kiểm tra tính tương thích thiết bị.</p>
-        </div>
-        <div class="col-md-4 text-md-end mt-2 mt-md-0">
-            <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Quay lại danh sách
-            </a>
-        </div>
+<!-- Tiêu đề trang -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="tieu-de-trang">Điều chuyển tài sản</h1>
     </div>
+</div>
 
-    <?php if ($dangKiemKe): ?>
-        <div class="alert alert-danger shadow-sm border-0 d-flex align-items-center gap-3 py-3 mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill fs-2"></i>
-            <div>
-                <h5 class="alert-heading mb-1 fw-bold">Bàn trực đang trong đợt kiểm kê tài sản!</h5>
-                <p class="mb-0">
-                    Mọi hoạt động điều chuyển thiết bị tạm thời bị khóa cho đến khi chốt đợt kiểm kê.
-                    Vui lòng hoàn tất hoặc hủy đợt kiểm kê trước khi tiếp tục thao tác.
-                </p>
-            </div>
-        </div>
-    <?php endif; ?>
+<?php if ($dangKiemKe): ?>
+<div class="alert alert-danger mb-4" role="alert">
+    Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.
+</div>
+<?php endif; ?>
 
-    <form id="formDieuChuyen" action="<?= url('dieu-chuyen/them.php') ?>" method="POST" <?= $dangKiemKe ? 'onsubmit="return false;"' : '' ?>>
-        <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
+<?php if (!empty($loi)): ?>
+<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <?= e($loi) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+</div>
+<?php endif; ?>
 
-        <div class="row g-4">
-            <!-- CỘT TRÁI: THIẾT LẬP PHÒNG & THÔNG TIN ĐIỀU CHUYỂN -->
-            <div class="col-lg-5">
-                <!-- Thẻ 1: Lộ trình điều chuyển -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                            <span class="badge bg-primary rounded-circle">1</span> Lộ trình điều chuyển
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="phong_hoc_di_id" class="form-label fw-semibold">
-                                Phòng học nguồn (Phòng đi) <span class="text-danger">*</span>
-                            </label>
-                            <select id="phong_hoc_di_id" name="phong_hoc_di_id" class="form-select" required>
-                                <option value="">-- Chọn phòng học có thiết bị cần chuyển --</option>
-                                <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                    <option value="<?= (int)$ph['id'] ?>" 
-                                            data-ma-phong="<?= e($ph['ma_phong']) ?>"
-                                            <?= ((int)$duLieu['phong_hoc_di_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
-                                        <?= e($ph['ma_phong']) ?> - <?= e($ph['ten_phong']) ?>
-                                    </option>
-                                <?php endforeach; ?>
+<form action="<?= url('dieu-chuyen/them.php') ?>" method="POST" id="formDieuChuyen" class="<?= $dangKiemKe ? 'opacity-50 pe-none' : '' ?>">
+    <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
+    <div id="vungTaiSanIds"></div>
+
+    <div class="row g-4 mb-4">
+        <!-- CỘT TRÁI: QUÉT QR & XEM TRƯỚC PHIẾU ĐIỀU CHUYỂN -->
+        <div class="col-12 col-lg-5">
+            <!-- Khối: Quét QR thiết bị điều chuyển -->
+            <div class="card mb-4">
+                <div class="card-body p-3">
+                    <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị điều chuyển</h2>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-12 col-sm-6">
+                            <div class="khung-quet-camera" id="khungVideoContainer">
+                                <video id="videoQuetCamera" playsinline style="display:none;"></video>
+                                <canvas id="canvasQuetCamera" style="display:none;"></canvas>
+                                <div class="overlay-ngam" id="overlayCamera">
+                                    <div class="fw-semibold text-dark mb-1">Khung camera</div>
+                                    <div style="font-size: 11px;">Đưa mã QR thiết bị vào khung</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex flex-column gap-2">
+                            <select id="chonCamera" class="form-select form-select-sm">
+                                <option value="">Chọn camera</option>
                             </select>
-                            <div class="form-text">Hệ thống sẽ lọc các thiết bị thuộc phòng trực của bạn đang ở phòng này.</div>
-                        </div>
+                            
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="ma_quet_nhap" 
+                                       placeholder="Nhập mã khi không quét được" autocomplete="off">
+                                <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
+                                    Thêm
+                                </button>
+                            </div>
 
-                        <div class="text-center my-2 text-muted">
-                            <i class="bi bi-arrow-down-up fs-4 text-primary"></i>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="phong_hoc_den_id" class="form-label fw-semibold">
-                                Phòng học đích (Phòng đến) <span class="text-danger">*</span>
-                            </label>
-                            <select id="phong_hoc_den_id" name="phong_hoc_den_id" class="form-select" required>
-                                <option value="">-- Chọn phòng học tiếp nhận thiết bị --</option>
-                                <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                    <option value="<?= (int)$ph['id'] ?>" 
-                                            data-ma-phong="<?= e($ph['ma_phong']) ?>"
-                                            <?= ((int)$duLieu['phong_hoc_den_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
-                                        <?= e($ph['ma_phong']) ?> - <?= e($ph['ten_phong']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="form-text">Thiết bị sẽ được kiểm tra độ tương thích với cấu hình hãng/model phòng đích.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Thẻ 2: Lý do & Ghi chú -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                            <span class="badge bg-primary rounded-circle">2</span> Thông tin & Cam kết
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="ly_do" class="form-label fw-semibold">
-                                Lý do điều chuyển <span class="text-danger">*</span>
-                            </label>
-                            <textarea id="ly_do" name="ly_do" class="form-control" rows="3" 
-                                      placeholder="Ví dụ: Thay thế máy chiếu phòng B11.301 bị lỗi, bổ sung micro cho giảng viên..." 
-                                      required><?= e($duLieu['ly_do']) ?></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="ghi_chu" class="form-label fw-semibold">Ghi chú bổ sung</label>
-                            <textarea id="ghi_chu" name="ghi_chu" class="form-control" rows="2" 
-                                      placeholder="Thông tin tình trạng hoặc lưu ý kèm theo..."><?= e($duLieu['ghi_chu']) ?></textarea>
-                        </div>
-
-                        <div class="form-check p-3 bg-light rounded border">
-                            <input class="form-check-input ms-0 me-2" type="checkbox" name="xac_nhan_tuong_thich" value="1" id="xac_nhan_tuong_thich" 
-                                   <?= ($duLieu['xac_nhan_tuong_thich'] === '1') ? 'checked' : '' ?> required>
-                            <label class="form-check-label small fw-semibold text-dark" for="xac_nhan_tuong_thich">
-                                Tôi xác nhận đã kiểm tra thực tế tính tương thích của thiết bị với cấu hình phòng học đích. <span class="text-danger">*</span>
-                            </label>
-                        </div>
-
-                        <div class="mt-4 d-grid">
-                            <button type="submit" id="btnSubmitDieuChuyen" class="btn btn-primary btn-lg shadow-sm" <?= $dangKiemKe ? 'disabled' : '' ?>>
-                                <i class="bi bi-check2-circle me-1"></i> Xác nhận điều chuyển (<span id="demThietBiNhan">0</span>)
+                            <button type="button" class="btn btn-phu btn-sm w-100" id="btnBatTatCamera" onclick="batTatCamera()">
+                                Bật camera
                             </button>
                         </div>
                     </div>
+                    <div id="thongBaoQuetLoi" class="loi-truong mt-2 d-none"></div>
                 </div>
             </div>
 
-            <!-- CỘT PHẢI: QUÉT MÃ QR & DANH SÁCH THIẾT BỊ ĐIỀU CHUYỂN -->
-            <div class="col-lg-7">
-                <!-- Thẻ 3: Quét QR & Tra cứu nhanh -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                            <span class="badge bg-primary rounded-circle">3</span> Thêm thiết bị điều chuyển
-                        </h6>
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnMoModalChonPhong">
-                            <i class="bi bi-list-check me-1"></i> Chọn nhanh từ phòng nguồn
-                        </button>
+            <!-- Khối: Phiếu điều chuyển (Xem trước) -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="tieu-de-khoi mb-3">Phiếu điều chuyển</h2>
+                    <div class="mb-3">
+                        <div class="fw-semibold text-dark" id="pvLoTrinh">Phòng đi: --- → Phòng đến: ---</div>
+                        <div class="mo-ta-phu" id="pvLyDo">Lý do: ---</div>
+                        <div class="mo-ta-phu" id="pvThoiGian">Thời gian: <?= date('d/m/Y H:i') ?> (minh họa)</div>
                     </div>
-                    <div class="card-body">
-                        <!-- Ô Quét Camera QR -->
-                        <?php 
-                        $tieuDeQuet = 'Quét mã QR tem tài sản trên thiết bị';
-                        $tenHamXuLy = 'xuLyMaQuetTaiSan';
-                        require dirname(__DIR__) . '/partials/o-quet-qr.php'; 
-                        ?>
 
-                        <!-- Hoặc nhập mã thủ công -->
-                        <div class="mt-3">
-                            <label class="form-label small fw-semibold">Hoặc nhập mã tài sản / mã QR</label>
-                            <div class="input-group">
-                                <input type="text" id="inputMaTaiSan" class="form-control" placeholder="Nhập mã tài sản hoặc quét mã vạch...">
-                                <button type="button" id="btnThemMaThuCong" class="btn btn-dark">
-                                    <i class="bi bi-plus-lg"></i> Thêm vào phiếu
-                                </button>
-                            </div>
-                            <div id="thongBaoLoiQuet" class="text-danger small mt-1 d-none fw-semibold"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Thẻ 4: Danh sách thiết bị đã chọn -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold text-dark">
-                            Danh sách thiết bị chuyển đi (<span id="tongSoDaChon" class="text-primary fw-bold">0</span>/30)
-                        </h6>
-                        <button type="button" id="btnXoaHet" class="btn btn-sm btn-outline-danger d-none">
-                            <i class="bi bi-trash"></i> Xóa tất cả
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" id="bangThietBiChon">
-                            <thead class="table-light text-secondary text-uppercase small">
+                    <div class="table-responsive mb-2">
+                        <table class="table table-sm">
+                            <thead>
                                 <tr>
-                                    <th style="width: 40px;" class="ps-3">#</th>
-                                    <th style="width: 140px;">Mã TS</th>
-                                    <th>Tên thiết bị</th>
-                                    <th style="width: 160px;">Hãng / Model</th>
-                                    <th style="width: 150px;">Tương thích</th>
-                                    <th style="width: 60px;" class="text-end pe-3">Xóa</th>
+                                    <th>Thiết bị</th>
+                                    <th class="text-end" style="width: 80px;">Số lượng</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbodyThietBiChon">
-                                <tr id="dongTrong">
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        <i class="bi bi-qr-code-scan fs-2 text-muted d-block mb-2"></i>
-                                        Chưa có thiết bị nào được chọn. Hãy quét mã QR hoặc chọn từ phòng nguồn.
-                                    </td>
+                            <tbody id="pvDanhSachThietBi">
+                                <tr>
+                                    <td colspan="2" class="text-center text-phu py-3">Chưa có thiết bị nào</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="fw-semibold text-dark text-end" id="pvTongCongThietBi">
+                        Tổng cộng: 0 thiết bị
+                    </div>
                 </div>
             </div>
         </div>
-    </form>
-</div>
 
-<!-- Modal Chọn Nhanh Thiết Bị Từ Phòng Nguồn -->
-<div class="modal fade" id="modalChonNhanh" tabindex="-1" aria-labelledby="modalChonNhanhLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold" id="modalChonNhanhLabel">
-                    <i class="bi bi-laptop me-1 text-primary"></i> Thiết bị sẵn sàng tại phòng nguồn
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- CỘT PHẢI: THÔNG TIN ĐIỀU CHUYỂN & THIẾT BỊ ĐÃ QUÉT -->
+        <div class="col-12 col-lg-7">
+            <!-- Khối: Thông tin điều chuyển -->
+            <div class="card mb-4">
+                <div class="card-body p-4">
+                    <h2 class="tieu-de-khoi mb-3">Thông tin điều chuyển</h2>
+                    <div class="row g-2 mb-3">
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label">Phòng đi</label>
+                            <select id="phong_hoc_di_id" name="phong_hoc_di_id" class="form-select" onchange="doiPhongDi(this)">
+                                <option value="">Chọn phòng đi</option>
+                                <?php foreach ($danhSachPhongHoc as $ph): ?>
+                                <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" <?= ((int)$duLieu['phong_hoc_di_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
+                                    <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label">Phòng đến</label>
+                            <select id="phong_hoc_den_id" name="phong_hoc_den_id" class="form-select" onchange="doiPhongDen(this)">
+                                <option value="">Chọn phòng đến</option>
+                                <?php foreach ($danhSachPhongHoc as $ph): ?>
+                                <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" <?= ((int)$duLieu['phong_hoc_den_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
+                                    <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Lý do điều chuyển</label>
+                        <textarea class="form-control" name="ly_do" id="inputLyDo" rows="2" 
+                                  placeholder="Nhập lý do điều chuyển thiết bị..." oninput="capNhatPreview()"><?= e($duLieu['ly_do']) ?></textarea>
+                    </div>
+                    <div class="mo-ta-phu">Thời gian: tự ghi nhận khi xác nhận</div>
+                </div>
             </div>
-            <div class="modal-body p-0">
-                <div id="taiDanhSachNguon" class="p-4 text-center text-muted">
-                    <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
-                    Đang tải danh sách thiết bị...
+
+            <!-- Khối: Thiết bị điều chuyển — đã quét -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="tieu-de-khoi mb-0">Thiết bị điều chuyển — đã quét (<span id="demThietBi">0</span>)</h2>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 d-none" id="bangDanhSachNguon">
-                        <thead class="table-light small text-uppercase">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <th class="ps-3" style="width: 40px;">
-                                    <input type="checkbox" class="form-check-input" id="checkChonTatCa">
-                                </th>
-                                <th>Mã TS</th>
-                                <th>Tên thiết bị</th>
-                                <th>Hãng / Model</th>
-                                <th>Tương thích phòng đến</th>
+                                <th>Mã / tên thiết bị</th>
+                                <th style="width: 140px;">Tình trạng</th>
+                                <th class="text-end" style="width: 80px;">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyDanhSachNguon"></tbody>
+                        <tbody id="bangThietBiDieuChuyen">
+                            <tr id="hangChuaCoThietBi">
+                                <td colspan="3" class="text-center py-4 text-phu">
+                                    Chưa có thiết bị nào được quét.
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
+                <div class="p-3 border-top bg-white">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="xac_nhan_tuong_thich" id="xac_nhan_tuong_thich" value="1" onchange="capNhatPreview()">
+                        <label class="form-check-label text-dark fw-semibold" for="xac_nhan_tuong_thich">
+                            Đã kiểm tra thiết bị phù hợp với phòng đến
+                        </label>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="btnXacNhanChonNhanh">
-                    <i class="bi bi-check-lg me-1"></i> Thêm các thiết bị đã chọn
+
+            <!-- Nút hành động chân trang -->
+            <div class="d-flex justify-content-end gap-2">
+                <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">Hủy</a>
+                <button type="submit" class="btn btn-chinh" id="btnXacNhanDieuChuyen" disabled>
+                    Xác nhận điều chuyển
                 </button>
             </div>
         </div>
     </div>
+</form>
+
+<!-- Bảng: Điều chuyển gần đây -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="tieu-de-khoi mb-0">Điều chuyển gần đây</h2>
+        </div>
+        <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu btn-sm">
+            Xem tất cả
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Mã phiếu</th>
+                    <th>Thời gian</th>
+                    <th>Phòng đi</th>
+                    <th>Phòng đến</th>
+                    <th>Thiết bị</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($dieuChuyenGanDay)): ?>
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-phu">Chưa có phiếu điều chuyển nào gần đây.</td>
+                </tr>
+                <?php else: ?>
+                <?php foreach ($dieuChuyenGanDay as $dc): ?>
+                <tr>
+                    <td class="fw-semibold text-primary"><?= e($dc['ma_dieu_chuyen']) ?></td>
+                    <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
+                    <td><?= e($dc['ma_phong_di']) ?></td>
+                    <td><?= e($dc['ma_phong_den']) ?></td>
+                    <td><?= (int)$dc['tong_so_thiet_bi'] ?></td>
+                    <td class="text-end">
+                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
+                            Xem phiếu
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
+<script src="<?= url('assets/vendor/jsqr/jsQR.js') ?>"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Lưu trữ danh sách thiết bị đã chọn: map id => { id, ma_tai_san, ten_tai_san, hang, model, tuong_thich, ly_do }
-    const dsDaChon = new Map();
+const danhSachThietBi = [];
 
-    const selectPhongDi = document.getElementById('phong_hoc_di_id');
-    const selectPhongDen = document.getElementById('phong_hoc_den_id');
-    const tbodyChon = document.getElementById('tbodyThietBiChon');
-    const dongTrong = document.getElementById('dongTrong');
-    const tongSoDaChonEl = document.getElementById('tongSoDaChon');
-    const demThietBiNhanEl = document.getElementById('demThietBiNhan');
-    const btnXoaHet = document.getElementById('btnXoaHet');
-    const thongBaoLoiQuet = document.getElementById('thongBaoLoiQuet');
-    const inputMa = document.getElementById('inputMaTaiSan');
-    const btnThemThuCong = document.getElementById('btnThemMaThuCong');
+function doiPhongDi(sel) {
+    capNhatPreview();
+}
 
-    // Modal chọn nhanh
-    const modalEl = document.getElementById('modalChonNhanh');
-    const bsModal = modalEl ? new bootstrap.Modal(modalEl) : null;
-    const btnMoModal = document.getElementById('btnMoModalChonPhong');
-    const taiDanhSachEl = document.getElementById('taiDanhSachNguon');
-    const bangNguonEl = document.getElementById('bangDanhSachNguon');
-    const tbodyNguonEl = document.getElementById('tbodyDanhSachNguon');
-    const checkAll = document.getElementById('checkChonTatCa');
-    const btnXacNhanChonNhanh = document.getElementById('btnXacNhanChonNhanh');
+function doiPhongDen(sel) {
+    capNhatPreview();
+}
 
-    let danhSachNguonCache = [];
+// Tìm & thêm thiết bị
+const inputMaQuet = document.getElementById('ma_quet_nhap');
+const thongBaoLoiQuet = document.getElementById('thongBaoQuetLoi');
 
-    function capNhatGiaoDien() {
-        const count = dsDaChon.size;
-        tongSoDaChonEl.textContent = count;
-        demThietBiNhanEl.textContent = count + ' thiết bị';
+if (inputMaQuet) {
+    inputMaQuet.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); xuLyThemMaThietBi(); }
+    });
+}
 
-        if (count === 0) {
-            tbodyChon.innerHTML = '';
-            tbodyChon.appendChild(dongTrong);
-            btnXoaHet.classList.add('d-none');
+async function xuLyThemMaThietBi() {
+    const ma = inputMaQuet.value.trim();
+    if (!ma) return;
+    await traCuuVaThem(ma);
+}
+
+async function traCuuVaThem(ma) {
+    thongBaoLoiQuet.classList.add('d-none');
+    try {
+        const res = await fetch('<?= url("api/tra-cuu-qr.php") ?>?ma=' + encodeURIComponent(ma) + '&hanh_dong=DIEU_CHUYEN');
+        const json = await res.json();
+
+        if (!json.thanh_cong) {
+            hienLoiQuet(json.thong_diep || 'Không tìm thấy thiết bị hợp lệ.');
             return;
         }
 
-        btnXoaHet.classList.remove('d-none');
-        tbodyChon.innerHTML = '';
+        const ts = json.du_lieu;
+        if (danhSachThietBi.some(item => item.id === ts.id)) {
+            hienLoiQuet(`Thiết bị [${ts.ma_tai_san}] đã có trong danh sách.`);
+            return;
+        }
 
-        let stt = 1;
-        dsDaChon.forEach((item, id) => {
+        danhSachThietBi.push(ts);
+        inputMaQuet.value = '';
+        capNhatBangThietBi();
+        capNhatPreview();
+    } catch(e) {
+        hienLoiQuet('Lỗi kết nối máy chủ.');
+    }
+}
+
+function hienLoiQuet(msg) {
+    thongBaoLoiQuet.textContent = msg;
+    thongBaoLoiQuet.classList.remove('d-none');
+}
+
+function boThietBi(idx) {
+    danhSachThietBi.splice(idx, 1);
+    capNhatBangThietBi();
+    capNhatPreview();
+}
+
+function capNhatBangThietBi() {
+    const tbody = document.getElementById('bangThietBiDieuChuyen');
+    const demEl = document.getElementById('demThietBi');
+    const hiddenContainer = document.getElementById('vungTaiSanIds');
+    demEl.textContent = danhSachThietBi.length;
+
+    hiddenContainer.innerHTML = '';
+    if (danhSachThietBi.length === 0) {
+        tbody.innerHTML = '<tr id="hangChuaCoThietBi"><td colspan="3" class="text-center py-4 text-phu">Chưa có thiết bị nào được quét.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+    danhSachThietBi.forEach((ts, idx) => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'tai_san_ids[]';
+        inp.value = ts.id;
+        hiddenContainer.appendChild(inp);
+
+        const phongHt = ts.phong_hoc_hien_tai_ma ? `Phòng hiện tại: ${ts.phong_hoc_hien_tai_ma}` : 'Phòng trực';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div class="fw-semibold text-dark">${escapeHtml(ts.ma_tai_san)} — ${escapeHtml(ts.ten_tai_san)}</div>
+                <div class="mo-ta-phu">${escapeHtml(phongHt)}</div>
+            </td>
+            <td>Bình thường</td>
+            <td class="text-end">
+                <button type="button" class="btn btn-phu btn-sm py-1 px-2" onclick="boThietBi(${idx})">
+                    Bỏ
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function capNhatPreview() {
+    const selDi = document.getElementById('phong_hoc_di_id');
+    const selDen = document.getElementById('phong_hoc_den_id');
+    const maDi = selDi.options[selDi.selectedIndex]?.getAttribute('data-ma') || '---';
+    const maDen = selDen.options[selDen.selectedIndex]?.getAttribute('data-ma') || '---';
+    const lyDo = document.getElementById('inputLyDo').value.trim() || '---';
+    const daCamKet = document.getElementById('xac_nhan_tuong_thich').checked;
+
+    document.getElementById('pvLoTrinh').textContent = `Phòng đi: ${maDi} → Phòng đến: ${maDen}`;
+    document.getElementById('pvLyDo').textContent = `Lý do: ${lyDo}`;
+
+    const pvTbody = document.getElementById('pvDanhSachThietBi');
+    if (danhSachThietBi.length === 0) {
+        pvTbody.innerHTML = '<tr><td colspan="2" class="text-center text-phu py-3">Chưa có thiết bị nào</td></tr>';
+    } else {
+        pvTbody.innerHTML = '';
+        danhSachThietBi.forEach(ts => {
             const tr = document.createElement('tr');
-            
-            let badgeTuongThich = '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>Tương thích</span>';
-            if (item.tuong_thich === false) {
-                badgeTuongThich = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle" title="${item.ly_do || ''}"><i class="bi bi-exclamation-octagon me-1"></i>Không tương thích</span>`;
-            }
-
-            tr.innerHTML = `
-                <td class="ps-3 text-muted small">${stt++}</td>
-                <td>
-                    <span class="font-monospace fw-bold text-primary">${escapeHtml(item.ma_tai_san)}</span>
-                    <input type="hidden" name="tai_san_ids[]" value="${id}">
-                </td>
-                <td>
-                    <div class="fw-semibold text-dark small">${escapeHtml(item.ten_tai_san)}</div>
-                </td>
-                <td class="small text-muted">
-                    ${escapeHtml((item.hang_san_xuat || '') + (item.model ? ' / ' + item.model : '')) || '—'}
-                </td>
-                <td>${badgeTuongThich}</td>
-                <td class="text-end pe-3">
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-xoa-ts" data-id="${id}" title="Xóa">
-                        <i class="bi bi-x"></i>
-                    </button>
-                </td>
-            `;
-            tbodyChon.appendChild(tr);
-        });
-
-        // Gán sự kiện xóa
-        tbodyChon.querySelectorAll('.btn-xoa-ts').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const id = parseInt(this.getAttribute('data-id'), 10);
-                dsDaChon.delete(id);
-                capNhatGiaoDien();
-            });
+            tr.innerHTML = `<td>${escapeHtml(ts.ma_tai_san)} — ${escapeHtml(ts.ten_tai_san)}</td><td class="text-end">1</td>`;
+            pvTbody.appendChild(tr);
         });
     }
+    document.getElementById('pvTongCongThietBi').textContent = `Tổng cộng: ${danhSachThietBi.length} thiết bị`;
 
-    function baoLoi(msg) {
-        if (!msg) {
-            thongBaoLoiQuet.classList.add('d-none');
-            thongBaoLoiQuet.textContent = '';
-        } else {
-            thongBaoLoiQuet.classList.remove('d-none');
-            thongBaoLoiQuet.textContent = msg;
-            setTimeout(() => { thongBaoLoiQuet.classList.add('d-none'); }, 6000);
-        }
+    const btnSubmit = document.getElementById('btnXacNhanDieuChuyen');
+    const hopLe = (maDi !== '---') && (maDen !== '---') && (maDi !== maDen) && (lyDo !== '---') && daCamKet && (danhSachThietBi.length > 0);
+    btnSubmit.disabled = !hopLe;
+}
+
+// Camera Scanner
+let streamCamera = null;
+let dangQuet = false;
+const videoEl = document.getElementById('videoQuetCamera');
+const canvasEl = document.getElementById('canvasQuetCamera');
+const overlayEl = document.getElementById('overlayCamera');
+const btnCamera = document.getElementById('btnBatTatCamera');
+const selCamera = document.getElementById('chonCamera');
+
+async function khoiTaoCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        selCamera.innerHTML = '<option value="">Chọn camera</option>';
+        videoDevices.forEach((d, idx) => {
+            const opt = document.createElement('option');
+            opt.value = d.deviceId;
+            opt.textContent = d.label || `Camera ${idx + 1}`;
+            selCamera.appendChild(opt);
+        });
+    } catch(e) {}
+}
+khoiTaoCamera();
+
+async function batTatCamera() {
+    if (dangQuet) {
+        dungCamera();
+    } else {
+        await batCamera();
     }
+}
 
-    // Tra cứu và nạp thiết bị theo mã QR hoặc mã tài sản
-    async function napThietBi(maQr, maTaiSan) {
-        baoLoi('');
-        const phongDiId = selectPhongDi.value;
-        const phongDenId = selectPhongDen.value;
-
-        if (!phongDiId) {
-            baoLoi('Vui lòng chọn Phòng học nguồn (phòng đi) trước khi quét thiết bị.');
-            return;
-        }
-
-        if (dsDaChon.size >= 30) {
-            baoLoi('Mỗi phiếu điều chuyển tối đa 30 thiết bị.');
-            return;
-        }
-
-        let url = '<?= url("api/tai-san.php") ?>?';
-        if (maQr) url += 'ma_qr=' + encodeURIComponent(maQr);
-        else if (maTaiSan) url += 'ma_tai_san=' + encodeURIComponent(maTaiSan);
-        if (phongDiId) url += '&phong_hoc_nguon_id=' + phongDiId;
-        if (phongDenId) url += '&phong_hoc_id=' + phongDenId;
-
-        try {
-            const resp = await fetch(url);
-            const data = await resp.json();
-
-            if (!data.thanh_cong) {
-                baoLoi(data.loi || 'Không tìm thấy thông tin thiết bị.');
-                return;
-            }
-
-            const ts = data.du_lieu;
-            if (dsDaChon.has(ts.id)) {
-                baoLoi(`Thiết bị [${ts.ma_tai_san}] đã có trong danh sách.`);
-                return;
-            }
-
-            if (!data.co_the_dieu_chuyen) {
-                baoLoi(`Thiết bị [${ts.ma_tai_san}] không thể chuyển: ${data.ly_do_khong_the_chuyen || 'Không đủ điều kiện'}`);
-                return;
-            }
-
-            let tuongThich = true;
-            let lyDoTuongThich = '';
-            if (data.kiem_tra_tuong_thich) {
-                tuongThich = data.kiem_tra_tuong_thich.tuong_thich;
-                lyDoTuongThich = data.kiem_tra_tuong_thich.ly_do;
-            }
-
-            if (!tuongThich) {
-                if (!confirm(`Cảnh báo tương thích: Thiết bị [${ts.ma_tai_san}] ${ts.ten_tai_san} được hệ thống đánh giá KHÔNG tương thích với phòng đích (${lyDoTuongThich}). Bạn vẫn muốn thêm?`)) {
-                    return;
-                }
-            }
-
-            dsDaChon.set(ts.id, {
-                id: ts.id,
-                ma_tai_san: ts.ma_tai_san,
-                ten_tai_san: ts.ten_tai_san,
-                hang_san_xuat: ts.hang_san_xuat,
-                model: ts.model,
-                tuong_thich: tuongThich,
-                ly_do: lyDoTuongThich,
-            });
-
-            capNhatGiaoDien();
-        } catch (err) {
-            baoLoi('Lỗi kết nối máy chủ tra cứu tài sản.');
-        }
-    }
-
-    // Hàm toàn cục cho camera quét QR
-    window.xuLyMaQuetTaiSan = function (ma) {
-        if (ma) napThietBi(ma, null);
+async function batCamera() {
+    const devId = selCamera.value;
+    const constraints = {
+        video: devId ? { deviceId: { exact: devId } } : { facingMode: 'environment' }
     };
+    try {
+        streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
+        videoEl.srcObject = streamCamera;
+        videoEl.style.display = 'block';
+        overlayEl.style.display = 'none';
+        await videoEl.play();
+        dangQuet = true;
+        btnCamera.textContent = 'Tắt camera';
+        btnCamera.classList.replace('btn-phu', 'btn-danger');
+        requestAnimationFrame(quetVongLap);
+    } catch(e) {
+        hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+    }
+}
 
-    // Nhập thủ công
-    btnThemThuCong.addEventListener('click', function () {
-        const val = inputMa.value.trim();
-        if (val) {
-            napThietBi(null, val);
-            inputMa.value = '';
-        }
-    });
-    inputMa.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            btnThemThuCong.click();
-        }
-    });
+function dungCamera() {
+    if (streamCamera) {
+        streamCamera.getTracks().forEach(t => t.stop());
+        streamCamera = null;
+    }
+    dangQuet = false;
+    videoEl.style.display = 'none';
+    overlayEl.style.display = 'flex';
+    btnCamera.textContent = 'Bật camera';
+    btnCamera.classList.replace('btn-danger', 'btn-phu');
+}
 
-    // Xóa hết
-    btnXoaHet.addEventListener('click', function () {
-        if (confirm('Bạn có chắc muốn xóa tất cả thiết bị khỏi danh sách?')) {
-            dsDaChon.clear();
-            capNhatGiaoDien();
-        }
-    });
+function quetVongLap() {
+    if (!dangQuet) return;
+    if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+        canvasEl.width = videoEl.videoWidth;
+        canvasEl.height = videoEl.videoHeight;
+        const ctx = canvasEl.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+        const imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
 
-    // Mở modal chọn nhanh từ phòng nguồn
-    btnMoModal.addEventListener('click', async function () {
-        const phongDiId = selectPhongDi.value;
-        const phongDenId = selectPhongDen.value;
-
-        if (!phongDiId) {
-            alert('Vui lòng chọn Phòng học nguồn (phòng đi) trước!');
-            selectPhongDi.focus();
+        if (code && code.data) {
+            traCuuVaThem(code.data);
+            setTimeout(() => { if (dangQuet) requestAnimationFrame(quetVongLap); }, 1200);
             return;
         }
-
-        taiDanhSachEl.classList.remove('d-none');
-        bangNguonEl.classList.add('d-none');
-        tbodyNguonEl.innerHTML = '';
-        checkAll.checked = false;
-        bsModal.show();
-
-        try {
-            const resp = await fetch(`<?= url("api/tai-san-theo-phong.php") ?>?phong_hoc_di_id=${phongDiId}&phong_hoc_den_id=${phongDenId}`);
-            const data = await resp.json();
-
-            taiDanhSachEl.classList.add('d-none');
-            bangNguonEl.classList.remove('d-none');
-
-            if (!data.thanh_cong || !data.danh_sach || data.danh_sach.length === 0) {
-                tbodyNguonEl.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Không có thiết bị sẵn sàng điều chuyển tại phòng học này.</td></tr>`;
-                return;
-            }
-
-            danhSachNguonCache = data.danh_sach;
-
-            data.danh_sach.forEach(ts => {
-                const tr = document.createElement('tr');
-                const daChonRoi = dsDaChon.has(ts.id);
-                
-                let badge = '<span class="badge bg-success-subtle text-success">Tương thích</span>';
-                if (ts.tuong_thich === false) {
-                    badge = `<span class="badge bg-danger-subtle text-danger" title="${ts.ly_do_tuong_thich}">Không tương thích</span>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="ps-3">
-                        <input type="checkbox" class="form-check-input check-item-nguon" value="${ts.id}" ${daChonRoi ? 'checked disabled' : ''}>
-                    </td>
-                    <td class="font-monospace fw-bold text-primary">${escapeHtml(ts.ma_tai_san)}</td>
-                    <td class="small fw-semibold">${escapeHtml(ts.ten_tai_san)}</td>
-                    <td class="small text-muted">${escapeHtml((ts.hang_san_xuat || '') + (ts.model ? ' / ' + ts.model : '')) || '—'}</td>
-                    <td>${badge}</td>
-                `;
-                tbodyNguonEl.appendChild(tr);
-            });
-        } catch (e) {
-            taiDanhSachEl.innerHTML = '<span class="text-danger">Lỗi tải danh sách thiết bị.</span>';
-        }
-    });
-
-    // Check all checkbox
-    checkAll.addEventListener('change', function () {
-        const checks = tbodyNguonEl.querySelectorAll('.check-item-nguon:not(:disabled)');
-        checks.forEach(c => c.checked = checkAll.checked);
-    });
-
-    // Xác nhận chọn nhanh từ modal
-    btnXacNhanChonNhanh.addEventListener('click', function () {
-        const checks = tbodyNguonEl.querySelectorAll('.check-item-nguon:checked:not(:disabled)');
-        checks.forEach(c => {
-            const id = parseInt(c.value, 10);
-            const ts = danhSachNguonCache.find(x => x.id === id);
-            if (ts && !dsDaChon.has(id)) {
-                dsDaChon.set(id, {
-                    id: ts.id,
-                    ma_tai_san: ts.ma_tai_san,
-                    ten_tai_san: ts.ten_tai_san,
-                    hang_san_xuat: ts.hang_san_xuat,
-                    model: ts.model,
-                    tuong_thich: ts.tuong_thich !== false,
-                    ly_do: ts.ly_do_tuong_thich || '',
-                });
-            }
-        });
-        capNhatGiaoDien();
-        bsModal.hide();
-    });
-
-    // Khi đổi phòng đi, reset danh sách đã chọn nếu xác nhận
-    selectPhongDi.addEventListener('change', function () {
-        if (dsDaChon.size > 0) {
-            if (confirm('Thay đổi phòng học nguồn sẽ làm mới danh sách thiết bị đã chọn. Bạn có chắc không?')) {
-                dsDaChon.clear();
-                capNhatGiaoDien();
-            }
-        }
-    });
-
-    // Form submit validation
-    document.getElementById('formDieuChuyen').addEventListener('submit', function (e) {
-        if (dsDaChon.size === 0) {
-            e.preventDefault();
-            alert('Vui lòng chọn ít nhất 1 thiết bị để điều chuyển.');
-            return false;
-        }
-        if (selectPhongDi.value === selectPhongDen.value) {
-            e.preventDefault();
-            alert('Phòng học nguồn và phòng học đích phải khác nhau.');
-            return false;
-        }
-        return true;
-    });
-
-    function escapeHtml(text) {
-        if (!text) return '';
-        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-        return text.toString().replace(/[&<>"']/g, function(m) { return map[m]; });
     }
-});
+    requestAnimationFrame(quetVongLap);
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+    });
+}
+
+capNhatPreview();
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
-

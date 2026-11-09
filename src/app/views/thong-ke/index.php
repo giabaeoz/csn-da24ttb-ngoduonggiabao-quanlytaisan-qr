@@ -1,333 +1,366 @@
 <?php
 /**
- * Giao diện: Báo cáo Thống kê & Biểu đồ Chart.js (G10).
+ * Giao diện: Tra cứu, thống kê (Bám sát 100% Trang tra cứu - thống kê.pdf)
  */
 
 declare(strict_types=1);
 
+if (!defined('APP_KHOI_DONG')) {
+    http_response_code(403);
+    exit;
+}
+
+$tieuDeTrang = 'Tra cứu, thống kê';
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
 ?>
 
-<style>
-@media print {
-    #sidebarMenu, .navbar, .btn-toolbar, .no-print, nav[aria-label="breadcrumb"], footer, .d-print-none {
-        display: none !important;
-    }
-    main {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .card {
-        border: 1px solid #dee2e6 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    .print-only {
-        display: block !important;
-    }
-}
-.print-only {
-    display: none;
-}
-</style>
-
-<!-- Tiêu ngữ in báo cáo chính thức -->
-<div class="print-only mb-4">
-    <div class="row align-items-center text-center pb-3 border-bottom mb-3">
-        <div class="col-6">
-            <div class="text-uppercase fw-bold text-secondary small">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ</div>
-            <div class="fw-bold fs-6 text-uppercase text-dark">PHÒNG QUẢN LÝ THIẾT BỊ VÀ TÀI SẢN</div>
-        </div>
-        <div class="col-6">
-            <div class="text-uppercase fw-bold text-dark fs-6">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-            <div class="fw-bold small text-dark">Độc lập - Tự do - Hạnh phúc</div>
-        </div>
-    </div>
-    <div class="text-center my-3">
-        <h3 class="fw-bold text-uppercase mb-1">BÁO CÁO THỐNG KÊ QUẢN LÝ THIẾT BỊ & MƯỢN TRẢ</h3>
-        <p class="text-muted small">Thời điểm xuất báo cáo: <?= date('d/m/Y H:i') ?></p>
-    </div>
-</div>
-
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3 border-bottom no-print">
+<!-- Tiêu đề trang & Nút tác vụ -->
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">
-            <span class="text-primary">📈</span> Báo cáo Thống kê & Phân tích Dữ liệu
-        </h1>
-        <p class="text-muted small mb-0">Giám sát tổng thể hoạt động mượn trả, cơ cấu tài sản, tần suất sử dụng và kiểm soát sự cố bảo trì.</p>
+        <h1 class="tieu-de-trang mb-0">Tra cứu, thống kê</h1>
     </div>
-    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
-        <!-- Bộ lọc bàn trực -->
-        <form action="<?= url('thong-ke/index.php') ?>" method="GET" class="d-flex gap-2">
-            <input type="hidden" name="khoang" value="<?= e($khoangThoiGian) ?>">
-            <?php if ($nguoiDung['vai_tro'] !== VAI_TRO_NHAN_VIEN): ?>
-                <select name="phong_truc_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">-- Toàn bộ các bàn trực --</option>
-                    <?php foreach ($danhSachPhongTruc as $pt): ?>
-                        <option value="<?= (int)$pt['id'] ?>" <?= ((int)$phongTrucFilter === (int)$pt['id']) ? 'selected' : '' ?>>
-                            <?= e($pt['ten_phong_truc']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            <?php endif; ?>
-        </form>
-
-        <button type="button" class="btn btn-outline-secondary btn-sm shadow-sm fw-semibold" onclick="window.print()">
-            <i class="bi bi-printer me-1"></i> In báo cáo A4
+    <div class="d-flex align-items-center gap-2">
+        <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($_GET, ['xuat' => 'excel']))) ?>" class="btn btn-phu">
+            Xuất Excel
+        </a>
+        <button type="button" class="btn btn-phu" onclick="window.print()">
+            In báo cáo
         </button>
     </div>
 </div>
 
-<!-- THẺ CHỈ SỐ KPI CHÍNH (4 CARDS) -->
-<div class="row g-3 mb-4">
-    <!-- KPI 1: Tổng tài sản & Tỷ lệ sử dụng -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm border-start border-primary border-4 h-100 bg-white">
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small text-uppercase fw-bold">Tổng tài sản</span>
-                    <span class="badge bg-primary bg-opacity-10 text-primary fw-bold">Khai thác: <?= $kpi['ty_le_su_dung'] ?>%</span>
+<!-- Tabs chuyển đổi phạm vi tra cứu -->
+<ul class="nav nav-tabs mb-3 border-bottom">
+    <li class="nav-item">
+        <a class="nav-link <?= $tab === 'muon-tra' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=muon-tra') ?>">
+            Mượn – trả
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <?= $tab === 'dieu-chuyen' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=dieu-chuyen') ?>">
+            Điều chuyển
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <?= $tab === 'kiem-ke' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=kiem-ke') ?>">
+            Kiểm kê
+        </a>
+    </li>
+</ul>
+
+<?php if ($tab === 'muon-tra'): ?>
+
+    <!-- Khối bộ lọc tìm kiếm -->
+    <div class="the-noi-dung p-3 mb-4">
+        <form method="GET" action="<?= url('thong-ke/index.php') ?>">
+            <input type="hidden" name="tab" value="muon-tra">
+            <?php if ($phongTrucFilter !== null && $nguoiDung['vai_tro'] !== VAI_TRO_NHAN_VIEN): ?>
+                <input type="hidden" name="phong_truc_id" value="<?= (int)$phongTrucFilter ?>">
+            <?php endif; ?>
+
+            <div class="row g-3 align-items-end mb-3">
+                <div class="col-12 col-md-5">
+                    <label class="nhan-truong">Từ khóa</label>
+                    <input type="text" name="tu_khoa" class="o-nhap" 
+                           placeholder="Mã phiếu / mã số / họ tên / mã hoặc tên thiết bị" 
+                           value="<?= e($tuKhoa) ?>">
                 </div>
-                <div class="h3 mb-0 fw-bold text-primary mt-2"><?= (int)$kpi['tong_tai_san'] ?></div>
-                <div class="small text-muted mt-1">
-                    <span class="text-success fw-semibold"><?= (int)$kpi['tai_san_san_sang'] ?> sẵn sàng</span> &bull; 
-                    <span class="text-warning-emphasis fw-semibold"><?= (int)$kpi['tai_san_dang_muon'] ?> đang mượn</span>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="nhan-truong">Phòng học</label>
+                    <select name="phong_hoc_id" class="o-nhap">
+                        <option value="">Tất cả phòng</option>
+                        <?php foreach ($danhSachPhongHoc as $ph): ?>
+                            <option value="<?= (int)$ph['id'] ?>" <?= $phongHocId === (int)$ph['id'] ? 'selected' : '' ?>>
+                                <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <label class="nhan-truong">Trạng thái phiếu</label>
+                    <select name="trang_thai" class="o-nhap">
+                        <option value="TAT_CA" <?= ($trangThai === 'TAT_CA' || $trangThai === '') ? 'selected' : '' ?>>Tất cả</option>
+                        <option value="DANG_MUON" <?= $trangThai === 'DANG_MUON' ? 'selected' : '' ?>>Đang mượn</option>
+                        <option value="TRA_MOT_PHAN" <?= $trangThai === 'TRA_MOT_PHAN' ? 'selected' : '' ?>>Trả một phần</option>
+                        <option value="DA_TRA" <?= $trangThai === 'DA_TRA' ? 'selected' : '' ?>>Đã trả đủ</option>
+                        <option value="QUA_HAN" <?= $trangThai === 'QUA_HAN' ? 'selected' : '' ?>>Quá hạn</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="nhan-truong">Ngày mượn từ</label>
+                    <input type="date" name="tu_ngay" class="o-nhap" value="<?= e($tuNgay) ?>">
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="nhan-truong">Đến ngày</label>
+                    <input type="date" name="den_ngay" class="o-nhap" value="<?= e($denNgay) ?>">
+                </div>
+                <div class="col-12 col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-chinh">Tra cứu</button>
+                    <a href="<?= url('thong-ke/index.php?tab=muon-tra') ?>" class="btn btn-phu">Xóa bộ lọc</a>
+                </div>
+            </div>
+
+            <div class="mo-ta-phu mt-2 pt-1 border-top text-muted">
+                Số liệu, biểu đồ và danh sách bên dưới cùng áp dụng bộ lọc đang chọn.
+            </div>
+        </form>
+    </div>
+
+    <!-- 4 Thẻ chỉ số KPI -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="the-so-lieu">
+                <div class="nhan-so-lieu">Phiếu mượn</div>
+                <div class="so-lieu"><?= sprintf('%02d', $kpiPhieuMuon) ?></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="the-so-lieu">
+                <div class="nhan-so-lieu">Thiết bị cho mượn</div>
+                <div class="so-lieu"><?= sprintf('%02d', $kpiThietBi) ?></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="the-so-lieu">
+                <div class="nhan-so-lieu">Phiếu đã trả đủ</div>
+                <div class="so-lieu text-success"><?= sprintf('%02d', $kpiDaTraDu) ?></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="the-so-lieu">
+                <div class="nhan-so-lieu">Phiếu chưa trả đủ</div>
+                <div class="so-lieu text-warning"><?= sprintf('%02d', $kpiChuaTraDu) ?></div>
             </div>
         </div>
     </div>
 
-    <!-- KPI 2: Hoạt động mượn trả -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm border-start border-success border-4 h-100 bg-white">
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small text-uppercase fw-bold">Lượt mượn 30 ngày</span>
-                    <span class="badge bg-success bg-opacity-10 text-success fw-bold">Tổng: <?= (int)$kpi['tong_luot_muon'] ?></span>
+    <!-- 2 Biểu đồ thống kê -->
+    <div class="row g-3 mb-4">
+        <!-- Biểu đồ 1: Mượn – trả theo ngày -->
+        <div class="col-12 col-lg-6">
+            <div class="the-noi-dung h-100 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="tieu-de-khoi mb-0">Mượn – trả theo ngày</div>
+                    <div class="mo-ta-phu">Đơn vị: phiếu / ngày</div>
                 </div>
-                <div class="h3 mb-0 fw-bold text-success mt-2"><?= (int)$kpi['luot_muon_30_ngay'] ?></div>
-                <div class="small text-muted mt-1">
-                    <span class="text-dark fw-semibold"><?= (int)$kpi['phieu_dang_muon'] ?> phiếu đang mượn</span>
-                    <?php if ($kpi['phieu_qua_han'] > 0): ?>
-                        &bull; <span class="text-danger fw-bold"><?= (int)$kpi['phieu_qua_han'] ?> quá hạn!</span>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- KPI 3: Sự cố & Bảo trì -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm border-start border-danger border-4 h-100 bg-white">
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small text-uppercase fw-bold">Sự cố thiết bị</span>
-                    <?php if ($kpi['su_co_chua_xu_ly'] > 0): ?>
-                        <span class="badge bg-danger">Chờ xử lý: <?= (int)$kpi['su_co_chua_xu_ly'] ?></span>
-                    <?php else: ?>
-                        <span class="badge bg-success bg-opacity-10 text-success">Ổn định</span>
-                    <?php endif; ?>
-                </div>
-                <div class="h3 mb-0 fw-bold text-danger mt-2"><?= (int)$kpi['tong_su_co'] ?></div>
-                <div class="small text-muted mt-1">
-                    <span class="text-warning-emphasis"><?= (int)$kpi['su_co_dang_xu_ly'] ?> đang bảo trì</span> &bull; 
-                    <span class="text-success"><?= (int)$kpi['su_co_da_xu_ly'] ?> đã xử lý</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- KPI 4: Hiệu suất kiểm kê -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm border-start border-info border-4 h-100 bg-white">
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small text-uppercase fw-bold">Đợt kiểm kê</span>
-                    <span class="badge bg-info bg-opacity-10 text-info fw-bold">Hoàn tất: <?= (int)$kpi['dot_hoan_tat'] ?></span>
-                </div>
-                <div class="h3 mb-0 fw-bold text-info mt-2"><?= (int)$kpi['tong_dot_kiem_ke'] ?></div>
-                <div class="small text-muted mt-1">
-                    <?php if ($kpi['dot_dang_mo'] > 0): ?>
-                        <span class="text-warning fw-bold"><i class="bi bi-clock-history"></i> <?= (int)$kpi['dot_dang_mo'] ?> đợt đang mở</span>
-                    <?php else: ?>
-                        <span class="text-muted">Không có đợt đang mở</span>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- HÀNG 1: BIỂU ĐỒ XU HƯỚNG MƯỢN TRẢ & CƠ CẤU TRẠNG THÁI -->
-<div class="row g-4 mb-4">
-    <!-- Cột 1: Biểu đồ xu hướng mượn - trả (Line/Bar Chart) -->
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-graph-up text-primary"></i> Xu hướng Mượn & Trả thiết bị
-                </h6>
-                <div class="btn-group btn-group-sm no-print" role="group">
-                    <?php
-                    $taoUrlKhoang = function(string $k) use ($phongTrucFilter) {
-                        return url('thong-ke/index.php?khoang=' . $k . ($phongTrucFilter ? '&phong_truc_id=' . $phongTrucFilter : ''));
-                    };
-                    ?>
-                    <a href="<?= $taoUrlKhoang('7_ngay') ?>" class="btn <?= ($khoangThoiGian === '7_ngay') ? 'btn-primary' : 'btn-outline-secondary' ?>">
-                        7 ngày
-                    </a>
-                    <a href="<?= $taoUrlKhoang('30_ngay') ?>" class="btn <?= ($khoangThoiGian === '30_ngay') ? 'btn-primary' : 'btn-outline-secondary' ?>">
-                        30 ngày
-                    </a>
-                    <a href="<?= $taoUrlKhoang('12_thang') ?>" class="btn <?= ($khoangThoiGian === '12_thang') ? 'btn-primary' : 'btn-outline-secondary' ?>">
-                        12 tháng
-                    </a>
-                </div>
-            </div>
-            <div class="card-body p-3">
-                <div style="height: 300px; position: relative;">
-                    <canvas id="chartMuonTra"></canvas>
-                </div>
-            </div>
-            <div class="card-footer bg-light py-2 text-center small text-muted">
-                Tổng lượt mượn trong kỳ: <strong class="text-primary"><?= (int)$muonTra['tong_muon'] ?></strong> &bull; 
-                Tổng lượt trả thiết bị: <strong class="text-success"><?= (int)$muonTra['tong_tra'] ?></strong>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cột 2: Biểu đồ trạng thái tài sản (Doughnut Chart) -->
-    <div class="col-lg-4">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-pie-chart text-success"></i> Tỷ lệ trạng thái tài sản
-                </h6>
-            </div>
-            <div class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
-                <div style="width: 230px; height: 230px; position: relative;">
-                    <canvas id="chartTrangThai"></canvas>
-                </div>
-                <div class="mt-3 w-100">
-                    <div class="row g-2 text-center small">
-                        <div class="col-6">
-                            <span class="badge bg-success w-100 py-1">Sẵn sàng: <?= (int)$taiSanTrangThai['data'][0] ?></span>
-                        </div>
-                        <div class="col-6">
-                            <span class="badge bg-warning text-dark w-100 py-1">Đang mượn: <?= (int)$taiSanTrangThai['data'][1] ?></span>
-                        </div>
-                        <div class="col-6">
-                            <span class="badge bg-danger w-100 py-1">Bảo trì: <?= (int)$taiSanTrangThai['data'][2] ?></span>
-                        </div>
-                        <div class="col-6">
-                            <span class="badge bg-secondary w-100 py-1">Ngừng SD: <?= (int)$taiSanTrangThai['data'][3] ?></span>
-                        </div>
+                <div class="d-flex align-items-center gap-3 mb-3 small">
+                    <div class="d-flex align-items-center gap-1">
+                        <span style="display:inline-block;width:12px;height:3px;background-color:#1E4E8C;"></span>
+                        <span class="text-secondary">Phiếu mượn mới</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <span style="display:inline-block;width:12px;height:3px;background-color:#6B7280;border-top:1px dashed #6B7280;"></span>
+                        <span class="text-secondary">Phiếu có nhận trả</span>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- HÀNG 2: CƠ CẤU CHỦNG LOẠI & ĐỐI TƯỢNG MƯỢN & SỰ CỐ -->
-<div class="row g-4 mb-4">
-    <!-- Cột 1: Cơ cấu tài sản theo loại (Bar Chart ngang hoặc đứng) -->
-    <div class="col-lg-6">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-bar-chart-fill text-info"></i> Cơ cấu thiết bị theo chủng loại
-                </h6>
-            </div>
-            <div class="card-body p-3">
-                <div style="height: 250px; position: relative;">
-                    <canvas id="chartLoaiTaiSan"></canvas>
+                <div style="height: 220px;">
+                    <canvas id="chartMuonTraNgay"></canvas>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Cột 2: Đối tượng mượn: Giảng viên vs Sinh viên -->
-    <div class="col-lg-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-people-fill text-primary"></i> Đối tượng mượn
-                </h6>
-            </div>
-            <div class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
-                <div style="width: 180px; height: 180px; position: relative;">
-                    <canvas id="chartDoiTuong"></canvas>
+        <!-- Biểu đồ 2: Thiết bị cho mượn theo loại -->
+        <div class="col-12 col-lg-6">
+            <div class="the-noi-dung h-100 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="tieu-de-khoi mb-0">Thiết bị cho mượn theo loại</div>
+                    <div class="mo-ta-phu">Đơn vị: thiết bị • Tổng cộng: <?= (int)$tongThietBiLoai ?></div>
                 </div>
-                <div class="mt-3 w-100 text-center small">
-                    <span class="badge bg-primary me-2">Giảng viên: <?= (int)$doiTuong['data'][0] ?></span>
-                    <span class="badge bg-info text-dark">Sinh viên: <?= (int)$doiTuong['data'][1] ?></span>
+                <div class="mb-3 small text-secondary">
+                    Phân bố thiết bị được mượn theo từng nhóm loại.
+                </div>
+                <div style="height: 220px;">
+                    <canvas id="chartThietBiLoai"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Cột 3: Phân tích sự cố -->
-    <div class="col-lg-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-exclamation-octagon-fill text-danger"></i> Phân loại sự cố
-                </h6>
+    <!-- Bảng kết quả tra cứu mượn – trả -->
+    <div class="the-noi-dung mb-4">
+        <div class="the-noi-dung-dau d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu mượn – trả</h3>
+                <div class="mo-ta-phu">Trạng thái cập nhật đến thời điểm tra cứu.</div>
             </div>
-            <div class="card-body p-3 d-flex flex-column justify-content-center align-items-center">
-                <div style="width: 180px; height: 180px; position: relative;">
-                    <canvas id="chartSuCo"></canvas>
-                </div>
-                <div class="mt-3 w-100 text-center small">
-                    <span class="badge bg-danger me-1">Hỏng: <?= (int)$suCo['theo_loai']['data'][0] ?></span>
-                    <span class="badge bg-dark me-1">Mất: <?= (int)$suCo['theo_loai']['data'][1] ?></span>
-                    <span class="badge bg-warning text-dark">Sai phòng: <?= (int)$suCo['theo_loai']['data'][2] ?></span>
-                </div>
+            <div>
+                <span class="badge bg-light text-secondary border px-2 py-1 fw-semibold">
+                    <?= (int)$tongSo ?> phiếu
+                </span>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- HÀNG 3: BẢNG XẾP HẠNG & TỔNG HỢP CHI TIẾT -->
-<div class="row g-4 mb-4">
-    <!-- Top 5 Phòng học mượn nhiều nhất -->
-    <div class="col-lg-6">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-trophy text-warning"></i> Top 5 phòng học sử dụng thiết bị nhiều nhất
-                </h6>
-            </div>
+        <div class="the-noi-dung-than p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small">
+                <table class="bang-du-lieu mb-0">
+                    <thead>
                         <tr>
-                            <th style="width: 40px;" class="ps-3">#</th>
-                            <th>Mã phòng</th>
-                            <th>Tên phòng học</th>
-                            <th style="width: 100px;">Tòa nhà</th>
-                            <th style="width: 130px;" class="text-end pe-3">Lượt mượn</th>
+                            <th>Mã phiếu</th>
+                            <th>Người mượn</th>
+                            <th>Phòng</th>
+                            <th class="text-center">Thiết bị</th>
+                            <th>Mượn / hạn trả</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Chi tiết</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (empty($topPhongHoc['danh_sach'])): ?>
+                        <?php if (empty($danhSach)): ?>
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">Chưa có dữ liệu mượn phòng.</td>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    Không tìm thấy phiếu mượn nào phù hợp với điều kiện tra cứu.
+                                </td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($topPhongHoc['danh_sach'] as $i => $ph): ?>
+                            <?php foreach ($danhSach as $row): ?>
+                                <?php
+                                $soTb = (int)($row['so_thiet_bi'] ?? 0);
+                                $soChuaTra = (int)($row['so_chua_tra'] ?? 0);
+                                $isOverdue = ($row['trang_thai'] === 'DANG_MUON' && !empty($row['han_tra']) && strtotime((string)$row['han_tra']) < time());
+                                $isPartial = ($row['trang_thai'] === 'DANG_MUON' && $soChuaTra < $soTb && $soChuaTra > 0);
+                                ?>
                                 <tr>
-                                    <td class="ps-3 fw-bold <?= ($i === 0) ? 'text-warning' : 'text-muted' ?>">
-                                        <?= $i + 1 ?>
+                                    <td class="fw-semibold text-primary">
+                                        <?= e($row['ma_phieu_muon']) ?>
                                     </td>
-                                    <td class="fw-bold font-monospace text-primary"><?= e($ph['ma_phong']) ?></td>
-                                    <td><?= e($ph['ten_phong']) ?></td>
-                                    <td><span class="badge bg-light text-dark border"><?= e($ph['toa_nha'] ?? '--') ?></span></td>
-                                    <td class="text-end pe-3">
-                                        <span class="badge bg-primary rounded-pill px-3 py-2"><?= (int)$ph['so_luot_muon'] ?></span>
+                                    <td>
+                                        <div class="fw-semibold text-secondary small"><?= e($row['ma_so_truong']) ?></div>
+                                        <div class="fw-medium text-dark"><?= e($row['ho_ten_nguoi_muon']) ?></div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border"><?= e($row['ma_phong']) ?></span>
+                                    </td>
+                                    <td class="text-center fw-bold">
+                                        <?= $soTb ?>
+                                    </td>
+                                    <td>
+                                        <div class="small fw-semibold"><?= !empty($row['thoi_gian_muon']) ? date('d/m • H:i', strtotime((string)$row['thoi_gian_muon'])) : '—' ?></div>
+                                        <div class="small text-muted"><?= !empty($row['han_tra']) ? date('d/m • H:i', strtotime((string)$row['han_tra'])) : '—' ?></div>
+                                    </td>
+                                    <td>
+                                        <?php if ($row['trang_thai'] === 'DA_TRA'): ?>
+                                            <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đã trả đủ</span>
+                                        <?php elseif ($isOverdue): ?>
+                                            <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Quá hạn</span>
+                                        <?php elseif ($isPartial): ?>
+                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Trả một phần</span>
+                                            <div class="text-muted small mt-1">Còn <?= $soChuaTra ?> thiết bị</div>
+                                        <?php else: ?>
+                                            <span class="huy-hieu-tt huy-hieu-tt-chinh">Đang mượn</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$row['id']) ?>" class="btn btn-sm btn-phu">
+                                            Xem
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Phân trang -->
+        <?php if ($tongSo > 0): ?>
+            <?php
+            $tuBanGhi = $offset + 1;
+            $denBanGhi = min($offset + count($danhSach), $tongSo);
+            $queryBase = $_GET;
+            unset($queryBase['trang']);
+            ?>
+            <div class="the-noi-dung-chan d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="mo-ta-phu mb-0">
+                    Hiển thị <?= $tuBanGhi ?>–<?= $denBanGhi ?> / <?= (int)$tongSo ?> phiếu
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                    <?php if ($trang > 1): ?>
+                        <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $trang - 1]))) ?>" class="btn btn-sm btn-phu">
+                            Trước
+                        </a>
+                    <?php else: ?>
+                        <button type="button" class="btn btn-sm btn-phu" disabled>Trước</button>
+                    <?php endif; ?>
+
+                    <?php for ($p = 1; $p <= $tongSoTrang; $p++): ?>
+                        <?php if ($p === $trang): ?>
+                            <span class="btn btn-sm btn-chinh"><?= $p ?></span>
+                        <?php elseif ($p <= 3 || $p >= $tongSoTrang - 2 || abs($p - $trang) <= 1): ?>
+                            <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $p]))) ?>" class="btn btn-sm btn-phu">
+                                <?= $p ?>
+                            </a>
+                        <?php endif; ?>
+                    <?php endfor; ?>
+
+                    <?php if ($trang < $tongSoTrang): ?>
+                        <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $trang + 1]))) ?>" class="btn btn-sm btn-phu">
+                            Sau
+                        </a>
+                    <?php else: ?>
+                        <button type="button" class="btn btn-sm btn-phu" disabled>Sau</button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+<?php elseif ($tab === 'dieu-chuyen'): ?>
+
+    <!-- Khối bộ lọc Điều chuyển -->
+    <div class="the-noi-dung p-3 mb-4">
+        <form method="GET" action="<?= url('thong-ke/index.php') ?>" class="row g-3 align-items-end">
+            <input type="hidden" name="tab" value="dieu-chuyen">
+            <div class="col-12 col-md-6">
+                <label class="nhan-truong">Từ khóa điều chuyển</label>
+                <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã phiếu / lý do..." value="<?= e($tuKhoa) ?>">
+            </div>
+            <div class="col-12 col-md-6 d-flex gap-2">
+                <button type="submit" class="btn btn-chinh">Tra cứu</button>
+                <a href="<?= url('thong-ke/index.php?tab=dieu-chuyen') ?>" class="btn btn-phu">Xóa bộ lọc</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bảng danh sách Điều chuyển -->
+    <div class="the-noi-dung mb-4">
+        <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
+            <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu điều chuyển</h3>
+            <span class="badge bg-light text-secondary border"><?= (int)$tongSo ?> phiếu</span>
+        </div>
+        <div class="the-noi-dung-than p-0">
+            <div class="table-responsive">
+                <table class="bang-du-lieu mb-0">
+                    <thead>
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Ngày chuyển</th>
+                            <th>Bàn trực gửi</th>
+                            <th>Bàn trực nhận</th>
+                            <th class="text-center">Số thiết bị</th>
+                            <th>Người tạo</th>
+                            <th class="text-end">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($danhSachDc)): ?>
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">Không có dữ liệu điều chuyển.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($danhSachDc as $dc): ?>
+                                <tr>
+                                    <td class="fw-semibold text-primary"><?= e($dc['ma_phieu_dieu_chuyen'] ?? $dc['ma_phieu'] ?? '') ?></td>
+                                    <td><?= !empty($dc['ngay_tao']) ? date('d/m/Y H:i', strtotime((string)$dc['ngay_tao'])) : '—' ?></td>
+                                    <td><?= e($dc['ten_phong_chuyen'] ?? $dc['phong_chuyen_ten'] ?? '—') ?></td>
+                                    <td><?= e($dc['ten_phong_nhan'] ?? $dc['phong_nhan_ten'] ?? '—') ?></td>
+                                    <td class="text-center fw-bold"><?= (int)($dc['so_luong_thiet_bi'] ?? $dc['so_thiet_bi'] ?? 0) ?></td>
+                                    <td><?= e($dc['ho_ten_nguoi_tao'] ?? $dc['nguoi_tao_ten'] ?? '—') ?></td>
+                                    <td class="text-end">
+                                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-sm btn-phu">Xem</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -338,41 +371,63 @@ require dirname(__DIR__) . '/layout/menu.php';
         </div>
     </div>
 
-    <!-- Top 5 Thiết bị được mượn nhiều nhất -->
-    <div class="col-lg-6">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-star-fill text-warning"></i> Top 5 thiết bị có tần suất mượn cao nhất
-                </h6>
+<?php elseif ($tab === 'kiem-ke'): ?>
+
+    <!-- Khối bộ lọc Kiểm kê -->
+    <div class="the-noi-dung p-3 mb-4">
+        <form method="GET" action="<?= url('thong-ke/index.php') ?>" class="row g-3 align-items-end">
+            <input type="hidden" name="tab" value="kiem-ke">
+            <div class="col-12 col-md-6">
+                <label class="nhan-truong">Từ khóa kiểm kê</label>
+                <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã đợt / tên đợt..." value="<?= e($tuKhoa) ?>">
             </div>
+            <div class="col-12 col-md-6 d-flex gap-2">
+                <button type="submit" class="btn btn-chinh">Tra cứu</button>
+                <a href="<?= url('thong-ke/index.php?tab=kiem-ke') ?>" class="btn btn-phu">Xóa bộ lọc</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bảng danh sách Kiểm kê -->
+    <div class="the-noi-dung mb-4">
+        <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
+            <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu kiểm kê</h3>
+            <span class="badge bg-light text-secondary border"><?= (int)$tongSo ?> đợt</span>
+        </div>
+        <div class="the-noi-dung-than p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small">
+                <table class="bang-du-lieu mb-0">
+                    <thead>
                         <tr>
-                            <th style="width: 40px;" class="ps-3">#</th>
-                            <th style="width: 120px;">Mã tài sản</th>
-                            <th>Tên thiết bị</th>
-                            <th>Loại</th>
-                            <th style="width: 130px;" class="text-end pe-3">Lượt mượn</th>
+                            <th>Mã đợt</th>
+                            <th>Tên đợt kiểm kê</th>
+                            <th>Bàn trực</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Chi tiết</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (empty($topTaiSan['danh_sach'])): ?>
+                        <?php if (empty($danhSachKk)): ?>
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">Chưa có dữ liệu mượn thiết bị.</td>
+                                <td colspan="6" class="text-center py-4 text-muted">Không có dữ liệu đợt kiểm kê.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($topTaiSan['danh_sach'] as $i => $ts): ?>
+                            <?php foreach ($danhSachKk as $kk): ?>
                                 <tr>
-                                    <td class="ps-3 fw-bold <?= ($i === 0) ? 'text-warning' : 'text-muted' ?>">
-                                        <?= $i + 1 ?>
+                                    <td class="fw-semibold text-primary"><?= e($kk['ma_dot_kiem_ke'] ?? '') ?></td>
+                                    <td class="fw-medium"><?= e($kk['ten_dot_kiem_ke'] ?? '') ?></td>
+                                    <td><?= e($kk['ten_phong_truc'] ?? '—') ?></td>
+                                    <td><?= !empty($kk['ngay_bat_dau']) ? date('d/m/Y H:i', strtotime((string)$kk['ngay_bat_dau'])) : '—' ?></td>
+                                    <td>
+                                        <?php if (($kk['trang_thai'] ?? '') === 'HOAN_TAT'): ?>
+                                            <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Hoàn tất</span>
+                                        <?php else: ?>
+                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Đang thực hiện</span>
+                                        <?php endif; ?>
                                     </td>
-                                    <td class="fw-bold font-monospace text-primary"><?= e($ts['ma_tai_san']) ?></td>
-                                    <td class="fw-semibold text-dark"><?= e($ts['ten_tai_san']) ?></td>
-                                    <td><span class="badge bg-light text-dark border"><?= e($ts['ten_loai'] ?? 'Thiết bị') ?></span></td>
-                                    <td class="text-end pe-3">
-                                        <span class="badge bg-success rounded-pill px-3 py-2"><?= (int)$ts['so_luot_muon'] ?></span>
+                                    <td class="text-end">
+                                        <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$kk['id']) ?>" class="btn btn-sm btn-phu">Xem</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -382,149 +437,103 @@ require dirname(__DIR__) . '/layout/menu.php';
             </div>
         </div>
     </div>
-</div>
 
-<!-- SCRIPTS KHỞI TẠO BIỂU ĐỒ CHART.JS (OFFLINE LOCAL VENDOR) -->
+<?php endif; ?>
+
+<!-- Nạp Chart.js từ Vendor cục bộ và khởi tạo 2 biểu đồ -->
 <script src="<?= url('assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
+<?php if ($tab === 'muon-tra'): ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. BIỂU ĐỒ XU HƯỚNG MƯỢN & TRẢ (Chart Line/Bar)
-    const ctxMuonTra = document.getElementById('chartMuonTra').getContext('2d');
-    new Chart(ctxMuonTra, {
-        type: 'line',
-        data: {
-            labels: <?= json_encode($muonTra['labels'], JSON_UNESCAPED_UNICODE) ?>,
-            datasets: [
-                {
-                    label: 'Lượt mượn thiết bị',
-                    data: <?= json_encode($muonTra['so_luot_muon']) ?>,
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#0d6efd',
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Biểu đồ Line: Mượn – trả theo ngày
+    const ctxNgay = document.getElementById('chartMuonTraNgay');
+    if (ctxNgay) {
+        new Chart(ctxNgay.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: <?= json_encode($chartLabels, JSON_UNESCAPED_UNICODE) ?>,
+                datasets: [
+                    {
+                        label: 'Phiếu mượn mới',
+                        data: <?= json_encode($chartMuon) ?>,
+                        borderColor: '#1E4E8C',
+                        backgroundColor: 'rgba(30, 78, 140, 0.08)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#1E4E8C',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.25
+                    },
+                    {
+                        label: 'Phiếu có nhận trả',
+                        data: <?= json_encode($chartTra) ?>,
+                        borderColor: '#6B7280',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        pointBackgroundColor: '#6B7280',
+                        pointRadius: 4,
+                        fill: false,
+                        tension: 0.25
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
                 },
-                {
-                    label: 'Lượt trả thiết bị',
-                    data: <?= json_encode($muonTra['so_luot_tra']) ?>,
-                    borderColor: '#198754',
-                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#198754',
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#E5E7EB' },
+                        ticks: { precision: 0, font: { family: 'system-ui' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'system-ui' } }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
-    // 2. BIỂU ĐỒ TRẠNG THÁI TÀI SẢN (Doughnut)
-    const ctxTrangThai = document.getElementById('chartTrangThai').getContext('2d');
-    new Chart(ctxTrangThai, {
-        type: 'doughnut',
-        data: {
-            labels: <?= json_encode($taiSanTrangThai['labels'], JSON_UNESCAPED_UNICODE) ?>,
-            datasets: [{
-                data: <?= json_encode($taiSanTrangThai['data']) ?>,
-                backgroundColor: <?= json_encode($taiSanTrangThai['colors']) ?>,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+    // 2. Biểu đồ Bar: Thiết bị cho mượn theo loại
+    const ctxLoai = document.getElementById('chartThietBiLoai');
+    if (ctxLoai) {
+        new Chart(ctxLoai.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: <?= json_encode($loaiLabels, JSON_UNESCAPED_UNICODE) ?>,
+                datasets: [{
+                    data: <?= json_encode($loaiData) ?>,
+                    backgroundColor: '#1E4E8C',
+                    borderRadius: 4,
+                    maxBarThickness: 36
+                }]
             },
-            cutout: '65%'
-        }
-    });
-
-    // 3. BIỂU ĐỒ CƠ CẤU CHỦNG LOẠI (Bar Chart)
-    const ctxLoai = document.getElementById('chartLoaiTaiSan').getContext('2d');
-    new Chart(ctxLoai, {
-        type: 'bar',
-        data: {
-            labels: <?= json_encode($taiSanLoai['labels'], JSON_UNESCAPED_UNICODE) ?>,
-            datasets: [{
-                label: 'Số lượng thiết bị',
-                data: <?= json_encode($taiSanLoai['so_luong']) ?>,
-                backgroundColor: 'rgba(13, 202, 240, 0.7)',
-                borderColor: '#0dcaf0',
-                borderWidth: 1,
-                borderRadius: 4,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#E5E7EB' },
+                        ticks: { precision: 0, font: { family: 'system-ui' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'system-ui' } }
+                    }
                 }
             }
-        }
-    });
-
-    // 4. BIỂU ĐỒ ĐỐI TƯỢNG MƯỢN (Doughnut)
-    const ctxDoiTuong = document.getElementById('chartDoiTuong').getContext('2d');
-    new Chart(ctxDoiTuong, {
-        type: 'doughnut',
-        data: {
-            labels: <?= json_encode($doiTuong['labels'], JSON_UNESCAPED_UNICODE) ?>,
-            datasets: [{
-                data: <?= json_encode($doiTuong['data']) ?>,
-                backgroundColor: <?= json_encode($doiTuong['colors']) ?>,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            cutout: '60%'
-        }
-    });
-
-    // 5. BIỂU ĐỒ PHÂN LOẠI SỰ CỐ (Doughnut)
-    const ctxSuCo = document.getElementById('chartSuCo').getContext('2d');
-    new Chart(ctxSuCo, {
-        type: 'doughnut',
-        data: {
-            labels: <?= json_encode($suCo['theo_loai']['labels'], JSON_UNESCAPED_UNICODE) ?>,
-            datasets: [{
-                data: <?= json_encode($suCo['theo_loai']['data']) ?>,
-                backgroundColor: <?= json_encode($suCo['theo_loai']['colors']) ?>,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            cutout: '60%'
-        }
-    });
+        });
+    }
 });
 </script>
+<?php endif; ?>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

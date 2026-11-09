@@ -14,8 +14,6 @@ if (!defined('APP_KHOI_DONG')) {
 }
 
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
-
 $laDangMuon = ($phieu['trang_thai'] ?? '') === 'DANG_MUON';
 $quaHan = false;
 if ($laDangMuon && !empty($phieu['han_tra'])) {

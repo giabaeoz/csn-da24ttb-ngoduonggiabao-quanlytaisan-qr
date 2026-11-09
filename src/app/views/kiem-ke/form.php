@@ -6,7 +6,6 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
 ?>
 
 <div class="container-fluid py-3">

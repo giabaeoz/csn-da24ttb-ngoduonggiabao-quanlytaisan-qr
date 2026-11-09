@@ -6,8 +6,6 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
-
 $thongKe = $dot['thong_ke'];
 $laHoanTat = ($dot['trang_thai'] === KIEM_KE_HOAN_TAT);
 $laDaHuy = ($dot['trang_thai'] === KIEM_KE_DA_HUY);

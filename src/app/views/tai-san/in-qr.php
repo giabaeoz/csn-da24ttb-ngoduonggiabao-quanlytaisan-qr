@@ -58,8 +58,8 @@ if (!defined('APP_KHOI_DONG')) {
         .ma-thiet-bi {
             font-family: monospace;
             font-size: 1.15rem;
-            font-weight: 800;
-            color: #1A56DB;
+            font-weight: 700;
+            color: #1E4E8C;
         }
 
         .thong-tin-phu {
@@ -96,9 +96,9 @@ if (!defined('APP_KHOI_DONG')) {
 <div class="container mb-4 no-print">
     <div class="card border-0 shadow-sm p-3 bg-white d-flex flex-row justify-content-between align-items-center">
         <div>
-            <h5 class="fw-bold mb-1">🖨️ In tem mã QR thiết bị</h5>
+            <h5 class="fw-bold mb-1">In tem mã QR thiết bị</h5>
             <div class="text-muted small">
-                Đang chuẩn bị in <strong><?= count($danhSachIn) ?></strong> tem dán thiết bị. Khuyên dùng khổ giấy Decal bế sẵn hoặc giấy dán A4.
+                Đang chuẩn bị in <strong><?= count($danhSachIn) ?></strong> tem thiết bị.
             </div>
         </div>
         <div class="d-flex gap-2">
@@ -133,7 +133,7 @@ if (!defined('APP_KHOI_DONG')) {
                         <?php endif; ?>
                         
                         <?php if (!empty($ts['ma_phong_phu_hop'])): ?>
-                            <div class="fw-bold text-dark">🏷️ Xếp kệ: Phòng <?= e($ts['ma_phong_phu_hop']) ?></div>
+                            <div class="fw-semibold text-dark">Phòng: <?= e($ts['ma_phong_phu_hop']) ?></div>
                         <?php else: ?>
                             <div>Phạm vi: Linh hoạt</div>
                         <?php endif; ?>

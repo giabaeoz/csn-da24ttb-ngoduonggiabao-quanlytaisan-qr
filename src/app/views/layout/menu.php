@@ -1,6 +1,6 @@
 <?php
 /**
- * Thanh điều hướng bên sườn (Sidebar Navigation) phân quyền theo vai trò.
+ * Thanh điều hướng Sidebar bên trái - Bám sát phác thảo
  */
 
 declare(strict_types=1);
@@ -11,126 +11,95 @@ if (!defined('APP_KHOI_DONG')) {
 }
 
 $tepHienTai = basename($_SERVER['PHP_SELF'] ?? '');
+$duongDanHienTai = $_SERVER['PHP_SELF'] ?? '';
+$nguoiDung = nguoi_dung_hien_tai();
+$tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
 ?>
-<!-- Sidebar điều hướng bên trái -->
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar shadow-sm py-3">
-    <div class="position-sticky">
-        <ul class="nav flex-column gap-1">
-            
-            <!-- Mục Tổng quan -->
-            <?php if (co_quyen('xem_tong_quan')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= ($tepHienTai === 'tong-quan.php') ? 'active fw-bold' : '' ?>" href="<?= url('tong-quan.php') ?>">
-                    <span class="nav-icon">📊</span> Tổng quan
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <!-- Nhóm: Nghiệp vụ trực phòng -->
-            <?php if (co_quyen('nghiep_vu_muon_tra') || co_quyen('xem_lich_su_muon_tra') || co_quyen('thuc_hien_kiem_ke') || co_quyen('tao_dieu_chuyen')): ?>
-            <li class="nav-header text-uppercase text-muted small fw-bold px-3 mt-3 mb-1">Nghiệp vụ trực</li>
-            
-            <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= ($tepHienTai === 'muon.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/muon.php') ?>">
-                    <span class="nav-icon">📤</span> Mượn tài sản
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?= ($tepHienTai === 'tra.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/tra.php') ?>">
-                    <span class="nav-icon">📥</span> Trả tài sản
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <?php if (co_quyen('xem_lich_su_muon_tra')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= (str_contains($_SERVER['PHP_SELF'] ?? '', 'muon-tra') && $tepHienTai === 'index.php') ? 'active fw-bold' : '' ?>" href="<?= url('muon-tra/index.php') ?>">
-                    <span class="nav-icon">📋</span> Lịch sử mượn - trả
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <?php if (co_quyen('thuc_hien_kiem_ke') || co_quyen('xem_kiem_ke')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'kiem-ke') ? 'active fw-bold' : '' ?>" href="<?= url('kiem-ke/index.php') ?>">
-                    <span class="nav-icon">🔍</span> Kiểm kê tài sản
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <?php if (co_quyen('tao_dieu_chuyen') || co_quyen('xem_dieu_chuyen')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'dieu-chuyen') ? 'active fw-bold' : '' ?>" href="<?= url('dieu-chuyen/index.php') ?>">
-                    <span class="nav-icon">🔄</span> Điều chuyển thiết bị
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php endif; ?>
-
-            <!-- Nhóm: Quản lý thiết bị & sự cố -->
-            <?php if (co_quyen('xem_danh_sach_tai_san') || co_quyen('ghi_nhan_su_co')): ?>
-            <li class="nav-header text-uppercase text-muted small fw-bold px-3 mt-3 mb-1">Thiết bị & Sự cố</li>
-            
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'tai-san') ? 'active fw-bold' : '' ?>" href="<?= url('tai-san/index.php') ?>">
-                    <span class="nav-icon">💻</span> Quản lý tài sản
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'su-co') ? 'active fw-bold' : '' ?>" href="<?= url('su-co/index.php') ?>">
-                    <span class="nav-icon">⚠️</span> Báo cáo sự cố
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <!-- Nhóm: Danh mục hệ thống -->
-            <?php if (co_quyen('quan_ly_nguoi_muon') || co_quyen('quan_ly_danh_muc')): ?>
-            <li class="nav-header text-uppercase text-muted small fw-bold px-3 mt-3 mb-1">Danh mục</li>
-
-            <?php if (co_quyen('quan_ly_nguoi_muon')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'nguoi-muon') ? 'active fw-bold' : '' ?>" href="<?= url('nguoi-muon/index.php') ?>">
-                    <span class="nav-icon">👥</span> Người mượn
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <?php if (co_quyen('quan_ly_danh_muc')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'danh-muc') ? 'active fw-bold' : '' ?>" href="<?= url('danh-muc/index.php') ?>">
-                    <span class="nav-icon">🏢</span> Phòng trực & Phòng học
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php endif; ?>
-
-            <!-- Nhóm: Quản trị & Thống kê -->
-            <?php if (co_quyen('xem_thong_ke') || co_quyen('quan_ly_tai_khoan')): ?>
-            <li class="nav-header text-uppercase text-muted small fw-bold px-3 mt-3 mb-1">Hệ thống</li>
-
-            <?php if (co_quyen('xem_thong_ke')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'thong-ke') ? 'active fw-bold' : '' ?>" href="<?= url('thong-ke/index.php') ?>">
-                    <span class="nav-icon">📈</span> Báo cáo thống kê
-                </a>
-            </li>
-            <?php endif; ?>
-
-            <?php if (co_quyen('quan_ly_tai_khoan')): ?>
-            <li class="nav-item">
-                <a class="nav-link <?= str_contains($_SERVER['PHP_SELF'] ?? '', 'tai-khoan') ? 'active fw-bold' : '' ?>" href="<?= url('tai-khoan/index.php') ?>">
-                    <span class="nav-icon">🛡️</span> Quản lý tài khoản
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php endif; ?>
-
-        </ul>
+<aside class="sidebar-app">
+    <!-- Đầu Sidebar: Logo và Tên hệ thống -->
+    <div class="sidebar-dau">
+        <div class="d-flex align-items-center">
+            <div class="logo-box">LOGO</div>
+            <div>
+                <div class="ten-he-thong">TÀI SẢN QR</div>
+                <div class="ten-phong-truc"><?= e($tenPhong) ?></div>
+            </div>
+        </div>
     </div>
-</nav>
 
-<!-- Vùng nội dung chính của trang -->
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-    <?php require dirname(__DIR__) . '/partials/thong-bao.php'; ?>
+    <!-- Danh sách Menu chức năng -->
+    <nav class="sidebar-menu">
+        <div class="menu-tieu-de">CHỨC NĂNG</div>
 
+        <?php if (co_quyen('xem_tong_quan')): ?>
+        <a class="menu-item <?= ($tepHienTai === 'tong-quan.php') ? 'active' : '' ?>" href="<?= url('tong-quan.php') ?>">
+            Tổng quan
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('xem_danh_sach_tai_san')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/tai-san/')) ? 'active' : '' ?>" href="<?= url('tai-san/index.php') ?>">
+            Tài sản
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('quan_ly_nguoi_muon') || co_quyen('nghiep_vu_muon_tra')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/nguoi-muon/')) ? 'active' : '' ?>" href="<?= url('nguoi-muon/index.php') ?>">
+            Người mượn
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('nghiep_vu_muon_tra') || co_quyen('xem_lich_su_muon_tra')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/muon-tra/')) ? 'active' : '' ?>" href="<?= url('muon-tra/muon.php') ?>">
+            Mượn – trả
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('tao_dieu_chuyen') || co_quyen('xem_dieu_chuyen')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/dieu-chuyen/')) ? 'active' : '' ?>" href="<?= url('dieu-chuyen/index.php') ?>">
+            Điều chuyển
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('thuc_hien_kiem_ke') || co_quyen('xem_kiem_ke')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/kiem-ke/')) ? 'active' : '' ?>" href="<?= url('kiem-ke/index.php') ?>">
+            Kiểm kê
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('xem_thong_ke')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/thong-ke/')) ? 'active' : '' ?>" href="<?= url('thong-ke/index.php') ?>">
+            Tra cứu, thống kê
+        </a>
+        <?php endif; ?>
+
+        <!-- Các mục quản trị nâng cao cho Quản trị viên / Quản lý -->
+        <?php if (co_quyen('ghi_nhan_su_co') || co_quyen('xem_su_co')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/su-co/')) ? 'active' : '' ?>" href="<?= url('su-co/index.php') ?>">
+            Sự cố & Bảo trì
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('quan_ly_danh_muc')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/danh-muc/')) ? 'active' : '' ?>" href="<?= url('danh-muc/phong-truc.php') ?>">
+            Danh mục
+        </a>
+        <?php endif; ?>
+
+        <?php if (co_quyen('quan_ly_tai_khoan')): ?>
+        <a class="menu-item <?= (str_contains($duongDanHienTai, '/tai-khoan/')) ? 'active' : '' ?>" href="<?= url('tai-khoan/index.php') ?>">
+            Tài khoản
+        </a>
+        <?php endif; ?>
+    </nav>
+
+    <!-- Chân Sidebar: Nút Đăng xuất -->
+    <div class="sidebar-chan">
+        <form action="<?= url('logout.php') ?>" method="POST" class="m-0">
+            <?= csrf_field() ?>
+            <button type="submit" class="btn-dang-xuat">
+                Đăng xuất
+            </button>
+        </form>
+    </div>
+</aside>

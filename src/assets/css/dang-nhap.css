@@ -1,26 +1,123 @@
 /**
- * CSS Riêng cho trang Đăng nhập hệ thống
+ * CSS Màn hình Đăng nhập - Bám sát phác thảo Trang đăng nhập.pdf
  */
 
-.bg-dang-nhap {
-    background: linear-gradient(135deg, #1E3A8A 0%, #1A56DB 50%, #3B82F6 100%);
-    position: relative;
-    overflow-x: hidden;
+.trang-dang-nhap-khung {
+  min-height: 100vh;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  background-color: var(--nen-the);
 }
 
-.bg-dang-nhap::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 40%);
-    pointer-events: none;
+.cot-thuong-hieu {
+  width: 50%;
+  background-color: var(--nen-trang);
+  border-right: 1px solid var(--vien);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px 40px;
+  text-align: center;
 }
 
-.card {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+.cot-thuong-hieu .vung-giua {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto 0;
 }
 
+.logo-lon {
+  width: 140px;
+  height: 140px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--chu-phu);
+  letter-spacing: 0.05em;
+  margin-bottom: 32px;
+}
+
+.tieu-de-thuong-hieu {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  margin-bottom: 8px;
+}
+
+.mo-ta-thuong-hieu {
+  font-size: 14px;
+  color: var(--chu-phu);
+  max-width: 420px;
+}
+
+.chan-thuong-hieu {
+  font-size: 13px;
+  color: var(--chu-phu);
+}
+
+.cot-bieu-mau {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: #FFFFFF;
+}
+
+.hop-dang-nhap {
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  padding: 36px 32px;
+  background-color: #FFFFFF;
+}
+
+.tieu-de-dang-nhap {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--chu-chinh);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.lien-ket-quen-mat-khau {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--chu-phu);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lien-ket-quen-mat-khau:hover {
+  color: var(--mau-chinh);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .trang-dang-nhap-khung {
+    flex-direction: column;
+  }
+  .cot-thuong-hieu {
+    width: 100%;
+    padding: 32px 20px;
+  }
+  .cot-bieu-mau {
+    width: 100%;
+    padding: 24px 16px;
+  }
+  .hop-dang-nhap {
+    border: none;
+    padding: 0;
+  }
+}

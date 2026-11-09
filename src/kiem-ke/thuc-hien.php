@@ -80,5 +80,8 @@ $boLocChiTiet = [
 $danhSachChiTiet = kiem_ke_lay_chi_tiet_dot((int)$dot['id'], $boLocChiTiet);
 $danhSachPhongHoc = phong_hoc_danh_sach(true);
 
+$ketQuaGanDay = kiem_ke_danh_sach(['phong_truc_id' => $phongTrucId > 0 ? $phongTrucId : null], 1, 3);
+$dotGanDay = $ketQuaGanDay['danh_sach'] ?? [];
+
 $tieuDeTrang = 'Thực hiện kiểm kê: ' . $dot['ten_dot_kiem_ke'];
 require dirname(__DIR__) . '/app/views/kiem-ke/thuc-hien.php';

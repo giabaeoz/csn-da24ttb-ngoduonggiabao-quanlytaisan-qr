@@ -6,8 +6,6 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
-
 $dsChiTiet = $phieu['chi_tiet'] ?? [];
 $tongThietBi = count($dsChiTiet);
 $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');

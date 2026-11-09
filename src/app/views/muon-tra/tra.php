@@ -1,14 +1,6 @@
 <?php
 /**
- * Giao diện Tiếp nhận Trả tài sản & Báo cáo sự cố (Asset Return View).
- *
- * @var array|null $phieuHienTai Dữ liệu phiếu mượn đang được chọn xử lý
- * @var array      $danhSachChoTra Danh sách các phiếu mượn đang chờ trả tại bàn trực
- * @var array      $phongTrucHienTai Bàn trực của cán bộ đang đăng nhập
- * @var bool       $dangBiKhoaKiemKe Trạng thái khóa kiểm kê của bàn trực
- * @var string     $thongBaoLoi Thông báo lỗi thao tác
- * @var string     $thongBaoLoiTimKiem Thông báo lỗi tra cứu
- * @var string     $tieuDeTrang Tiêu đề trang
+ * Giao diện Tiếp nhận Trả tài sản - Khớp chính xác Trang trả tài sản.pdf
  */
 
 declare(strict_types=1);
@@ -18,8 +10,8 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+$tieuDeTrang = 'Mượn – trả';
 require dirname(__DIR__) . '/layout/dau-trang.php';
-require dirname(__DIR__) . '/layout/menu.php';
 
 $laDangMuon = ($phieuHienTai && ($phieuHienTai['trang_thai'] ?? '') === PHIEU_MUON_DANG_MUON);
 $quaHan = false;
@@ -35,516 +27,392 @@ foreach ($dsChiTiet as $it) {
 }
 ?>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3 border-bottom">
+<!-- Tiêu đề trang & Tabs chuyển đổi -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">📥 Tiếp nhận Trả tài sản & Báo cáo sự cố</h1>
-        <p class="text-secondary small mb-0">
-            Quét mã QR phiếu hoặc tem thiết bị để tra cứu nhanh, kiểm tra tình trạng và ghi nhận nhận trả về bàn trực: 
-            <strong class="text-primary"><?= e($phongTrucHienTai['ten_phong_truc'] ?? 'D6') ?></strong>
-        </p>
+        <h1 class="tieu-de-trang">Mượn – trả tài sản</h1>
     </div>
     <div class="d-flex gap-2">
-        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-outline-primary fw-semibold shadow-sm">
-            📤 Lập phiếu mượn mới
-        </a>
-        <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-outline-secondary fw-semibold shadow-sm">
-            📋 Lịch sử mượn trả
-        </a>
+        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-phu">Mượn</a>
+        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-chinh">Trả</a>
     </div>
 </div>
 
-<!-- Cảnh báo khóa kiểm kê -->
 <?php if ($dangBiKhoaKiemKe): ?>
-<div class="alert alert-danger d-flex align-items-center rounded-3 shadow-sm mb-4" role="alert">
-    <div class="fs-4 me-3">🔒</div>
-    <div>
-        <h6 class="fw-bold mb-1">Bàn trực đang diễn ra đợt kiểm kê tài sản!</h6>
-        <div class="small">
-            Mọi thao tác tiếp nhận trả thiết bị tạm thời bị khóa cho đến khi đợt kiểm kê được chốt hoặc hủy.
-        </div>
-    </div>
+<div class="alert alert-danger mb-4" role="alert">
+    Bàn trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.
 </div>
 <?php endif; ?>
 
-<!-- Thông báo lỗi thao tác -->
 <?php if ($thongBaoLoi !== ''): ?>
-<div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
-    <strong>Lỗi tiếp nhận trả:</strong> <?= e($thongBaoLoi) ?>
+<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <?= e($thongBaoLoi) ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
 </div>
 <?php endif; ?>
 
-<!-- KHUNG TRA CỨU & QUÉT QR -->
-<div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
-    <div class="card-body p-4">
-        <div class="row g-3 align-items-center">
-            <div class="col-12 col-lg-8">
-                <form action="<?= url('muon-tra/tra.php') ?>" method="GET" class="d-flex gap-2" id="formTraCuu">
-                    <div class="input-group input-group-lg flex-grow-1">
-                        <span class="input-group-text bg-light text-muted border-end-0">
-                            🔍
-                        </span>
-                        <input type="text" class="form-control border-start-0 font-monospace fs-6" name="tu_khoa" id="tu_khoa"
-                               placeholder="Quét mã QR tem thiết bị / Quét mã phiếu / Nhập MSSV hoặc Mã TS..." 
-                               value="<?= e($_GET['tu_khoa'] ?? $_GET['ma_phieu'] ?? '') ?>" autocomplete="off" autofocus>
-                    </div>
-                    <button type="submit" class="btn btn-primary fw-semibold px-4">
-                        Tra cứu
-                    </button>
-                    <button type="button" class="btn btn-outline-success fw-semibold px-3" id="btnToggleCamera" onclick="toggleCamera()">
-                        📹 Quét QR
-                    </button>
-                </form>
-                <?php if ($thongBaoLoiTimKiem !== ''): ?>
-                    <div class="text-danger small fw-semibold mt-2">
-                        ⚠️ <?= e($thongBaoLoiTimKiem) ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="col-12 col-lg-4 text-lg-end">
-                <span class="badge bg-light text-dark border p-2 text-start">
-                    💡 Hỗ trợ: Mã QR phiếu, mã QR tem thiết bị, mã TS (MC-0001), hoặc MSSV người mượn.
-                </span>
-            </div>
-        </div>
+<form action="<?= url('muon-tra/tra.php') ?>" method="POST" id="formNhanTra" class="<?= $dangBiKhoaKiemKe ? 'opacity-50 pe-none' : '' ?>">
+    <?= csrf_field() ?>
+    <input type="hidden" name="phieu_muon_id" value="<?= (int)($phieuHienTai['id'] ?? 0) ?>">
 
-        <!-- KHUNG CAMERA QUÉT QR (Dùng thư viện jsQR offline) -->
-        <div id="khuVucCamera" class="d-none text-center mt-3 p-3 bg-dark rounded-4">
-            <div class="position-relative d-inline-block">
-                <video id="videoQuet" playsinline style="max-width: 100%; max-height: 250px; border-radius: 8px;"></video>
-                <canvas id="canvasQuet" class="d-none"></canvas>
-                <div class="position-absolute top-50 start-50 translate-middle border border-2 border-success rounded-3" 
-                     style="width: 180px; height: 180px; pointer-events: none; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);">
+    <div class="row g-4">
+        <!-- CỘT TRÁI: QUÉT QR TRẢ & PHIẾU TRẢ TÀI SẢN -->
+        <div class="col-12 col-lg-5">
+            <!-- Khối: Quét QR thiết bị trả -->
+            <div class="card mb-4">
+                <div class="card-body p-3">
+                    <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị trả</h2>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-12 col-sm-6">
+                            <div class="khung-quet-camera" id="khungVideoContainer">
+                                <video id="videoQuetCamera" playsinline style="display:none;"></video>
+                                <canvas id="canvasQuetCamera" style="display:none;"></canvas>
+                                <div class="overlay-ngam" id="overlayCamera">
+                                    <div class="fw-semibold text-dark mb-1">Khung camera</div>
+                                    <div style="font-size: 11px;">Đưa mã QR thiết bị vào khung</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex flex-column gap-2">
+                            <select id="chonCamera" class="form-select form-select-sm">
+                                <option value="">Chọn camera</option>
+                            </select>
+                            
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="ma_tra_cuu_nhap" 
+                                       placeholder="Mã thiết bị / mã phiếu / mã số" 
+                                       value="<?= e($_GET['tu_khoa'] ?? $_GET['ma_phieu'] ?? '') ?>" autocomplete="off">
+                                <button type="button" class="btn btn-phu" onclick="thucHienTraCuu()">
+                                    Tìm
+                                </button>
+                            </div>
+
+                            <button type="button" class="btn btn-phu btn-sm w-100" id="btnBatTatCamera" onclick="batTatCamera()">
+                                Bật camera
+                            </button>
+                        </div>
+                    </div>
+                    <?php if ($thongBaoLoiTimKiem !== ''): ?>
+                    <div class="loi-truong mt-2"><?= e($thongBaoLoiTimKiem) ?></div>
+                    <?php endif; ?>
                 </div>
             </div>
-            <div class="text-white small mt-2">
-                Hướng camera về phía mã QR trên tem thiết bị hoặc trên phiếu mượn để hệ thống tự động tìm kiếm...
-            </div>
-        </div>
-    </div>
-</div>
 
-<?php if ($phieuHienTai !== null): ?>
-<!-- KHỐI XỬ LÝ NHẬN TRẢ CHO PHIẾU ĐANG CHỌN -->
-<div class="card border-0 shadow-sm rounded-4 bg-white mb-4 border-top border-primary border-4">
-    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2">
-            <h5 class="fw-bold mb-0 text-dark">
-                Phiếu mượn: <span class="font-monospace text-primary"><?= e($phieuHienTai['ma_phieu']) ?></span>
-            </h5>
-            <?php if ($laDangMuon): ?>
-                <span class="badge bg-warning text-dark"><i class="bi bi-clock-history"></i> Đang mượn</span>
-                <?php if ($quaHan): ?>
-                    <span class="badge bg-danger"><i class="bi bi-exclamation-octagon-fill"></i> Quá hạn</span>
-                <?php endif; ?>
-            <?php else: ?>
-                <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Đã trả đủ</span>
-            <?php endif; ?>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$phieuHienTai['id']) ?>" class="btn btn-sm btn-outline-secondary" target="_blank">
-                🔍 Xem chi tiết phiếu
-            </a>
-            <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-sm btn-outline-dark">
-                ✖ Đóng / Chọn phiếu khác
-            </a>
-        </div>
-    </div>
+            <!-- Khối: Phiếu trả tài sản -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="tieu-de-khoi mb-3">Phiếu trả tài sản</h2>
+                    <?php if ($phieuHienTai): ?>
+                        <div class="mb-3">
+                            <div class="fw-semibold text-dark">
+                                <?= e($phieuHienTai['ho_ten_nguoi_muon']) ?> - <?= e($phieuHienTai['ma_so_nguoi_muon']) ?> - <?= e($phieuHienTai['lop_don_vi'] ?? '---') ?>
+                            </div>
+                            <div class="mo-ta-phu">
+                                Phiếu mượn: <?= e($phieuHienTai['ma_phieu_muon']) ?> • Phòng: <?= e($phieuHienTai['ma_phong']) ?>
+                            </div>
+                            <div class="mo-ta-phu">
+                                Trả: <?= date('d/m/Y H:i') ?> • 
+                                <span class="<?= $quaHan ? 'text-danger fw-semibold' : 'text-success' ?>">
+                                    <?= $quaHan ? 'Quá hạn' : 'Trong hạn' ?>
+                                </span>
+                            </div>
+                        </div>
 
-    <div class="card-body p-4">
-        <!-- Thông tin tóm tắt phiếu mượn -->
-        <div class="row g-3 p-3 bg-light rounded-3 mb-4">
-            <div class="col-md-3">
-                <span class="text-muted small d-block">Người mượn:</span>
-                <strong class="text-dark fs-6"><?= e($phieuHienTai['ten_nguoi_muon']) ?></strong>
-                <div class="small text-muted font-monospace">MSSV: <?= e($phieuHienTai['ma_so_truong']) ?></div>
-            </div>
-            <div class="col-md-3">
-                <span class="text-muted small d-block">Phòng học phục vụ:</span>
-                <span class="badge bg-dark font-monospace"><?= e($phieuHienTai['ma_phong']) ?></span>
-                <span class="small text-muted ms-1"><?= e($phieuHienTai['ten_phong']) ?></span>
-            </div>
-            <div class="col-md-3">
-                <span class="text-muted small d-block">Thời gian mượn:</span>
-                <span class="small fw-semibold"><?= dinh_dang_ngay_gio($phieuHienTai['thoi_gian_muon']) ?></span>
-            </div>
-            <div class="col-md-3">
-                <span class="text-muted small d-block">Hạn trả dự kiến:</span>
-                <span class="small fw-bold <?= $quaHan ? 'text-danger' : 'text-dark' ?>">
-                    <?= dinh_dang_ngay_gio($phieuHienTai['han_tra']) ?>
-                    <?= $quaHan ? '<span class="badge bg-danger ms-1">Quá hạn</span>' : '' ?>
-                </span>
-            </div>
-        </div>
+                        <div class="table-responsive mb-2">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Thiết bị nhận trả</th>
+                                        <th class="text-end" style="width: 110px;">Tình trạng</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pvDanhSachNhanTra">
+                                    <!-- Cập nhật qua JS khi tick chọn -->
+                                </tbody>
+                            </table>
+                        </div>
 
-        <?php if ($soChuaTra === 0): ?>
-            <div class="alert alert-success d-flex align-items-center mb-0 rounded-3">
-                <i class="bi bi-check-circle-fill fs-3 me-3 text-success"></i>
-                <div>
-                    <h6 class="fw-bold mb-1">Toàn bộ thiết bị trong phiếu mượn này đã được hoàn trả!</h6>
-                    <div class="small text-muted">Không còn thiết bị nào cần tiếp nhận trả cho phiếu này.</div>
+                        <div class="fw-semibold text-dark text-end" id="pvTongNhan">
+                            Tổng nhận: 0 thiết bị
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-4 text-phu">
+                            Chưa chọn phiếu mượn cần trả. Hãy quét QR hoặc tra cứu ở khung bên trên.
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
-        <?php else: ?>
-            <!-- BIỂU MẪU TIẾP NHẬN TRẢ -->
-            <form action="<?= url('muon-tra/tra.php') ?>" method="POST" id="formTiepNhanTra">
-                <?= csrf_field() ?>
-                <input type="hidden" name="phieu_muon_id" value="<?= (int)$phieuHienTai['id'] ?>">
+        </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold text-dark mb-0">
-                        Danh sách thiết bị cần hoàn trả (Còn lại <?= $soChuaTra ?> / <?= count($dsChiTiet) ?>)
-                    </h6>
-                    <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-outline-secondary" onclick="chonTatCa(true)">Chọn tất cả</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="chonTatCa(false)">Bỏ chọn</button>
+        <!-- CỘT PHẢI: THÔNG TIN PHIẾU MƯỢN & THIẾT BỊ NHẬN TRẢ -->
+        <div class="col-12 col-lg-7">
+            <!-- Khối: Thông tin phiếu mượn -->
+            <div class="card mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="tieu-de-khoi mb-0">Thông tin phiếu mượn</h2>
+                        <?php if ($phieuHienTai): ?>
+                        <span class="font-monospace fw-semibold text-dark"><?= e($phieuHienTai['ma_phieu_muon']) ?></span>
+                        <?php endif; ?>
                     </div>
-                </div>
 
-                <div class="table-responsive border rounded-3 mb-4">
-                    <table class="table table-hover align-middle mb-0" id="bangThietBiTra">
-                        <thead class="table-light small">
+                    <?php if ($phieuHienTai): ?>
+                    <div class="row g-2 mb-2">
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label">Mã số</label>
+                            <input type="text" class="form-control" value="<?= e($phieuHienTai['ma_so_nguoi_muon']) ?>" readonly>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" value="<?= e($phieuHienTai['ho_ten_nguoi_muon']) ?>" readonly>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" value="<?= e($phieuHienTai['so_dien_thoai'] ?? '---') ?>" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label">Lớp / đơn vị</label>
+                            <input type="text" class="form-control" value="<?= e($phieuHienTai['lop_don_vi'] ?? '---') ?>" readonly>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label">Phòng đã mượn</label>
+                            <input type="text" class="form-control" value="<?= e($phieuHienTai['ma_phong']) ?>" readonly>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label">Hạn trả</label>
+                            <input type="text" class="form-control <?= $quaHan ? 'is-invalid text-danger' : '' ?>" 
+                                   value="<?= date('d/m/Y - H:i', strtotime($phieuHienTai['han_tra'])) ?>" readonly>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="text-center py-4 text-phu">
+                        Vui lòng quét tem thiết bị hoặc nhập mã phiếu để nạp thông tin.
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Khối: Thiết bị nhận trả — đã quét -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="tieu-de-khoi mb-0">Thiết bị nhận trả — đã quét (<span id="demNhanTra"><?= $soChuaTra ?></span>)</h2>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <th style="width: 45px;" class="text-center">
-                                    <input type="checkbox" class="form-check-input" id="checkAll" onchange="chonTatCa(this.checked)" checked>
-                                </th>
-                                <th style="width: 50px;" class="text-center">STT</th>
-                                <th>Thiết bị / Tem QR</th>
-                                <th>Loại & Hãng/Model</th>
-                                <th>Tình trạng mượn</th>
-                                <th style="width: 220px;">Tình trạng khi trả</th>
-                                <th>Ghi chú / Mô tả hư hỏng</th>
+                                <th style="width: 50px;">Nhận</th>
+                                <th>Mã / tên thiết bị</th>
+                                <th style="width: 170px;">Tình trạng khi nhận</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($dsChiTiet as $idx => $ctm): ?>
-                                <?php 
-                                    $daTra = !empty($ctm['thoi_gian_tra']);
-                                    $ctmId = (int)$ctm['id'];
-                                ?>
-                                <tr class="<?= $daTra ? 'table-light text-muted opacity-75' : 'hang-cho-tra' ?>" id="hang_<?= $ctmId ?>">
-                                    <td class="text-center">
-                                        <?php if ($daTra): ?>
-                                            <span class="text-success fs-5">✓</span>
-                                        <?php else: ?>
-                                            <input type="checkbox" class="form-check-input check-thiet-bi" 
-                                                   name="chi_tiet_id[]" value="<?= $ctmId ?>" 
-                                                   id="cb_<?= $ctmId ?>" onchange="capNhatDong(<?= $ctmId ?>)" checked>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="text-center font-monospace small"><?= $idx + 1 ?></td>
-                                    <td>
-                                        <div class="fw-bold text-dark"><?= e($ctm['ten_tai_san']) ?></div>
-                                        <div class="small">
-                                            <span class="badge bg-secondary font-monospace"><?= e($ctm['ma_tai_san']) ?></span>
-                                            <code class="text-dark bg-light px-2 py-0 rounded"><?= e($ctm['ma_qr']) ?></code>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small text-muted"><?= e($ctm['ten_loai']) ?></div>
-                                        <?php if (!empty($ctm['hang_san_xuat']) || !empty($ctm['model'])): ?>
-                                            <span class="badge bg-light text-dark border font-monospace small">
-                                                <?= e($ctm['hang_san_xuat'] ?? '') ?> <?= !empty($ctm['model']) ? '/ ' . e($ctm['model']) : '' ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                            <?= ($ctm['tinh_trang_khi_muon'] ?? 'TOT') === 'TOT' ? 'Tốt' : 'Hư hỏng' ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($daTra): ?>
-                                            <span class="badge bg-success"><i class="bi bi-check2"></i> Đã trả</span>
-                                            <div class="small text-muted mt-1"><?= dinh_dang_ngay_gio($ctm['thoi_gian_tra']) ?></div>
-                                        <?php else: ?>
-                                            <select class="form-select form-select-sm" name="tinh_trang[<?= $ctmId ?>]" 
-                                                    id="tinh_trang_<?= $ctmId ?>" onchange="doiTinhTrang(<?= $ctmId ?>)">
-                                                <option value="TOT" selected>✅ Tốt / Nguyên vẹn</option>
-                                                <option value="HU_HONG">⚠️ Hư hỏng / Sự cố</option>
-                                            </select>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($daTra): ?>
-                                            <div class="small text-muted"><?= e($ctm['ghi_chu_tra'] ?? '---') ?></div>
-                                            <div class="small text-secondary">Cán bộ nhận: <?= e($ctm['ten_nhan_vien_nhan'] ?? '---') ?></div>
-                                        <?php else: ?>
-                                            <input type="text" class="form-control form-control-sm" 
-                                                   name="ghi_chu[<?= $ctmId ?>]" id="ghi_chu_<?= $ctmId ?>" 
-                                                   placeholder="Ghi chú thêm...">
-                                            <div class="text-danger small fw-semibold mt-1 d-none" id="loi_ghi_chu_<?= $ctmId ?>">
-                                                * Bắt buộc ghi rõ mô tả hư hỏng
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
+                            <?php if (empty($dsChiTiet)): ?>
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-phu">
+                                    Chưa có thiết bị nào.
+                                </td>
+                            </tr>
+                            <?php else: ?>
+                            <?php foreach ($dsChiTiet as $it): 
+                                $daTra = !empty($it['thoi_gian_tra']);
+                            ?>
+                            <tr class="<?= $daTra ? 'opacity-50 bg-light' : '' ?>">
+                                <td>
+                                    <?php if (!$daTra): ?>
+                                    <input type="checkbox" class="form-check-input check-nhan-tra" 
+                                           name="chi_tiet_id[]" value="<?= (int)$it['id'] ?>" 
+                                           data-ma="<?= e($it['ma_tai_san']) ?>"
+                                           data-ten="<?= e($it['ten_tai_san']) ?>"
+                                           onchange="capNhatPreviewTra()" checked>
+                                    <?php else: ?>
+                                    <span class="text-success fw-bold">✓</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark"><?= e($it['ma_tai_san']) ?> — <?= e($it['ten_tai_san']) ?></div>
+                                    <div class="mo-ta-phu"><?= e($phieuHienTai['ma_phong']) ?></div>
+                                </td>
+                                <td>
+                                    <?php if (!$daTra): ?>
+                                    <select name="tinh_trang[<?= (int)$it['id'] ?>]" class="form-select form-select-sm sel-tinh-trang" 
+                                            data-id="<?= (int)$it['id'] ?>" onchange="capNhatPreviewTra()">
+                                        <option value="TOT" selected>Bình thường</option>
+                                        <option value="HU_HONG">Hư hỏng</option>
+                                    </select>
+                                    <?php else: ?>
+                                    <span class="text-phu small">Đã trả (<?= dinh_dang_ngay_gio($it['thoi_gian_tra']) ?>)</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted small">
-                        Đang chọn nhận trả: <strong class="text-primary" id="dem_so_chon"><?= $soChuaTra ?></strong> / <?= $soChuaTra ?> thiết bị chưa trả.
-                    </span>
-                    <button type="submit" class="btn btn-primary btn-lg fw-semibold px-4 shadow-sm" id="btnXacNhanTra">
-                        📥 Xác nhận tiếp nhận trả (<span id="dem_nut_tra"><?= $soChuaTra ?></span>)
-                    </button>
+                <div class="p-3 border-top bg-white">
+                    <label class="form-label">Ghi chú hư hỏng / thiếu phụ kiện (nếu có)</label>
+                    <input type="text" class="form-control" name="ghi_chu_chung" id="ghi_chu_chung" 
+                           placeholder="Nhập ghi chú" autocomplete="off">
                 </div>
-            </form>
-        <?php endif; ?>
-    </div>
-</div>
-<?php endif; ?>
+            </div>
 
-<!-- DANH SÁCH CÁC PHIẾU ĐANG CHỜ TRẢ TẠI BÀN TRỰC -->
-<div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
-    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0 text-dark">
-            📋 Các phiếu mượn đang chờ trả tại bàn trực: <strong class="text-primary"><?= e($phongTrucHienTai['ten_phong_truc'] ?? 'D6') ?></strong>
-        </h5>
-        <span class="badge bg-secondary rounded-pill"><?= count($danhSachChoTra) ?> phiếu</span>
+            <!-- Nút hành động chân trang -->
+            <div class="d-flex justify-content-end gap-2">
+                <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">Hủy</a>
+                <button type="submit" class="btn btn-chinh" id="btnXacNhanTra" <?= (!$phieuHienTai || $soChuaTra === 0) ? 'disabled' : '' ?>>
+                    Xác nhận trả & lưu phiếu
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light small">
-                <tr>
-                    <th class="ps-3" style="width: 140px;">Mã phiếu</th>
-                    <th>Người mượn</th>
-                    <th>Phòng học</th>
-                    <th>Thời gian mượn</th>
-                    <th>Hạn trả</th>
-                    <th class="text-center">Chưa trả / Tổng</th>
-                    <th class="text-end pe-3" style="width: 140px;">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($danhSachChoTra)): ?>
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            🎉 Hiện tại không có phiếu mượn nào đang chờ trả tại bàn trực này.
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($danhSachChoTra as $cho): ?>
-                        <tr class="<?= $cho['la_qua_han'] ? 'table-warning' : '' ?>">
-                            <td class="ps-3">
-                                <a href="<?= url('muon-tra/tra.php?id=' . (int)$cho['id']) ?>" class="font-monospace fw-bold text-decoration-none text-primary">
-                                    <?= e($cho['ma_phieu']) ?>
-                                </a>
-                            </td>
-                            <td>
-                                <div class="fw-bold text-dark"><?= e($cho['ten_nguoi_muon']) ?></div>
-                                <div class="small text-muted font-monospace">MSSV: <?= e($cho['ma_so_truong']) ?></div>
-                            </td>
-                            <td>
-                                <span class="badge bg-light text-dark border"><?= e($cho['ma_phong']) ?></span>
-                                <div class="small text-muted text-truncate" style="max-width: 130px;"><?= e($cho['ten_phong']) ?></div>
-                            </td>
-                            <td><?= dinh_dang_ngay_gio($cho['thoi_gian_muon']) ?></td>
-                            <td>
-                                <span class="<?= $cho['la_qua_han'] ? 'text-danger fw-bold' : '' ?>">
-                                    <?= dinh_dang_ngay_gio($cho['han_tra']) ?>
-                                    <?php if ($cho['la_qua_han']): ?>
-                                        <span class="badge bg-danger small ms-1">Quá hạn</span>
-                                    <?php endif; ?>
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-warning text-dark fs-6">
-                                    <?= $cho['so_chua_tra'] ?> / <?= $cho['tong_so_thiet_bi'] ?>
-                                </span>
-                            </td>
-                            <td class="text-end pe-3">
-                                <a href="<?= url('muon-tra/tra.php?id=' . (int)$cho['id']) ?>" class="btn btn-sm btn-primary fw-semibold shadow-sm">
-                                    📥 Nhận trả
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+</form>
 
-<!-- Nạp thư viện jsQR cục bộ để quét mã QR bằng camera -->
 <script src="<?= url('assets/vendor/jsqr/jsQR.js') ?>"></script>
-
 <script>
-let videoStream = null;
-let cameraRunning = false;
-
-// 1. Quét mã QR bằng Camera qua jsQR
-function toggleCamera() {
-    const khuVuc = document.getElementById('khuVucCamera');
-    const btn = document.getElementById('btnToggleCamera');
-    const video = document.getElementById('videoQuet');
-    const canvas = document.getElementById('canvasQuet');
-    const ctx = canvas.getContext('2d');
-
-    if (!cameraRunning) {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert('Trình duyệt của bạn không hỗ trợ truy cập camera.');
-            return;
-        }
-
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(function(stream) {
-                videoStream = stream;
-                video.srcObject = stream;
-                video.setAttribute('playsinline', true);
-                video.play();
-                cameraRunning = true;
-                khuVuc.classList.remove('d-none');
-                btn.innerHTML = '⏹ Tắt Camera';
-                btn.classList.replace('btn-outline-success', 'btn-outline-danger');
-                requestAnimationFrame(tickQuetQr);
-            })
-            .catch(function(err) {
-                alert('Không thể mở camera: ' + err.message);
-            });
-    } else {
-        tatCamera();
-    }
+function thucHienTraCuu() {
+    const val = document.getElementById('ma_tra_cuu_nhap').value.trim();
+    if (!val) return;
+    window.location.href = '<?= url("muon-tra/tra.php") ?>?tu_khoa=' + encodeURIComponent(val);
 }
 
-function tatCamera() {
-    const khuVuc = document.getElementById('khuVucCamera');
-    const btn = document.getElementById('btnToggleCamera');
-    const video = document.getElementById('videoQuet');
-
-    if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-        videoStream = null;
+document.getElementById('ma_tra_cuu_nhap')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        thucHienTraCuu();
     }
-    video.srcObject = null;
-    cameraRunning = false;
-    khuVuc.classList.add('d-none');
-    btn.innerHTML = '📹 Quét QR';
-    btn.classList.replace('btn-outline-danger', 'btn-outline-success');
+});
+
+function capNhatPreviewTra() {
+    const checkedItems = document.querySelectorAll('.check-nhan-tra:checked');
+    const dem = checkedItems.length;
+    document.getElementById('demNhanTra').textContent = dem;
+
+    const pvTbody = document.getElementById('pvDanhSachNhanTra');
+    if (!pvTbody) return;
+
+    if (dem === 0) {
+        pvTbody.innerHTML = '<tr><td colspan="2" class="text-center text-phu py-2">Chưa chọn thiết bị nào</td></tr>';
+        document.getElementById('pvTongNhan').textContent = 'Tổng nhận: 0 thiết bị';
+        document.getElementById('btnXacNhanTra').disabled = true;
+        return;
+    }
+
+    pvTbody.innerHTML = '';
+    checkedItems.forEach(cb => {
+        const id = cb.value;
+        const ma = cb.getAttribute('data-ma');
+        const ten = cb.getAttribute('data-ten');
+        const sel = document.querySelector(`.sel-tinh-trang[data-id="${id}"]`);
+        const ttText = (sel && sel.value === 'HU_HONG') ? 'Hỏng' : 'Bình thường';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(ma)} — ${escapeHtml(ten)}</td><td class="text-end text-phu">${ttText}</td>`;
+        pvTbody.appendChild(tr);
+    });
+
+    const tongChuaTra = <?= (int)$soChuaTra ?>;
+    const trangThaiDu = (dem === tongChuaTra && tongChuaTra > 0) ? ' • Đã trả đủ' : '';
+    document.getElementById('pvTongNhan').textContent = `Tổng nhận: ${dem} thiết bị${trangThaiDu}`;
+    document.getElementById('btnXacNhanTra').disabled = false;
 }
 
-function tickQuetQr() {
-    if (!cameraRunning) return;
+// Camera scanner
+let streamCamera = null;
+let dangQuet = false;
+const videoEl = document.getElementById('videoQuetCamera');
+const canvasEl = document.getElementById('canvasQuetCamera');
+const overlayEl = document.getElementById('overlayCamera');
+const btnCamera = document.getElementById('btnBatTatCamera');
+const selCamera = document.getElementById('chonCamera');
 
-    const video = document.getElementById('videoQuet');
-    const canvas = document.getElementById('canvasQuet');
-    const ctx = canvas.getContext('2d');
-
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.height = video.videoHeight;
-        canvas.width = video.videoWidth;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'dontInvert',
+async function khoiTaoCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        selCamera.innerHTML = '<option value="">Chọn camera</option>';
+        videoDevices.forEach((d, idx) => {
+            const opt = document.createElement('option');
+            opt.value = d.deviceId;
+            opt.textContent = d.label || `Camera ${idx + 1}`;
+            selCamera.appendChild(opt);
         });
+    } catch(e) {}
+}
+khoiTaoCamera();
+
+async function batTatCamera() {
+    if (dangQuet) {
+        dungCamera();
+    } else {
+        await batCamera();
+    }
+}
+
+async function batCamera() {
+    const devId = selCamera.value;
+    const constraints = {
+        video: devId ? { deviceId: { exact: devId } } : { facingMode: 'environment' }
+    };
+    try {
+        streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
+        videoEl.srcObject = streamCamera;
+        videoEl.style.display = 'block';
+        overlayEl.style.display = 'none';
+        await videoEl.play();
+        dangQuet = true;
+        btnCamera.textContent = 'Tắt camera';
+        btnCamera.classList.replace('btn-phu', 'btn-danger');
+        requestAnimationFrame(quetVongLap);
+    } catch(e) {
+        alert('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+    }
+}
+
+function dungCamera() {
+    if (streamCamera) {
+        streamCamera.getTracks().forEach(t => t.stop());
+        streamCamera = null;
+    }
+    dangQuet = false;
+    videoEl.style.display = 'none';
+    overlayEl.style.display = 'flex';
+    btnCamera.textContent = 'Bật camera';
+    btnCamera.classList.replace('btn-danger', 'btn-phu');
+}
+
+function quetVongLap() {
+    if (!dangQuet) return;
+    if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+        canvasEl.width = videoEl.videoWidth;
+        canvasEl.height = videoEl.videoHeight;
+        const ctx = canvasEl.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+        const imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
 
         if (code && code.data) {
-            const qrText = code.data.trim();
-            tatCamera();
-            document.getElementById('tu_khoa').value = qrText;
-            document.getElementById('formTraCuu').submit();
+            dungCamera();
+            window.location.href = '<?= url("muon-tra/tra.php") ?>?tu_khoa=' + encodeURIComponent(code.data);
             return;
         }
     }
-    requestAnimationFrame(tickQuetQr);
+    requestAnimationFrame(quetVongLap);
 }
 
-// 2. Xử lý đổi tình trạng thiết bị khi nhận trả (Tốt vs Hư hỏng)
-function doiTinhTrang(id) {
-    const select = document.getElementById('tinh_trang_' + id);
-    const inputGhiChu = document.getElementById('ghi_chu_' + id);
-    const loiGhiChu = document.getElementById('loi_ghi_chu_' + id);
-
-    if (select.value === 'HU_HONG') {
-        inputGhiChu.classList.add('border-danger', 'bg-warning-subtle');
-        inputGhiChu.placeholder = 'Ghi rõ chi tiết hư hỏng / sự cố thiết bị...';
-        inputGhiChu.focus();
-        loiGhiChu.classList.remove('d-none');
-    } else {
-        inputGhiChu.classList.remove('border-danger', 'bg-warning-subtle');
-        inputGhiChu.placeholder = 'Ghi chú thêm...';
-        loiGhiChu.classList.add('d-none');
-    }
-}
-
-// 3. Chọn tất cả hoặc bỏ chọn các thiết bị cần trả
-function chonTatCa(chon) {
-    const checkboxes = document.querySelectorAll('.check-thiet-bi');
-    checkboxes.forEach(cb => {
-        cb.checked = chon;
-        capNhatDong(cb.value);
-    });
-    capNhatDem();
-}
-
-function capNhatDong(id) {
-    const cb = document.getElementById('cb_' + id);
-    const tr = document.getElementById('hang_' + id);
-    const select = document.getElementById('tinh_trang_' + id);
-    const inputGhiChu = document.getElementById('ghi_chu_' + id);
-
-    if (cb && tr) {
-        if (cb.checked) {
-            tr.classList.remove('opacity-50');
-            select.disabled = false;
-            inputGhiChu.disabled = false;
-        } else {
-            tr.classList.add('opacity-50');
-            select.disabled = true;
-            inputGhiChu.disabled = true;
-        }
-    }
-    capNhatDem();
-}
-
-function capNhatDem() {
-    const count = document.querySelectorAll('.check-thiet-bi:checked').length;
-    const demSoChon = document.getElementById('dem_so_chon');
-    const demNutTra = document.getElementById('dem_nut_tra');
-    const btn = document.getElementById('btnXacNhanTra');
-
-    if (demSoChon) demSoChon.textContent = count;
-    if (demNutTra) demNutTra.textContent = count;
-    if (btn) btn.disabled = (count === 0);
-}
-
-// 4. Kiểm tra trước khi submit form
-const formTra = document.getElementById('formTiepNhanTra');
-if (formTra) {
-    formTra.addEventListener('submit', function(e) {
-        const checked = document.querySelectorAll('.check-thiet-bi:checked');
-        if (checked.length === 0) {
-            e.preventDefault();
-            alert('Vui lòng tích chọn ít nhất một thiết bị cần tiếp nhận trả.');
-            return;
-        }
-
-        let coLoi = false;
-        checked.forEach(cb => {
-            const id = cb.value;
-            const select = document.getElementById('tinh_trang_' + id);
-            const inputGhiChu = document.getElementById('ghi_chu_' + id);
-            if (select && select.value === 'HU_HONG') {
-                if (!inputGhiChu || inputGhiChu.value.trim() === '') {
-                    coLoi = true;
-                    inputGhiChu.focus();
-                    inputGhiChu.classList.add('is-invalid');
-                }
-            }
-        });
-
-        if (coLoi) {
-            e.preventDefault();
-            alert('Thiết bị đánh dấu Hư hỏng bắt buộc phải có mô tả chi tiết hư hỏng!');
-            return;
-        }
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
     });
 }
+
+// Khởi chạy preview ban đầu
+capNhatPreviewTra();
 </script>
 
-<?php
-require dirname(__DIR__) . '/layout/chan-trang.php';
+<?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
