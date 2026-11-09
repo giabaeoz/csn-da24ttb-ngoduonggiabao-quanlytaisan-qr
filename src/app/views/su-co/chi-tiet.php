@@ -339,3 +339,4 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
 <?php endif; ?>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
+

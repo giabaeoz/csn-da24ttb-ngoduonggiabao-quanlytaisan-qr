@@ -253,3 +253,4 @@ require dirname(__DIR__) . '/layout/menu.php';
 </div>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
+

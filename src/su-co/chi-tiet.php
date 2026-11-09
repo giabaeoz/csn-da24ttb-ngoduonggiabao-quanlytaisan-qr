@@ -58,3 +58,4 @@ $danhSachPhongHoc = phong_hoc_danh_sach(true);
 
 $tieuDeTrang = 'Chi tiết sự cố: ' . $suCo['ma_su_co'];
 require dirname(__DIR__) . '/app/views/su-co/chi-tiet.php';
+

@@ -316,3 +316,4 @@ if ($soDat !== $tongBai) {
     exit(1);
 }
 exit(0);
+

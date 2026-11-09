@@ -42,3 +42,4 @@ $danhSachPhongTruc = phong_truc_danh_sach(true);
 
 $tieuDeTrang = 'Quản lý sự cố tài sản & bảo trì';
 require dirname(__DIR__) . '/app/views/su-co/danh-sach.php';
+

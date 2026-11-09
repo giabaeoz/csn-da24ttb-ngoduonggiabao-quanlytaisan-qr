@@ -82,6 +82,7 @@ $trangCanKiemTra = [
     '/su-co/index.php',
     '/su-co/bao-cao.php',
     '/su-co/chi-tiet.php?id=' . $scId,
+    '/thong-ke/index.php',
 ];
 
 $loi = 0;

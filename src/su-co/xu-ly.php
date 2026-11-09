@@ -59,3 +59,4 @@ if ($veTrang === 'danh_sach') {
     chuyen_huong('su-co/index.php');
 }
 chuyen_huong('su-co/chi-tiet.php?id=' . $suCoId);
+

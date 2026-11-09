@@ -57,3 +57,4 @@ if ($phongTrucId > 0 && $nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN) {
 
 $tieuDeTrang = 'Báo cáo sự cố tài sản mới';
 require dirname(__DIR__) . '/app/views/su-co/form.php';
+
