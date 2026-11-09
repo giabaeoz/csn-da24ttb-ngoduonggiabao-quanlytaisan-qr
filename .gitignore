@@ -1,2 +1,8 @@
 /config.local.php
 /src/config.local.php
+/src/app/config/config.local.php
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
