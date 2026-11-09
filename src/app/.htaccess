@@ -1,2 +1,3 @@
 # Chặn toàn bộ truy cập trực tiếp từ trình duyệt vào thư mục app
 Require all denied
+

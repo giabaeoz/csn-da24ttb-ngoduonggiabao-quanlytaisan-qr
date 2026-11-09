@@ -277,3 +277,4 @@ Sự cố tài sản sinh ra từ hai nguồn:
    - *Giải pháp:* Không đọc `phong_truc_id` từ session khi thực thi các nghiệp vụ ghi. Mọi service đọc lại `phong_truc_id` và `dang_hoat_dong` trực tiếp từ bảng `nhan_vien` bên trong Transaction.
 4. **Đồng bộ thời gian:**
    - Luôn sử dụng hàm `NOW()` của MySQL hoặc lấy thời gian hiện tại từ DB để tính toán hạn trả và thời gian mượn/trả, tránh chênh lệch giữa giờ PHP và giờ MySQL.
+
