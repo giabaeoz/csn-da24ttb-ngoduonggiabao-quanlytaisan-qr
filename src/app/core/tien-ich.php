@@ -42,6 +42,9 @@ function url(string $duongDan = ''): string {
  * @param string $duongDan URL cần chuyển hướng tới
  */
 function chuyen_huong(string $duongDan): void {
+    if (!preg_match('~^https?://~i', $duongDan) && !str_starts_with($duongDan, '/')) {
+        $duongDan = url($duongDan);
+    }
     if (!headers_sent()) {
         header('Location: ' . $duongDan);
     } else {
@@ -84,6 +87,13 @@ function sinh_ma(string $tienTo, int $doDaiNgauNhien = 8): string {
 }
 
 /**
+ * Bí danh tiện lợi cho sinh_ma.
+ */
+function sinh_ma_nghiep_vu(string $tienTo, int $doDaiNgauNhien = 8): string {
+    return sinh_ma($tienTo, $doDaiNgauNhien);
+}
+
+/**
  * Định dạng chuỗi ngày giờ từ MySQL sang định dạng hiển thị tiếng Việt.
  *
  * @param string|null $chuoiNgayGio Chuỗi datetime (Y-m-d H:i:s)
@@ -111,4 +121,19 @@ function dinh_dang_ngay_gio(?string $chuoiNgayGio, string $dinhDang = 'd/m/Y H:i
 function dinh_dang_ngay(?string $chuoiNgay, string $dinhDang = 'd/m/Y'): string {
     return dinh_dang_ngay_gio($chuoiNgay, $dinhDang);
 }
+
+/**
+ * Bí danh tiện lợi cho dinh_dang_ngay_gio (hỗ trợ view ngắn gọn).
+ */
+function f_ngay_gio(?string $chuoiNgayGio, string $dinhDang = 'd/m/Y H:i'): string {
+    return dinh_dang_ngay_gio($chuoiNgayGio, $dinhDang);
+}
+
+/**
+ * Bí danh tiện lợi cho dinh_dang_ngay.
+ */
+function f_ngay(?string $chuoiNgay, string $dinhDang = 'd/m/Y'): string {
+    return dinh_dang_ngay($chuoiNgay, $dinhDang);
+}
+
 

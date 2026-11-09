@@ -122,3 +122,4 @@ class MayQuetQr {
         this.rafId = requestAnimationFrame(() => this._quetKhungHinh());
     }
 }
+

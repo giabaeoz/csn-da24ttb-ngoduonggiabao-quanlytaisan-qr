@@ -38,8 +38,8 @@ foreach ($dsChiTiet as $item) {
         <div class="col-md-7">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="/tong-quan.php" class="text-decoration-none">Tổng quan</a></li>
-                    <li class="breadcrumb-item"><a href="/muon-tra/" class="text-decoration-none">Mượn - Trả tài sản</a></li>
+                    <li class="breadcrumb-item"><a href="<?= url('tong-quan.php') ?>" class="text-decoration-none">Tổng quan</a></li>
+                    <li class="breadcrumb-item"><a href="<?= url('muon-tra/index.php') ?>" class="text-decoration-none">Mượn - Trả tài sản</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><?= e($phieu['ma_phieu'] ?? '') ?></li>
                 </ol>
             </nav>
@@ -56,7 +56,7 @@ foreach ($dsChiTiet as $item) {
             </h1>
         </div>
         <div class="col-md-5 text-md-end mt-2 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
-            <a href="/muon-tra/" class="btn btn-outline-secondary">
+            <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Quay lại
             </a>
             <?php if (!empty($dsChiTiet)): ?>
@@ -68,7 +68,7 @@ foreach ($dsChiTiet as $item) {
                 <i class="bi bi-printer"></i> In phiếu mượn
             </button>
             <?php if ($chuaTraCount > 0 && co_quyen('nghiep_vu_muon_tra')): ?>
-                <a href="/muon-tra/tra.php?ma_phieu=<?= urlencode((string)$phieu['ma_phieu']) ?>" class="btn btn-primary">
+                <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode((string)$phieu['ma_phieu'])) ?>" class="btn btn-primary">
                     <i class="bi bi-arrow-return-left"></i> Nhận trả thiết bị (<?= $chuaTraCount ?>)
                 </a>
             <?php endif; ?>

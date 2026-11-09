@@ -9,6 +9,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/app/core/khoi-dong.php';
 require_once dirname(__DIR__) . '/app/services/tai-san-service.php';
 require_once dirname(__DIR__) . '/app/services/muon-tra-service.php';
+require_once dirname(__DIR__) . '/app/services/dieu-chuyen-service.php';
 require_once dirname(__DIR__) . '/app/services/danh-muc-service.php';
 
 yeu_cau_quyen('xem_danh_sach_tai_san');
@@ -50,7 +51,19 @@ if ($phieu !== null) {
     ]);
 }
 
-// 3. Kiểm tra xem có phải mã phòng học (phong_hoc)
+// 3. Kiểm tra xem có phải mã phiếu điều chuyển (DC-...)
+if (str_starts_with($maQr, 'DC-')) {
+    $phieuDc = dieu_chuyen_tim_theo_ma($maQr);
+    if ($phieuDc !== null) {
+        phan_hoi_json([
+            'thanh_cong' => true,
+            'loai'       => 'DIEU_CHUYEN',
+            'du_lieu'    => $phieuDc,
+        ]);
+    }
+}
+
+// 4. Kiểm tra xem có phải mã phòng học (phong_hoc)
 $db = db();
 $stmtPh = $db->prepare("SELECT * FROM phong_hoc WHERE ma_phong = ? LIMIT 1");
 $stmtPh->bind_param('s', $maQr);
@@ -70,3 +83,4 @@ phan_hoi_json([
     'thanh_cong' => false,
     'loi'        => "Không tìm thấy dữ liệu khớp với mã QR '$maQr'.",
 ], 404);
+
