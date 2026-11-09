@@ -19,3 +19,4 @@ if ($phieu === null) {
 
 $tieuDeTrang = 'Chi tiết phiếu mượn: ' . ($phieu['ma_phieu'] ?? '');
 require dirname(__DIR__) . '/app/views/muon-tra/chi-tiet.php';
+

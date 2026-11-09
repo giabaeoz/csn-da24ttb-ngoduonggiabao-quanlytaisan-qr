@@ -544,3 +544,404 @@ function muon_tim_theo_id(int $id): ?array {
 
     return $phieu;
 }
+
+/**
+ * Tra cứu phiếu mượn đang hoạt động (chưa trả đủ) theo từ khóa bất kỳ:
+ *  - Mã phiếu mượn (PM-...)
+ *  - Mã QR của tem thiết bị đang mượn (QR-...)
+ *  - Mã tài sản của thiết bị đang mượn (MC-..., MT-...)
+ *  - Mã số trường của người mượn (MSSV / MSGV)
+ *
+ * @param string $tuKhoa Từ khóa tra cứu
+ * @param int|null $phongTrucId Giới hạn trong phạm vi bàn trực (nếu có)
+ * @return array|null Trả về thông tin phiếu mượn kèm chi tiết thiết bị, hoặc null nếu không tìm thấy
+ */
+function tra_tim_phieu_theo_tu_khoa(string $tuKhoa, ?int $phongTrucId = null): ?array {
+    $db = db();
+    $tuKhoa = trim($tuKhoa);
+    if ($tuKhoa === '') {
+        return null;
+    }
+
+    $phieuId = 0;
+
+    // 1. Tìm theo mã phiếu mượn chính xác
+    $sql1 = "SELECT id FROM phieu_muon WHERE ma_phieu_muon = ? AND trang_thai = ?";
+    $params1 = [$tuKhoa, PHIEU_MUON_DANG_MUON];
+    $types1 = 'ss';
+    if ($phongTrucId !== null && $phongTrucId > 0) {
+        $sql1 .= " AND phong_truc_id = ?";
+        $params1[] = $phongTrucId;
+        $types1 .= 'i';
+    }
+    $sql1 .= " LIMIT 1";
+
+    $stmt1 = $db->prepare($sql1);
+    $stmt1->bind_param($types1, ...$params1);
+    $stmt1->execute();
+    $res1 = $stmt1->get_result()->fetch_assoc();
+    $stmt1->close();
+
+    if ($res1) {
+        $phieuId = (int)$res1['id'];
+    }
+
+    // 2. Tìm theo mã QR của thiết bị đang được mượn
+    if ($phieuId === 0) {
+        $sql2 = "SELECT pm.id 
+                 FROM phieu_muon pm
+                 JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
+                 JOIN tai_san ts ON ctm.tai_san_id = ts.id
+                 WHERE ts.ma_qr = ? AND ctm.thoi_gian_tra IS NULL AND pm.trang_thai = ?";
+        $params2 = [$tuKhoa, PHIEU_MUON_DANG_MUON];
+        $types2 = 'ss';
+        if ($phongTrucId !== null && $phongTrucId > 0) {
+            $sql2 .= " AND pm.phong_truc_id = ?";
+            $params2[] = $phongTrucId;
+            $types2 .= 'i';
+        }
+        $sql2 .= " ORDER BY pm.id DESC LIMIT 1";
+
+        $stmt2 = $db->prepare($sql2);
+        $stmt2->bind_param($types2, ...$params2);
+        $stmt2->execute();
+        $res2 = $stmt2->get_result()->fetch_assoc();
+        $stmt2->close();
+
+        if ($res2) {
+            $phieuId = (int)$res2['id'];
+        }
+    }
+
+    // 3. Tìm theo mã tài sản (Mã thiết bị) đang được mượn
+    if ($phieuId === 0) {
+        $sql3 = "SELECT pm.id 
+                 FROM phieu_muon pm
+                 JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
+                 JOIN tai_san ts ON ctm.tai_san_id = ts.id
+                 WHERE ts.ma_tai_san = ? AND ctm.thoi_gian_tra IS NULL AND pm.trang_thai = ?";
+        $params3 = [$tuKhoa, PHIEU_MUON_DANG_MUON];
+        $types3 = 'ss';
+        if ($phongTrucId !== null && $phongTrucId > 0) {
+            $sql3 .= " AND pm.phong_truc_id = ?";
+            $params3[] = $phongTrucId;
+            $types3 .= 'i';
+        }
+        $sql3 .= " ORDER BY pm.id DESC LIMIT 1";
+
+        $stmt3 = $db->prepare($sql3);
+        $stmt3->bind_param($types3, ...$params3);
+        $stmt3->execute();
+        $res3 = $stmt3->get_result()->fetch_assoc();
+        $stmt3->close();
+
+        if ($res3) {
+            $phieuId = (int)$res3['id'];
+        }
+    }
+
+    // 4. Tìm theo mã số trường (MSSV / MSGV) của người mượn
+    if ($phieuId === 0) {
+        $sql4 = "SELECT pm.id 
+                 FROM phieu_muon pm
+                 JOIN nguoi_muon nm ON pm.nguoi_muon_id = nm.id
+                 WHERE nm.ma_so_truong = ? AND pm.trang_thai = ?";
+        $params4 = [$tuKhoa, PHIEU_MUON_DANG_MUON];
+        $types4 = 'ss';
+        if ($phongTrucId !== null && $phongTrucId > 0) {
+            $sql4 .= " AND pm.phong_truc_id = ?";
+            $params4[] = $phongTrucId;
+            $types4 .= 'i';
+        }
+        $sql4 .= " ORDER BY pm.id DESC LIMIT 1";
+
+        $stmt4 = $db->prepare($sql4);
+        $stmt4->bind_param($types4, ...$params4);
+        $stmt4->execute();
+        $res4 = $stmt4->get_result()->fetch_assoc();
+        $stmt4->close();
+
+        if ($res4) {
+            $phieuId = (int)$res4['id'];
+        }
+    }
+
+    if ($phieuId > 0) {
+        return muon_tim_theo_id($phieuId);
+    }
+
+    return null;
+}
+
+/**
+ * Lấy danh sách các phiếu mượn đang chờ trả tại bàn trực (dùng hiển thị nhanh trong màn hình trả).
+ * Ưu tiên các phiếu đã quá hạn trả lên trước để nhân viên dễ nhận diện và xử lý.
+ *
+ * @param int|null $phongTrucId ID bàn trực
+ * @param int $gioiHan Số lượng hiển thị tối đa
+ * @return array
+ */
+function tra_danh_sach_cho_xu_ly(?int $phongTrucId = null, int $gioiHan = 15): array {
+    $db = db();
+    $phongTrucId = $phongTrucId ?? (int)(phong_truc_hien_tai()['id'] ?? 0);
+
+    $sql = "SELECT pm.*,
+                   pm.ma_phieu_muon AS ma_phieu,
+                   nm.ho_ten AS ten_nguoi_muon, nm.ma_so_truong, nm.so_dien_thoai,
+                   ph.ma_phong, ph.ten_phong,
+                   pt.ten_phong_truc, pt.ma_phong_truc,
+                   (SELECT COUNT(*) FROM chi_tiet_muon ctm WHERE ctm.phieu_muon_id = pm.id) AS tong_so_thiet_bi,
+                   (SELECT COUNT(*) FROM chi_tiet_muon ctm WHERE ctm.phieu_muon_id = pm.id AND ctm.thoi_gian_tra IS NULL) AS so_chua_tra,
+                   (pm.han_tra < NOW()) AS la_qua_han
+            FROM phieu_muon pm
+            JOIN nguoi_muon nm ON pm.nguoi_muon_id = nm.id
+            JOIN phong_hoc ph ON pm.phong_hoc_id = ph.id
+            JOIN phong_truc pt ON pm.phong_truc_id = pt.id
+            WHERE pm.trang_thai = ?";
+
+    $params = [PHIEU_MUON_DANG_MUON];
+    $types = 's';
+
+    if ($phongTrucId > 0) {
+        $sql .= " AND pm.phong_truc_id = ?";
+        $params[] = $phongTrucId;
+        $types .= 'i';
+    }
+
+    $sql .= " ORDER BY (pm.han_tra < NOW()) DESC, pm.id DESC LIMIT ?";
+    $params[] = max(1, min(100, $gioiHan));
+    $types .= 'i';
+
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    return $rows;
+}
+
+/**
+ * Thực hiện tiếp nhận trả tài sản (Hỗ trợ trả từng phần hoặc trả đủ toàn bộ phiếu).
+ * Thực thi Transaction ACID an toàn, kiểm tra khóa kiểm kê và tự động ghi nhận sự cố nếu thiết bị bị hư hỏng.
+ *
+ * @param array $duLieu Dữ liệu gửi lên:
+ *                      - phieu_muon_id (int)
+ *                      - chi_tiet_id (mảng ID các chi_tiet_muon được chọn trả)
+ *                      - tinh_trang (mảng trạng thái khi trả: [chi_tiet_id => 'TOT' | 'HU_HONG'])
+ *                      - ghi_chu (mảng ghi chú phản ánh: [chi_tiet_id => string])
+ * @param int|null $nhanVienNhanId ID nhân viên tiếp nhận trả (mặc định lấy nhân viên đăng nhập)
+ * @param int|null $phongTrucId ID bàn trực tiếp nhận (mặc định lấy bàn trực hiện tại)
+ * @return array ['thanh_cong' => bool, 'loi' => string, 'so_da_tra' => int, 'con_lai' => int, 'hoan_tat' => bool, 'ma_phieu' => string]
+ */
+function tra_thuc_hien(array $duLieu, ?int $nhanVienNhanId = null, ?int $phongTrucId = null): array {
+    $db = db();
+
+    $nhanVienNhanId = $nhanVienNhanId ?? (int)($duLieu['nhan_vien_nhan_id'] ?? (tai_khoan_hien_tai()['id'] ?? 0));
+    $phongTrucId = $phongTrucId ?? (int)($duLieu['phong_truc_id'] ?? (phong_truc_hien_tai()['id'] ?? 0));
+
+    // 1. Kiểm tra khóa kiểm kê tại bàn trực
+    if ($phongTrucId > 0 && muon_kiem_tra_khoa_kiem_ke($phongTrucId)) {
+        return [
+            'thanh_cong' => false,
+            'loi'        => 'Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động nhận trả tạm thời bị khóa.',
+            'so_da_tra'  => 0,
+            'con_lai'    => 0,
+            'hoan_tat'   => false,
+            'ma_phieu'   => '',
+        ];
+    }
+
+    // 2. Xác thực phiếu mượn
+    $phieuMuonId = (int)($duLieu['phieu_muon_id'] ?? 0);
+    if ($phieuMuonId <= 0) {
+        return [
+            'thanh_cong' => false,
+            'loi'        => 'Không tìm thấy mã định danh phiếu mượn cần trả.',
+            'so_da_tra'  => 0,
+            'con_lai'    => 0,
+            'hoan_tat'   => false,
+            'ma_phieu'   => '',
+        ];
+    }
+
+    // 3. Kiểm tra danh sách thiết bị được tích chọn trả
+    $dsChiTietChon = $duLieu['chi_tiet_id'] ?? [];
+    if (!is_array($dsChiTietChon) || empty($dsChiTietChon)) {
+        return [
+            'thanh_cong' => false,
+            'loi'        => 'Vui lòng tích chọn ít nhất một thiết bị cần tiếp nhận trả.',
+            'so_da_tra'  => 0,
+            'con_lai'    => 0,
+            'hoan_tat'   => false,
+            'ma_phieu'   => '',
+        ];
+    }
+
+    $dsIdCtm = array_values(array_unique(array_filter(array_map('intval', $dsChiTietChon), fn($id) => $id > 0)));
+    if (empty($dsIdCtm)) {
+        return [
+            'thanh_cong' => false,
+            'loi'        => 'Danh sách thiết bị chọn trả không hợp lệ.',
+            'so_da_tra'  => 0,
+            'con_lai'    => 0,
+            'hoan_tat'   => false,
+            'ma_phieu'   => '',
+        ];
+    }
+
+    // Sắp xếp thứ tự ID tăng dần để ngăn ngừa Deadlock khi nhiều bàn trực nhận trả cùng lúc
+    sort($dsIdCtm, SORT_NUMERIC);
+
+    $bangTinhTrang = (array)($duLieu['tinh_trang'] ?? []);
+    $bangGhiChu = (array)($duLieu['ghi_chu'] ?? []);
+
+    // 4. Bắt đầu Transaction ACID
+    $db->begin_transaction();
+
+    try {
+        // Khóa dòng phiếu mượn để kiểm tra
+        $stmtPm = $db->prepare("SELECT id, ma_phieu_muon, phong_truc_id, trang_thai FROM phieu_muon WHERE id = ? FOR UPDATE");
+        $stmtPm->bind_param('i', $phieuMuonId);
+        $stmtPm->execute();
+        $phieu = $stmtPm->get_result()->fetch_assoc();
+        $stmtPm->close();
+
+        if (!$phieu) {
+            throw new RuntimeException('Phiếu mượn không tồn tại trong hệ thống.');
+        }
+
+        if ($phongTrucId > 0 && (int)$phieu['phong_truc_id'] !== $phongTrucId) {
+            throw new RuntimeException('Phiếu mượn này thuộc bàn trực khác, bạn không có thẩm quyền tiếp nhận trả tại bàn trực này.');
+        }
+
+        if ($phieu['trang_thai'] !== PHIEU_MUON_DANG_MUON) {
+            throw new RuntimeException("Phiếu mượn [{$phieu['ma_phieu_muon']}] đã được xác nhận hoàn tất trả đủ từ trước.");
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $soLuongDaTra = 0;
+
+        // Chuẩn bị các câu lệnh cập nhật
+        $stmtKiemTraCtm = $db->prepare("SELECT ctm.id, ctm.tai_san_id, ctm.thoi_gian_tra, ts.ma_tai_san, ts.ten_tai_san, ts.phong_truc_id
+                                        FROM chi_tiet_muon ctm
+                                        JOIN tai_san ts ON ctm.tai_san_id = ts.id
+                                        WHERE ctm.id = ? AND ctm.phieu_muon_id = ?
+                                        FOR UPDATE");
+
+        $stmtCapNhatCtm = $db->prepare("UPDATE chi_tiet_muon 
+                                        SET thoi_gian_tra = ?, tinh_trang_khi_tra = ?, nhan_vien_nhan_id = ?, ghi_chu = ? 
+                                        WHERE id = ?");
+
+        $stmtCapNhatTs = $db->prepare("UPDATE tai_san 
+                                       SET tinh_trang = ?, trang_thai = ?, phong_hoc_hien_tai_id = NULL 
+                                       WHERE id = ?");
+
+        $stmtTaoSuCo = $db->prepare("INSERT INTO su_co_tai_san (
+                                        ma_su_co, tai_san_id, nhan_vien_lap_id, chi_tiet_muon_id, loai_su_co, mo_ta, trang_thai
+                                     ) VALUES (?, ?, ?, ?, 'HU_HONG', ?, 'CHUA_XU_LY')");
+
+        foreach ($dsIdCtm as $ctmId) {
+            // Kiểm tra và khóa dòng chi tiết
+            $stmtKiemTraCtm->bind_param('ii', $ctmId, $phieuMuonId);
+            $stmtKiemTraCtm->execute();
+            $detail = $stmtKiemTraCtm->get_result()->fetch_assoc();
+
+            if (!$detail) {
+                throw new RuntimeException("Thiết bị chi tiết #$ctmId không thuộc phiếu mượn này.");
+            }
+
+            if ($detail['thoi_gian_tra'] !== null) {
+                throw new RuntimeException("Thiết bị [{$detail['ma_tai_san']}] đã được hoàn trả từ trước, không thể nhận trả lần 2.");
+            }
+
+            if ($phongTrucId > 0 && (int)$detail['phong_truc_id'] !== $phongTrucId) {
+                throw new RuntimeException("Thiết bị [{$detail['ma_tai_san']}] đã được điều chuyển sang phòng trực khác.");
+            }
+
+            // Tình trạng thiết bị khi nhận lại
+            $tinhTrangKhiTra = (string)($bangTinhTrang[$ctmId] ?? 'TOT');
+            if (!in_array($tinhTrangKhiTra, [TINH_TRANG_TOT, TINH_TRANG_HU_HONG], true)) {
+                $tinhTrangKhiTra = TINH_TRANG_TOT;
+            }
+
+            $ghiChuTra = trim((string)($bangGhiChu[$ctmId] ?? ''));
+
+            // QUY TẮC BẮT BUỘC: Nếu thiết bị bị hư hỏng, bắt buộc phải có ghi chú mô tả hư hại
+            if ($tinhTrangKhiTra === TINH_TRANG_HU_HONG && $ghiChuTra === '') {
+                throw new RuntimeException("Thiết bị [{$detail['ma_tai_san']}] {$detail['ten_tai_san']} được đánh dấu Hư hỏng. Vui lòng ghi rõ mô tả hư hỏng, sự cố hoặc linh kiện bị mất/hỏng.");
+            }
+
+            $ghiChuLuu = ($ghiChuTra !== '') ? $ghiChuTra : null;
+
+            // 1. Cập nhật chi_tiet_muon
+            $stmtCapNhatCtm->bind_param('ssisi', $now, $tinhTrangKhiTra, $nhanVienNhanId, $ghiChuLuu, $ctmId);
+            $stmtCapNhatCtm->execute();
+
+            // 2. Cập nhật tai_san:
+            // Nếu TOT -> tinh_trang = TOT, trang_thai = SAN_SANG, vị trí phòng học = NULL (trả về phòng trực)
+            // Nếu HU_HONG -> tinh_trang = HU_HONG, trang_thai = BAO_TRI, vị trí phòng học = NULL
+            $taiSanId = (int)$detail['tai_san_id'];
+            $trangThaiMoi = ($tinhTrangKhiTra === TINH_TRANG_TOT) ? TRANG_THAI_SAN_SANG : TRANG_THAI_BAO_TRI;
+
+            $stmtCapNhatTs->bind_param('ssi', $tinhTrangKhiTra, $trangThaiMoi, $taiSanId);
+            $stmtCapNhatTs->execute();
+
+            // 3. Nếu hư hỏng, tự động sinh phiếu sự cố (su_co_tai_san)
+            if ($tinhTrangKhiTra === TINH_TRANG_HU_HONG) {
+                $maSuCo = sinh_ma('SC');
+                $stmtTaoSuCo->bind_param('siiis', $maSuCo, $taiSanId, $nhanVienNhanId, $ctmId, $ghiChuTra);
+                $stmtTaoSuCo->execute();
+            }
+
+            $soLuongDaTra++;
+        }
+
+        $stmtKiemTraCtm->close();
+        $stmtCapNhatCtm->close();
+        $stmtCapNhatTs->close();
+        $stmtTaoSuCo->close();
+
+        // 5. Kiểm tra xem phiếu mượn còn thiết bị nào chưa trả không
+        $stmtDem = $db->prepare("SELECT COUNT(*) FROM chi_tiet_muon WHERE phieu_muon_id = ? AND thoi_gian_tra IS NULL");
+        $stmtDem->bind_param('i', $phieuMuonId);
+        $stmtDem->execute();
+        $soConLai = (int)$stmtDem->get_result()->fetch_row()[0];
+        $stmtDem->close();
+
+        // Nếu tất cả thiết bị đã được trả -> cập nhật trạng thái phiếu sang DA_TRA
+        $hoanTat = ($soConLai === 0);
+        if ($hoanTat) {
+            $stmtDongPhieu = $db->prepare("UPDATE phieu_muon SET trang_thai = ? WHERE id = ?");
+            $ttDaTra = PHIEU_MUON_DA_TRA;
+            $stmtDongPhieu->bind_param('si', $ttDaTra, $phieuMuonId);
+            $stmtDongPhieu->execute();
+            $stmtDongPhieu->close();
+        }
+
+        // Commit transaction
+        $db->commit();
+
+        return [
+            'thanh_cong' => true,
+            'loi'        => '',
+            'so_da_tra'  => $soLuongDaTra,
+            'con_lai'    => $soConLai,
+            'hoan_tat'   => $hoanTat,
+            'ma_phieu'   => $phieu['ma_phieu_muon'],
+        ];
+
+    } catch (Throwable $e) {
+        $db->rollback();
+        error_log('[RETURN ERROR] Lỗi trả thiết bị: ' . $e->getMessage());
+
+        return [
+            'thanh_cong' => false,
+            'loi'        => $e->getMessage(),
+            'so_da_tra'  => 0,
+            'con_lai'    => 0,
+            'hoan_tat'   => false,
+            'ma_phieu'   => '',
+        ];
+    }
+}

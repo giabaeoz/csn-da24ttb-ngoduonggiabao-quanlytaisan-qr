@@ -41,3 +41,4 @@ $danhSachPhongTruc = phong_truc_danh_sach(true);
 
 $tieuDeTrang = 'Lịch sử mượn - trả tài sản';
 require dirname(__DIR__) . '/app/views/muon-tra/danh-sach.php';
+
