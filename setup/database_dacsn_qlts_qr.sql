@@ -57,7 +57,7 @@ CREATE TABLE `phong_truc` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
--- 2. BẢNG: phong_hoc (Phòng học / giảng đường sử dụng thiết bị)
+-- 2. BẢNG: phong_hoc (Phòng học kèm thông tin thiết bị cố định: máy lạnh, máy chiếu, âm thanh)
 -- ---------------------------------------------------------------------
 CREATE TABLE `phong_hoc` (
     `id` INT UNSIGNED AUTO_INCREMENT,
@@ -65,6 +65,7 @@ CREATE TABLE `phong_hoc` (
     `ten_phong` VARCHAR(100) NOT NULL,
     `toa_nha` VARCHAR(50) NULL,
     `tang` VARCHAR(20) NULL,
+    `thiet_bi_phong` JSON NULL COMMENT 'Danh sách thiết bị cố định trong phòng: [{"ten":"Máy lạnh","hang":"Daikin","model":"FTKB25W"},...]',
     `dang_hoat_dong` TINYINT UNSIGNED NOT NULL DEFAULT 1,
     `tao_luc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `cap_nhat_luc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -82,7 +83,10 @@ CREATE TABLE `phong_hoc` (
         CHECK (CHAR_LENGTH(TRIM(`ma_phong`)) > 0),
 
     CONSTRAINT `ck_phong_hoc_ten`
-        CHECK (CHAR_LENGTH(TRIM(`ten_phong`)) > 0)
+        CHECK (CHAR_LENGTH(TRIM(`ten_phong`)) > 0),
+
+    CONSTRAINT `ck_phong_hoc_thiet_bi`
+        CHECK (`thiet_bi_phong` IS NULL OR JSON_VALID(`thiet_bi_phong`))
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
@@ -192,7 +196,7 @@ CREATE TABLE `nguoi_muon` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
--- 6. BẢNG: tai_san (Danh sách thiết bị độc lập kèm mã QR)
+-- 6. BẢNG: tai_san (Danh sách thiết bị độc lập kèm mã QR, hãng, model, độ tương thích)
 -- ---------------------------------------------------------------------
 CREATE TABLE `tai_san` (
     `id` INT UNSIGNED AUTO_INCREMENT,
@@ -201,14 +205,17 @@ CREATE TABLE `tai_san` (
     `ten_tai_san` VARCHAR(150) NOT NULL,
     `loai_tai_san_id` INT UNSIGNED NOT NULL,
     `phong_truc_id` INT UNSIGNED NOT NULL,
-    `phong_hoc_phu_hop_id` INT UNSIGNED NULL,
-    `phong_hoc_hien_tai_id` INT UNSIGNED NULL,
+    `hang_san_xuat` VARCHAR(50) NULL COMMENT 'Hãng sản xuất (Daikin, Panasonic, Sony, Shure...)',
+    `model` VARCHAR(50) NULL COMMENT 'Mã dòng máy / model kỹ thuật (PT-LB386, FTKB25W...)',
+    `phong_hoc_phu_hop_id` INT UNSIGNED NULL COMMENT 'Phòng học gợi ý dán nhãn trên tem để nhân viên tìm kiếm nhanh',
+    `phong_hoc_hien_tai_id` INT UNSIGNED NULL COMMENT 'Vị trí phòng học hiện tại (NULL nếu ở phòng trực)',
     `tinh_trang` ENUM('TOT', 'HU_HONG', 'MAT') NOT NULL DEFAULT 'TOT',
     `trang_thai` ENUM('SAN_SANG', 'DANG_MUON', 'BAO_TRI', 'NGUNG_SU_DUNG') NOT NULL DEFAULT 'SAN_SANG',
     `ngay_dua_vao_su_dung` DATE NULL,
     `mo_ta` TEXT NULL,
-    `pham_vi_tuong_thich` ENUM('THEO_PHONG', 'LINH_HOAT') NULL DEFAULT 'LINH_HOAT',
-    `phong_tuong_thich` JSON NULL,
+    `pham_vi_tuong_thich` ENUM('THEO_THIET_BI', 'THEO_PHONG', 'LINH_HOAT') NOT NULL DEFAULT 'LINH_HOAT'
+        COMMENT 'THEO_THIET_BI: khớp hãng/model với thiết bị phòng; THEO_PHONG: khớp danh sách phòng; LINH_HOAT: mọi phòng',
+    `phong_tuong_thich` JSON NULL COMMENT 'Danh sách mã phòng cụ thể nếu dùng phạm vi THEO_PHONG',
     `tao_luc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `cap_nhat_luc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -251,12 +258,9 @@ CREATE TABLE `tai_san` (
 
     CONSTRAINT `ck_tai_san_tuong_thich`
         CHECK (
-            ((`pham_vi_tuong_thich` IS NULL) AND (`phong_tuong_thich` IS NULL))
-            OR
-            ((`pham_vi_tuong_thich` IS NOT NULL) AND (`phong_tuong_thich` IS NOT NULL)
-             AND JSON_SCHEMA_VALID('{"type":"array","items":{"type":"string","minLength":1,"maxLength":30},"uniqueItems":true}', `phong_tuong_thich`)
-             AND (((`pham_vi_tuong_thich` = 'LINH_HOAT') AND (JSON_LENGTH(`phong_tuong_thich`) = 0))
-                  OR ((`pham_vi_tuong_thich` = 'THEO_PHONG') AND (JSON_LENGTH(`phong_tuong_thich`) > 0))))
+            (`pham_vi_tuong_thich` IN ('THEO_THIET_BI', 'THEO_PHONG', 'LINH_HOAT'))
+            AND
+            (`phong_tuong_thich` IS NULL OR JSON_VALID(`phong_tuong_thich`))
         )
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 

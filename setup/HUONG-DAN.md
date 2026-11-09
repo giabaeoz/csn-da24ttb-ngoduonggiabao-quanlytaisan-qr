@@ -148,3 +148,4 @@ Mở trình duyệt truy cập:
 ### 5.5. Phân hệ Xử lý sự cố & Thống kê
 - Cán bộ Quản lý tiếp nhận sự cố, điều phối bảo trì/sửa chữa và phục hồi trạng thái thiết bị về `SAN_SANG`.
 - Thống kê biểu đồ Chart.js trực quan: phân bổ theo trạng thái, theo loại, danh sách quá hạn, số lượt mượn theo ngày.
+

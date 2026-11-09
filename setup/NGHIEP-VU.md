@@ -12,7 +12,8 @@
    - Mỗi Nhân viên trực được phân công làm việc tại một phòng trực cụ thể (`nhan_vien.phong_truc_id`).
    
 2. **Phòng học / Giảng đường (`phong_hoc`):**
-   - Nơi tài sản được mang đến để phục vụ giảng dạy, học tập (ví dụ: B31.103, B71.101).
+   - Nơi tài sản được mang đến để phục vụ giảng dạy, học tập (ví dụ: B31.101, B71.101).
+   - Mỗi phòng học chứa cấu hình các thiết bị cố định được trang bị sẵn trong phòng (`thiet_bi_phong` dạng JSON: máy lạnh, máy chiếu treo trần, dàn âm thanh... kèm thông tin hãng sản xuất và model).
    - Tài sản khi cho mượn hoặc điều chuyển sẽ được ghi nhận phòng học hiện tại (`tai_san.phong_hoc_hien_tai_id`). Khi thiết bị nằm tại phòng trực, giá trị này là `NULL`.
 
 3. **Người mượn (`nguoi_muon`):**
@@ -21,8 +22,12 @@
    - Định danh qua `ma_so_truong` (MSSV/MSGV), `so_dien_thoai`, `ho_ten`, `lop_don_vi`.
 
 4. **Tài sản / Thiết bị (`tai_san`):**
-   - Thiết bị độc lập cần quản lý: remote máy chiếu, micro, máy chiếu di động, loa trợ giảng, cáp HDMI...
-   - Mỗi tài sản có một `ma_tai_san` (định danh hiển thị) và một `ma_qr` duy nhất (chuỗi mã vạch 2D dán trên tem thiết bị).
+   - Thiết bị độc lập cần quản lý: remote máy chiếu, remote máy lạnh, micro, máy chiếu di động, loa trợ giảng, cáp HDMI...
+   - Mỗi tài sản có:
+     - `ma_tai_san` (định danh hiển thị) và `ma_qr` duy nhất (chuỗi mã vạch 2D dán trên tem thiết bị).
+     - `hang_san_xuat` (Daikin, Panasonic, Sony, Epson, Shure, Soundking...) và `model` (mã kiểu máy kỹ thuật).
+     - `phong_hoc_phu_hop_id`: Mã phòng học gợi ý dán trên tem thiết bị, giúp nhân viên tìm kiếm thiết bị nhanh chóng trên kệ tủ phân loại, không mang tính khóa cứng.
+     - `pham_vi_tuong_thich`: `THEO_THIET_BI` (khớp hãng/model thiết bị phòng), `THEO_PHONG` (khớp danh sách phòng), hoặc `LINH_HOAT` (dùng chung cho mọi phòng).
 
 ---
 
@@ -94,10 +99,14 @@ Mỗi tài sản có hai thuộc tính phản ánh trạng thái hoạt động:
    - Thuộc phòng trực của nhân viên đang thao tác (`tai_san.phong_truc_id == nhan_vien.phong_truc_id`).
    - Đang sẵn sàng: `trang_thai = 'SAN_SANG'`, `tinh_trang = 'TOT'`, `phong_hoc_hien_tai_id IS NULL`.
    - Không có giao dịch mượn dở dang: Không có bản ghi nào trong `chi_tiet_muon` mà `thoi_gian_tra IS NULL`.
-   - **Độ tương thích phòng học:**
-     - Nếu `pham_vi_tuong_thich = 'LINH_HOAT'`: Dùng được cho mọi phòng học.
-     - Nếu `pham_vi_tuong_thich = 'THEO_PHONG'`: Mã phòng học đích phải nằm trong danh sách JSON `tai_san.phong_tuong_thich`.
-     - Nếu dùng cấu hình truyền thống: `phong_hoc_phu_hop_id` phải khớp với ID phòng học đích.
+   - **Độ tương thích với phòng học đích:**
+     - Nếu `pham_vi_tuong_thich = 'LINH_HOAT'`: Luôn hợp lệ cho mọi phòng học (máy chiếu di động, loa kéo, cáp HDMI, ổ cắm...).
+     - Nếu `pham_vi_tuong_thich = 'THEO_THIET_BI'`: Hệ thống duyệt danh sách thiết bị cố định (`thiet_bi_phong`) của phòng học đích:
+       - Phòng học phải có ít nhất một thiết bị có cùng `hang_san_xuat` (so khớp không phân biệt hoa thường).
+       - Nếu tài sản có khai báo `model` cụ thể, thiết bị trong phòng cũng phải có model tương thích.
+       - *Ví dụ:* Remote Daikin model FTKB25W sẽ dùng được cho mọi phòng có máy lạnh Daikin model FTKB25W; Micro Soundking SK-12 dùng được cho mọi phòng có dàn âm thanh Soundking SK-12.
+     - Nếu `pham_vi_tuong_thich = 'THEO_PHONG'`: Mã phòng học đích phải nằm trong mảng JSON `tai_san.phong_tuong_thich`.
+     - **Ý nghĩa nhãn dán phòng (`phong_hoc_phu_hop_id`):** Là thông tin hỗ trợ sắp xếp vị trí trên giá kệ phòng trực. Khi nhân viên chọn phòng học, hệ thống ưu tiên đề xuất các thiết bị có nhãn phòng này để nhân viên lấy nhanh, nhưng không khóa cứng nếu thiết bị thỏa mãn độ tương thích Hãng/Model với phòng học đích.
 6. **Hạn trả hợp lệ:** Chuỗi thời gian tương lai so với thời điểm hiện tại của máy chủ MySQL (`han_tra > NOW()`).
 
 #### Các bước thực thi:

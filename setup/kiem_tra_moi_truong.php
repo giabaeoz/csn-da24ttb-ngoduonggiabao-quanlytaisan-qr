@@ -163,15 +163,35 @@ if (extension_loaded('mysqli')) {
             );
 
             // Kiểm tra các cột nghiệp vụ đặc thù
+            if (in_array('phong_hoc', $bangHienCo, true)) {
+                $colsPhongHoc = [];
+                $res = $db->query("SHOW COLUMNS FROM phong_hoc");
+                while ($r = $res->fetch_assoc()) {
+                    $colsPhongHoc[] = $r['Field'];
+                }
+                $coThietBiPhong = in_array('thiet_bi_phong', $colsPhongHoc, true);
+                kiem_tra(
+                    'Bảng `phong_hoc` có cấu hình thiết bị cố định (hãng/model)',
+                    $coThietBiPhong,
+                    $coThietBiPhong ? 'thiet_bi_phong (JSON)' : 'Thiếu cột thiet_bi_phong'
+                );
+            }
+
             if (in_array('tai_san', $bangHienCo, true)) {
                 $colsTaiSan = [];
                 $res = $db->query("SHOW COLUMNS FROM tai_san");
                 while ($r = $res->fetch_assoc()) {
                     $colsTaiSan[] = $r['Field'];
                 }
+                $coHangModel = in_array('hang_san_xuat', $colsTaiSan, true) && in_array('model', $colsTaiSan, true);
+                kiem_tra(
+                    'Bảng `tai_san` có hãng sản xuất và model',
+                    $coHangModel,
+                    $coHangModel ? 'hang_san_xuat, model' : 'Thiếu hang_san_xuat hoặc model'
+                );
                 $coTuongThich = in_array('pham_vi_tuong_thich', $colsTaiSan, true) && in_array('phong_tuong_thich', $colsTaiSan, true);
                 kiem_tra(
-                    'Bảng `tai_san` có thuộc tính tương thích phòng',
+                    'Bảng `tai_san` có thuộc tính tương thích phòng / thiết bị',
                     $coTuongThich,
                     $coTuongThich ? 'pham_vi_tuong_thich, phong_tuong_thich' : 'Thiếu cột tương thích'
                 );
@@ -223,3 +243,4 @@ if ($soLoi > 0) {
 }
 
 exit(0);
+
