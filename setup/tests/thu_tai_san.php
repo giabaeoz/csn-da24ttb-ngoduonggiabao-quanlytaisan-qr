@@ -124,3 +124,4 @@ kiem_thu('Xóa tài sản an toàn khi chưa phát sinh giao dịch mượn/chuy
 
 // Tổng kết
 tong_ket_kiem_thu('Quản lý Tài sản (G4)');
+

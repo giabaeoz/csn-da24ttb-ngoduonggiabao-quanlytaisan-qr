@@ -43,3 +43,4 @@ if (empty($danhSachIn)) {
 
 $tieuDeTrang = 'In tem mã QR (' . count($danhSachIn) . ' thiết bị)';
 require dirname(__DIR__) . '/app/views/tai-san/in-qr.php';
+

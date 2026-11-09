@@ -50,3 +50,4 @@ $stmtSc->close();
 
 $tieuDeTrang = 'Chi tiết thiết bị: ' . ($taiSan['ten_tai_san'] ?? '');
 require dirname(__DIR__) . '/app/views/tai-san/chi-tiet.php';
+

@@ -70,3 +70,4 @@ $danhSachPhongTruc = phong_truc_danh_sach(true);
 $thongKe = tai_san_thong_ke_nhanh($phongTrucId > 0 ? $phongTrucId : null);
 
 require dirname(__DIR__) . '/app/views/tai-san/danh-sach.php';
+

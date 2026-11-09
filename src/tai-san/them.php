@@ -67,3 +67,4 @@ $danhSachPhongHoc = phong_hoc_danh_sach(true);
 $laThemMoi = true;
 $tieuDeTrang = 'Thêm mới tài sản / thiết bị';
 require dirname(__DIR__) . '/app/views/tai-san/form.php';
+

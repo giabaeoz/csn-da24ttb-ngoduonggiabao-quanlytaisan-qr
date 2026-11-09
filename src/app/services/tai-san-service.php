@@ -433,8 +433,17 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
 
     if ($id === null) {
         // Thêm mới tài sản: mặc định tình trạng TOT, trạng thái SAN_SANG, vị trí phòng học là NULL (ở tại phòng trực)
-        $tinhTrang = 'TOT';
-        $trangThai = 'SAN_SANG';
+        $tinhTrang = (string)($duLieu['tinh_trang'] ?? 'TOT');
+        if (!in_array($tinhTrang, ['TOT', 'HU_HONG', 'MAT'], true)) {
+            $tinhTrang = 'TOT';
+        }
+        $trangThai = (string)($duLieu['trang_thai'] ?? 'SAN_SANG');
+        if (!in_array($trangThai, ['SAN_SANG', 'DANG_MUON', 'BAO_TRI', 'NGUNG_SU_DUNG'], true)) {
+            $trangThai = 'SAN_SANG';
+        }
+        if ($trangThai === TRANG_THAI_SAN_SANG && $tinhTrang !== TINH_TRANG_TOT) {
+            $trangThai = TRANG_THAI_BAO_TRI;
+        }
         $phongHocHienTaiId = null;
 
         $sql = "INSERT INTO tai_san (
@@ -625,3 +634,4 @@ function tai_san_thong_ke_nhanh(?int $phongTrucId = null): array {
         'ngung_su_dung'     => (int)($res['ngung_su_dung'] ?? 0),
     ];
 }
+

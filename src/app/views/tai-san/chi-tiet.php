@@ -228,3 +228,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
+
