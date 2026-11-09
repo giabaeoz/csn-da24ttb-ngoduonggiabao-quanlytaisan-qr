@@ -143,4 +143,40 @@ function la_post(): bool {
     return (strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === 'POST');
 }
 
+/**
+ * Trả về nhãn tiếng Việt cho loại kiểm kê tài sản.
+ */
+function nhan_loai_kiem_ke(?string $loai): string {
+    return match ($loai) {
+        'CUOI_BUOI' => 'Cuối buổi trực',
+        'DINH_KY'   => 'Định kỳ',
+        'DOT_XUAT'  => 'Đột xuất',
+        default     => $loai ?? 'Khác',
+    };
+}
+
+/**
+ * Trả về nhãn tiếng Việt cho trạng thái đợt kiểm kê tài sản.
+ */
+function nhan_trang_thai_kiem_ke(?string $trangThai): string {
+    return match ($trangThai) {
+        'DANG_KIEM_KE' => 'Đang kiểm kê',
+        'HOAN_TAT'     => 'Hoàn tất',
+        'DA_HUY'       => 'Đã hủy',
+        default        => $trangThai ?? 'Không xác định',
+    };
+}
+
+/**
+ * Trả về nhãn tiếng Việt cho kết quả đối chiếu tài sản trong đợt kiểm kê.
+ */
+function nhan_ket_qua_kiem_ke(?string $ketQua, ?string $tinhTrang = null): string {
+    return match ($ketQua) {
+        'TIM_THAY'      => ($tinhTrang === 'HU_HONG' ? 'Có mặt (Hư hỏng)' : 'Có mặt (Tốt)'),
+        'CHUA_TIM_THAY' => 'Chưa tìm thấy',
+        'CHUA_KIEM_TRA' => 'Chưa kiểm tra',
+        default         => $ketQua ?? 'Chưa rõ',
+    };
+}
+
 

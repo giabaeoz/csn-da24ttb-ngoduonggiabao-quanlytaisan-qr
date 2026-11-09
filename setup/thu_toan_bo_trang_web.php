@@ -34,6 +34,15 @@ $tsId = (int)($db->query("SELECT id FROM tai_san LIMIT 1")->fetch_row()[0] ?? 1)
 $nmId = (int)($db->query("SELECT id FROM nguoi_muon LIMIT 1")->fetch_row()[0] ?? 1);
 $pmId = (int)($db->query("SELECT id FROM phieu_muon LIMIT 1")->fetch_row()[0] ?? 1);
 
+$kkId = (int)($db->query("SELECT id FROM dot_kiem_ke LIMIT 1")->fetch_row()[0] ?? 0);
+if ($kkId === 0) {
+    $ptId = (int)($db->query("SELECT id FROM phong_truc LIMIT 1")->fetch_row()[0] ?? 1);
+    $nvId = (int)($db->query("SELECT id FROM nhan_vien LIMIT 1")->fetch_row()[0] ?? 1);
+    require_once dirname(__DIR__) . '/src/app/services/kiem-ke-service.php';
+    $kqM = kiem_ke_mo_dot(['ten_dot_kiem_ke' => 'Đợt kiểm kê web demo'], $nvId, $ptId);
+    $kkId = (int)($kqM['id'] ?? 1);
+}
+
 $trangCanKiemTra = [
     '/tong-quan.php',
     '/muon-tra/muon.php',
@@ -54,6 +63,10 @@ $trangCanKiemTra = [
     '/danh-muc/loai-tai-san.php',
     '/dieu-chuyen/index.php',
     '/dieu-chuyen/them.php',
+    '/kiem-ke/index.php',
+    '/kiem-ke/tao.php',
+    '/kiem-ke/thuc-hien.php?id=' . $kkId,
+    '/kiem-ke/chi-tiet.php?id=' . $kkId,
 ];
 
 $loi = 0;
@@ -64,6 +77,7 @@ echo "============================================================\n";
 foreach ($trangCanKiemTra as $uri) {
     $ch = curl_init('http://127.0.0.1:8000' . $uri);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
     $body = curl_exec($ch);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -90,3 +104,4 @@ if ($loi === 0) {
     echo "CÓ $loi TRANG BỊ LỖI!\n";
 }
 echo "============================================================\n";
+

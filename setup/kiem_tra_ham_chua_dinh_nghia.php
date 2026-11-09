@@ -11,6 +11,7 @@ require_once dirname(__DIR__) . '/src/app/services/tai-san-service.php';
 require_once dirname(__DIR__) . '/src/app/services/nguoi-muon-service.php';
 require_once dirname(__DIR__) . '/src/app/services/muon-tra-service.php';
 require_once dirname(__DIR__) . '/src/app/services/dieu-chuyen-service.php';
+require_once dirname(__DIR__) . '/src/app/services/kiem-ke-service.php';
 
 $allDefined = get_defined_functions();
 $definedMap = array_flip(array_map('strtolower', array_merge($allDefined['internal'], $allDefined['user'])));
@@ -97,3 +98,4 @@ if (empty($chuaDinhNghia)) {
         echo "  [LỖI] {$item['file']}:{$item['line']} -> {$item['function']}()\n";
     }
 }
+
