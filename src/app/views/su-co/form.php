@@ -13,9 +13,8 @@ if (!defined('APP_KHOI_DONG')) {
 $tieuDeTrang = 'Báo cáo sự cố thiết bị';
 $loi = $loi ?? '';
 $taiSanChon = $taiSanChon ?? null;
-$danhSachPhongHoc = $danhSachPhongHoc ?? [];
-$danhSachLoai = $danhSachLoai ?? [];
-$duLieuForm = $duLieuForm ?? [];
+$duLieu = $duLieu ?? ['tai_san_id' => 0, 'loai_su_co' => 'HU_HONG', 'mo_ta' => ''];
+$danhSachTaiSan = $danhSachTaiSan ?? [];
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
