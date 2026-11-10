@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện: Danh sách lịch sử điều chuyển thiết bị - Khớp Hệ thống thiết kế
  */
@@ -35,9 +36,9 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
     </div>
     <div>
         <?php if (co_quyen('tao_dieu_chuyen')): ?>
-        <a href="<?= url('dieu-chuyen/them.php') ?>" class="btn btn-chinh">
-            Lập phiếu điều chuyển
-        </a>
+            <a href="<?= url('dieu-chuyen/them.php') ?>" class="btn btn-chinh">
+                Lập phiếu điều chuyển
+            </a>
         <?php endif; ?>
     </div>
 </div>
@@ -48,8 +49,8 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
         <form action="<?= url('dieu-chuyen/index.php') ?>" method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Từ khóa</label>
-                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã phiếu, cán bộ..." 
-                       value="<?= e($boLoc['tu_khoa']) ?>">
+                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã phiếu, cán bộ..."
+                    value="<?= e($boLoc['tu_khoa']) ?>">
             </div>
 
             <div class="col-6 col-md-2">
@@ -57,9 +58,9 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                 <select name="phong_hoc_di_id" class="form-select">
                     <option value="">Tất cả phòng đi</option>
                     <?php foreach ($danhSachPhongHoc as $ph): ?>
-                    <option value="<?= (int)$ph['id'] ?>" <?= ((int)$boLoc['phong_hoc_di_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
-                        <?= e($ph['ma_phong']) ?>
-                    </option>
+                        <option value="<?= (int)$ph['id'] ?>" <?= ((int)$boLoc['phong_hoc_di_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
+                            <?= e($ph['ma_phong']) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -69,9 +70,9 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                 <select name="phong_hoc_den_id" class="form-select">
                     <option value="">Tất cả phòng đến</option>
                     <?php foreach ($danhSachPhongHoc as $ph): ?>
-                    <option value="<?= (int)$ph['id'] ?>" <?= ((int)$boLoc['phong_hoc_den_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
-                        <?= e($ph['ma_phong']) ?>
-                    </option>
+                        <option value="<?= (int)$ph['id'] ?>" <?= ((int)$boLoc['phong_hoc_den_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
+                            <?= e($ph['ma_phong']) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -115,27 +116,27 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
             </thead>
             <tbody>
                 <?php if (empty($danhSachDieuChuyen)): ?>
-                <tr>
-                    <td colspan="7" class="text-center py-5 text-phu">Không có dữ liệu.</td>
-                </tr>
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-phu">Không có dữ liệu.</td>
+                    </tr>
                 <?php else: ?>
-                <?php foreach ($danhSachDieuChuyen as $dc): ?>
-                <tr>
-                    <td class="fw-semibold text-primary">
-                        <?= e($dc['ma_dieu_chuyen']) ?>
-                    </td>
-                    <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
-                    <td><?= e($dc['ma_phong_di']) ?></td>
-                    <td><?= e($dc['ma_phong_den']) ?></td>
-                    <td><?= (int)$dc['tong_so_thiet_bi'] ?> thiết bị</td>
-                    <td><?= e($dc['ho_ten_can_bo']) ?></td>
-                    <td class="text-end">
-                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
-                            Xem phiếu
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($danhSachDieuChuyen as $dc): ?>
+                        <tr>
+                            <td class="fw-semibold text-primary">
+                                <?= e($dc['ma_dieu_chuyen']) ?>
+                            </td>
+                            <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
+                            <td><?= e($dc['ma_phong_di']) ?></td>
+                            <td><?= e($dc['ma_phong_den']) ?></td>
+                            <td><?= (int)$dc['tong_so_thiet_bi'] ?> thiết bị</td>
+                            <td><?= e($dc['ho_ten_can_bo']) ?></td>
+                            <td class="text-end">
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
+                                    Xem phiếu
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -144,7 +145,7 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
     <!-- Phân trang -->
     <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
         <div class="mo-ta-phu">
-            <?= $viTriBatDau ?>–<?= $viTriKetThuc ?> trong <?= $tongSo ?> phiếu
+            <?= $viTriBatDau ?>-<?= $viTriKetThuc ?> trong <?= $tongSo ?> phiếu
         </div>
         <div>
             <ul class="pagination pagination-sm mb-0">
@@ -152,9 +153,9 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                     <a class="page-link" href="<?= url('dieu-chuyen/index.php?' . http_build_query(array_merge($_GET, ['trang' => max(1, $trangHienTai - 1)]))) ?>">Trước</a>
                 </li>
                 <?php for ($i = 1; $i <= $tongTrang; $i++): ?>
-                <li class="page-item <?= ($i === $trangHienTai) ? 'active' : '' ?>">
-                    <a class="page-link" href="<?= url('dieu-chuyen/index.php?' . http_build_query(array_merge($_GET, ['trang' => $i]))) ?>"><?= $i ?></a>
-                </li>
+                    <li class="page-item <?= ($i === $trangHienTai) ? 'active' : '' ?>">
+                        <a class="page-link" href="<?= url('dieu-chuyen/index.php?' . http_build_query(array_merge($_GET, ['trang' => $i]))) ?>"><?= $i ?></a>
+                    </li>
                 <?php endfor; ?>
                 <li class="page-item <?= ($trangHienTai >= $tongTrang) ? 'disabled' : '' ?>">
                     <a class="page-link" href="<?= url('dieu-chuyen/index.php?' . http_build_query(array_merge($_GET, ['trang' => min($tongTrang, $trangHienTai + 1)]))) ?>">Sau</a>

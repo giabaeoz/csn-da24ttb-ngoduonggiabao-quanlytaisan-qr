@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện Bàn làm việc Kiểm kê tài sản - Khớp chính xác Trang kiểm kê.pdf
  */
@@ -41,10 +42,10 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
 </div>
 
 <?php if (!empty($thongBaoLoi)): ?>
-<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-    <?= e($thongBaoLoi) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-</div>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <?= e($thongBaoLoi) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
 <?php endif; ?>
 
 <div class="row g-4 mb-4">
@@ -68,10 +69,10 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
                         <select id="chonCamera" class="form-select form-select-sm">
                             <option value="">Chọn camera</option>
                         </select>
-                        
+
                         <div class="input-group input-group-sm">
-                            <input type="text" class="form-control" id="ma_quet_nhap" 
-                                   placeholder="Nhập mã khi không quét được" autocomplete="off">
+                            <input type="text" class="form-control" id="ma_quet_nhap"
+                                placeholder="Nhập mã khi không quét được" autocomplete="off">
                             <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
                                 Tìm
                             </button>
@@ -156,8 +157,8 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
             <input type="hidden" name="id" value="<?= (int)$dot['id'] ?>">
             <div class="col-12 col-md-5">
                 <label class="form-label">Tìm thiết bị</label>
-                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã / tên thiết bị" 
-                       value="<?= e($boLocChiTiet['tu_khoa']) ?>">
+                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã / tên thiết bị"
+                    value="<?= e($boLocChiTiet['tu_khoa']) ?>">
             </div>
             <div class="col-12 col-md-5">
                 <label class="form-label">Kết quả đối chiếu</label>
@@ -198,67 +199,67 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
             </thead>
             <tbody>
                 <?php if (empty($danhSachChiTiet)): ?>
-                <tr>
-                    <td colspan="5" class="text-center py-5 text-phu">Không tìm thấy thiết bị nào.</td>
-                </tr>
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-phu">Không tìm thấy thiết bị nào.</td>
+                    </tr>
                 <?php else: ?>
-                <?php foreach ($danhSachChiTiet as $ct): 
-                    $laDangMuon = ($ct['trang_thai_so_sach'] === 'DANG_MUON');
-                    $daKiemDoi = ($ct['ket_qua_kiem_ke'] !== null);
-                ?>
-                <tr>
-                    <td>
-                        <div class="fw-semibold text-dark"><?= e($ct['ma_tai_san']) ?> — <?= e($ct['ten_tai_san']) ?></div>
-                        <div class="mo-ta-phu">Phòng quản lý: <?= e($dot['ten_phong_truc']) ?></div>
-                    </td>
-                    <td>
-                        <?php if ($laDangMuon): ?>
-                            <span class="huy-hieu huy-hieu-chinh">Đang mượn</span>
-                        <?php elseif ($ct['ket_qua_kiem_ke'] === 'TIM_THAY'): ?>
-                            <span class="huy-hieu huy-hieu-thanh-cong">Có mặt</span>
-                        <?php elseif ($ct['ket_qua_kiem_ke'] === 'CHUA_TIM_THAY'): ?>
-                            <span class="huy-hieu huy-hieu-nguy-hiem">Chưa tìm thấy</span>
-                        <?php else: ?>
-                            <span class="huy-hieu huy-hieu-xam">Chưa kiểm</span>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if ($laDangMuon): ?>
-                            <span class="text-phu">Theo phiếu mượn</span>
-                        <?php elseif (!$daKiemDoi): ?>
-                            <span class="text-phu">Chưa ghi nhận</span>
-                        <?php elseif ($ct['tinh_trang_thuc_te'] === 'HU_HONG'): ?>
-                            <span class="text-danger fw-semibold">Hỏng</span>
-                        <?php else: ?>
-                            <span>Bình thường</span>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if (!empty($ct['ghi_chu'])): ?>
-                            <?= e($ct['ghi_chu']) ?>
-                        <?php elseif ($laDangMuon && !empty($ct['ma_phieu_muon_hien_tai'])): ?>
-                            <span class="font-monospace text-primary"><?= e($ct['ma_phieu_muon_hien_tai']) ?></span>
-                        <?php else: ?>
-                            <span class="text-phu">—</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-end">
-                        <?php if ($laDangMuon): ?>
-                            <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)($ct['phieu_muon_id'] ?? 1)) ?>" class="btn btn-phu btn-sm">
-                                Xem phiếu
-                            </a>
-                        <?php elseif ($daKiemDoi): ?>
-                            <button type="button" class="btn btn-phu btn-sm text-success" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
-                                Đã lưu
-                            </button>
-                        <?php else: ?>
-                            <button type="button" class="btn btn-phu btn-sm" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
-                                Ghi nhận
-                            </button>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($danhSachChiTiet as $ct):
+                        $laDangMuon = ($ct['trang_thai_so_sach'] === 'DANG_MUON');
+                        $daKiemDoi = ($ct['ket_qua_kiem_ke'] !== null);
+                    ?>
+                        <tr>
+                            <td>
+                                <div class="fw-semibold text-dark"><?= e($ct['ma_tai_san']) ?> - <?= e($ct['ten_tai_san']) ?></div>
+                                <div class="mo-ta-phu">Phòng quản lý: <?= e($dot['ten_phong_truc']) ?></div>
+                            </td>
+                            <td>
+                                <?php if ($laDangMuon): ?>
+                                    <span class="huy-hieu huy-hieu-chinh">Đang mượn</span>
+                                <?php elseif ($ct['ket_qua_kiem_ke'] === 'TIM_THAY'): ?>
+                                    <span class="huy-hieu huy-hieu-thanh-cong">Có mặt</span>
+                                <?php elseif ($ct['ket_qua_kiem_ke'] === 'CHUA_TIM_THAY'): ?>
+                                    <span class="huy-hieu huy-hieu-nguy-hiem">Chưa tìm thấy</span>
+                                <?php else: ?>
+                                    <span class="huy-hieu huy-hieu-xam">Chưa kiểm</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($laDangMuon): ?>
+                                    <span class="text-phu">Theo phiếu mượn</span>
+                                <?php elseif (!$daKiemDoi): ?>
+                                    <span class="text-phu">Chưa ghi nhận</span>
+                                <?php elseif ($ct['tinh_trang_thuc_te'] === 'HU_HONG'): ?>
+                                    <span class="text-danger fw-semibold">Hỏng</span>
+                                <?php else: ?>
+                                    <span>Bình thường</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if (!empty($ct['ghi_chu'])): ?>
+                                    <?= e($ct['ghi_chu']) ?>
+                                <?php elseif ($laDangMuon && !empty($ct['ma_phieu_muon_hien_tai'])): ?>
+                                    <span class="font-monospace text-primary"><?= e($ct['ma_phieu_muon_hien_tai']) ?></span>
+                                <?php else: ?>
+                                    <span class="text-phu">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-end">
+                                <?php if ($laDangMuon): ?>
+                                    <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)($ct['phieu_muon_id'] ?? 1)) ?>" class="btn btn-phu btn-sm">
+                                        Xem phiếu
+                                    </a>
+                                <?php elseif ($daKiemDoi): ?>
+                                    <button type="button" class="btn btn-phu btn-sm text-success" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
+                                        Đã lưu
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-phu btn-sm" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
+                                        Ghi nhận
+                                    </button>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -270,10 +271,10 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
     <div class="card-body p-4">
         <h2 class="tieu-de-khoi mb-2">Kết quả tạm thời</h2>
         <div class="mo-ta-phu mb-2">
-            Bình thường: <?= (int)$thongKe['so_tim_thay_tot'] ?> • 
-            Hỏng: <?= (int)$thongKe['so_tim_thay_hong'] ?> • 
-            Không tìm thấy: <?= (int)$thongKe['so_chua_tim_thay'] ?> • 
-            Đang mượn: <?= (int)$thongKe['so_dang_muon_khi_mo'] ?> • 
+            Bình thường: <?= (int)$thongKe['so_tim_thay_tot'] ?> •
+            Hỏng: <?= (int)$thongKe['so_tim_thay_hong'] ?> •
+            Không tìm thấy: <?= (int)$thongKe['so_chua_tim_thay'] ?> •
+            Đang mượn: <?= (int)$thongKe['so_dang_muon_khi_mo'] ?> •
             Chưa kiểm: <?= (int)$thongKe['so_con_lai_can_kiem'] ?>
         </div>
         <div class="small text-dark mb-3">
@@ -285,7 +286,7 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
         </div>
         <div class="d-flex justify-content-end gap-2">
             <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu">Lưu nháp</a>
-            
+
             <form action="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$dot['id']) ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn chốt sổ và hoàn tất đợt kiểm kê này? Các sự cố phát sinh (nếu có) sẽ được tự động ghi nhận.');">
                 <?= csrf_field() ?>
                 <input type="hidden" name="hanh_dong" value="hoan_tat">
@@ -317,33 +318,33 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
             </thead>
             <tbody>
                 <?php if (empty($dotGanDay)): ?>
-                <tr>
-                    <td colspan="4" class="text-center py-4 text-phu">Chưa có đợt kiểm kê nào gần đây.</td>
-                </tr>
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-phu">Chưa có đợt kiểm kê nào gần đây.</td>
+                    </tr>
                 <?php else: ?>
-                <?php foreach ($dotGanDay as $d): ?>
-                <tr>
-                    <td>
-                        <div class="fw-semibold text-primary"><?= e($d['ma_dot_kiem_ke']) ?></div>
-                        <div class="mo-ta-phu"><?= e(TEN_LOAI_KIEM_KE[$d['loai_kiem_ke']] ?? $d['loai_kiem_ke']) ?> • <?= date('d/m/Y', strtotime($d['thoi_gian_bat_dau'])) ?></div>
-                    </td>
-                    <td>Phòng <?= e($d['ten_phong_truc']) ?></td>
-                    <td>
-                        <?php if ($d['trang_thai'] === 'HOAN_TAT'): ?>
-                            <span class="huy-hieu huy-hieu-thanh-cong">Đã hoàn tất</span>
-                        <?php elseif ($d['trang_thai'] === 'DANG_KIEM_KE'): ?>
-                            <span class="huy-hieu huy-hieu-chinh">Đang thực hiện</span>
-                        <?php else: ?>
-                            <span class="huy-hieu huy-hieu-xam">Đã hủy</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-end">
-                        <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$d['id']) ?>" class="btn btn-phu btn-sm">
-                            Xem
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($dotGanDay as $d): ?>
+                        <tr>
+                            <td>
+                                <div class="fw-semibold text-primary"><?= e($d['ma_dot_kiem_ke']) ?></div>
+                                <div class="mo-ta-phu"><?= e(TEN_LOAI_KIEM_KE[$d['loai_kiem_ke']] ?? $d['loai_kiem_ke']) ?> • <?= date('d/m/Y', strtotime($d['thoi_gian_bat_dau'])) ?></div>
+                            </td>
+                            <td>Phòng <?= e($d['ten_phong_truc']) ?></td>
+                            <td>
+                                <?php if ($d['trang_thai'] === 'HOAN_TAT'): ?>
+                                    <span class="huy-hieu huy-hieu-thanh-cong">Đã hoàn tất</span>
+                                <?php elseif ($d['trang_thai'] === 'DANG_KIEM_KE'): ?>
+                                    <span class="huy-hieu huy-hieu-chinh">Đang thực hiện</span>
+                                <?php else: ?>
+                                    <span class="huy-hieu huy-hieu-xam">Đã hủy</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-end">
+                                <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$d['id']) ?>" class="btn btn-phu btn-sm">
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -402,126 +403,134 @@ $dangMuon = (int)$thongKe['so_dang_muon_khi_mo'];
 
 <script src="<?= url('assets/vendor/jsqr/jsQR.js') ?>"></script>
 <script>
-function moModalGhiNhan(ct) {
-    document.getElementById('gn_chi_tiet_id').value = ct.id;
-    document.getElementById('gn_tai_san_id').value = ct.tai_san_id;
-    document.getElementById('gn_ten_thiet_bi').textContent = ct.ten_tai_san;
-    document.getElementById('gn_ma_tai_san').textContent = ct.ma_tai_san;
-    document.getElementById('gn_ket_qua').value = ct.ket_qua_kiem_ke || 'TIM_THAY';
-    document.getElementById('gn_tinh_trang_thuc_te').value = ct.tinh_trang_thuc_te || 'TOT';
-    document.getElementById('gn_ghi_chu').value = ct.ghi_chu || '';
-    doiKetQuaGhiNhan(document.getElementById('gn_ket_qua').value);
+    function moModalGhiNhan(ct) {
+        document.getElementById('gn_chi_tiet_id').value = ct.id;
+        document.getElementById('gn_tai_san_id').value = ct.tai_san_id;
+        document.getElementById('gn_ten_thiet_bi').textContent = ct.ten_tai_san;
+        document.getElementById('gn_ma_tai_san').textContent = ct.ma_tai_san;
+        document.getElementById('gn_ket_qua').value = ct.ket_qua_kiem_ke || 'TIM_THAY';
+        document.getElementById('gn_tinh_trang_thuc_te').value = ct.tinh_trang_thuc_te || 'TOT';
+        document.getElementById('gn_ghi_chu').value = ct.ghi_chu || '';
+        doiKetQuaGhiNhan(document.getElementById('gn_ket_qua').value);
 
-    const m = new bootstrap.Modal(document.getElementById('modalGhiNhan'));
-    m.show();
-}
-
-function doiKetQuaGhiNhan(val) {
-    const box = document.getElementById('gn_box_tinh_trang');
-    if (val === 'CHUA_TIM_THAY') {
-        box.style.display = 'none';
-    } else {
-        box.style.display = 'block';
+        const m = new bootstrap.Modal(document.getElementById('modalGhiNhan'));
+        m.show();
     }
-}
 
-// Tìm thiết bị
-function xuLyThemMaThietBi() {
-    const ma = document.getElementById('ma_quet_nhap').value.trim();
-    if (!ma) return;
-    window.location.href = '<?= url("kiem-ke/thuc-hien.php?id=" . (int)$dot['id']) ?>&tu_khoa=' + encodeURIComponent(ma);
-}
-
-document.getElementById('ma_quet_nhap')?.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        xuLyThemMaThietBi();
-    }
-});
-
-// Camera
-let streamCamera = null;
-let dangQuet = false;
-const videoEl = document.getElementById('videoQuetCamera');
-const canvasEl = document.getElementById('canvasQuetCamera');
-const overlayEl = document.getElementById('overlayCamera');
-const btnCamera = document.getElementById('btnBatTatCamera');
-const selCamera = document.getElementById('chonCamera');
-
-async function khoiTaoCamera() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-    try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(d => d.kind === 'videoinput');
-        selCamera.innerHTML = '<option value="">Chọn camera</option>';
-        videoDevices.forEach((d, idx) => {
-            const opt = document.createElement('option');
-            opt.value = d.deviceId;
-            opt.textContent = d.label || `Camera ${idx + 1}`;
-            selCamera.appendChild(opt);
-        });
-    } catch(e) {}
-}
-khoiTaoCamera();
-
-async function batTatCamera() {
-    if (dangQuet) {
-        dungCamera();
-    } else {
-        await batCamera();
-    }
-}
-
-async function batCamera() {
-    const devId = selCamera.value;
-    const constraints = {
-        video: devId ? { deviceId: { exact: devId } } : { facingMode: 'environment' }
-    };
-    try {
-        streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
-        videoEl.srcObject = streamCamera;
-        videoEl.style.display = 'block';
-        overlayEl.style.display = 'none';
-        await videoEl.play();
-        dangQuet = true;
-        btnCamera.textContent = 'Tắt camera';
-        btnCamera.classList.replace('btn-phu', 'btn-danger');
-        requestAnimationFrame(quetVongLap);
-    } catch(e) {
-        alert('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
-    }
-}
-
-function dungCamera() {
-    if (streamCamera) {
-        streamCamera.getTracks().forEach(t => t.stop());
-        streamCamera = null;
-    }
-    dangQuet = false;
-    videoEl.style.display = 'none';
-    overlayEl.style.display = 'flex';
-    btnCamera.textContent = 'Bật camera';
-    btnCamera.classList.replace('btn-danger', 'btn-phu');
-}
-
-function quetVongLap() {
-    if (!dangQuet) return;
-    if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
-        canvasEl.width = videoEl.videoWidth;
-        canvasEl.height = videoEl.videoHeight;
-        const ctx = canvasEl.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
-        const imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
-        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-
-        if (code && code.data) {
-            dungCamera();
-            window.location.href = '<?= url("kiem-ke/thuc-hien.php?id=" . (int)$dot['id']) ?>&tu_khoa=' + encodeURIComponent(code.data);
-            return;
+    function doiKetQuaGhiNhan(val) {
+        const box = document.getElementById('gn_box_tinh_trang');
+        if (val === 'CHUA_TIM_THAY') {
+            box.style.display = 'none';
+        } else {
+            box.style.display = 'block';
         }
     }
-    requestAnimationFrame(quetVongLap);
-}
+
+    // Tìm thiết bị
+    function xuLyThemMaThietBi() {
+        const ma = document.getElementById('ma_quet_nhap').value.trim();
+        if (!ma) return;
+        window.location.href = '<?= url("kiem-ke/thuc-hien.php?id=" . (int)$dot['id']) ?>&tu_khoa=' + encodeURIComponent(ma);
+    }
+
+    document.getElementById('ma_quet_nhap')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            xuLyThemMaThietBi();
+        }
+    });
+
+    // Camera
+    let streamCamera = null;
+    let dangQuet = false;
+    const videoEl = document.getElementById('videoQuetCamera');
+    const canvasEl = document.getElementById('canvasQuetCamera');
+    const overlayEl = document.getElementById('overlayCamera');
+    const btnCamera = document.getElementById('btnBatTatCamera');
+    const selCamera = document.getElementById('chonCamera');
+
+    async function khoiTaoCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(d => d.kind === 'videoinput');
+            selCamera.innerHTML = '<option value="">Chọn camera</option>';
+            videoDevices.forEach((d, idx) => {
+                const opt = document.createElement('option');
+                opt.value = d.deviceId;
+                opt.textContent = d.label || `Camera ${idx + 1}`;
+                selCamera.appendChild(opt);
+            });
+        } catch (e) {}
+    }
+    khoiTaoCamera();
+
+    async function batTatCamera() {
+        if (dangQuet) {
+            dungCamera();
+        } else {
+            await batCamera();
+        }
+    }
+
+    async function batCamera() {
+        const devId = selCamera.value;
+        const constraints = {
+            video: devId ? {
+                deviceId: {
+                    exact: devId
+                }
+            } : {
+                facingMode: 'environment'
+            }
+        };
+        try {
+            streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
+            videoEl.srcObject = streamCamera;
+            videoEl.style.display = 'block';
+            overlayEl.style.display = 'none';
+            await videoEl.play();
+            dangQuet = true;
+            btnCamera.textContent = 'Tắt camera';
+            btnCamera.classList.replace('btn-phu', 'btn-danger');
+            requestAnimationFrame(quetVongLap);
+        } catch (e) {
+            alert('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+        }
+    }
+
+    function dungCamera() {
+        if (streamCamera) {
+            streamCamera.getTracks().forEach(t => t.stop());
+            streamCamera = null;
+        }
+        dangQuet = false;
+        videoEl.style.display = 'none';
+        overlayEl.style.display = 'flex';
+        btnCamera.textContent = 'Bật camera';
+        btnCamera.classList.replace('btn-danger', 'btn-phu');
+    }
+
+    function quetVongLap() {
+        if (!dangQuet) return;
+        if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+            canvasEl.width = videoEl.videoWidth;
+            canvasEl.height = videoEl.videoHeight;
+            const ctx = canvasEl.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+            const imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+            const code = jsQR(imgData.data, imgData.width, imgData.height, {
+                inversionAttempts: 'dontInvert'
+            });
+
+            if (code && code.data) {
+                dungCamera();
+                window.location.href = '<?= url("kiem-ke/thuc-hien.php?id=" . (int)$dot['id']) ?>&tu_khoa=' + encodeURIComponent(code.data);
+                return;
+            }
+        }
+        requestAnimationFrame(quetVongLap);
+    }
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

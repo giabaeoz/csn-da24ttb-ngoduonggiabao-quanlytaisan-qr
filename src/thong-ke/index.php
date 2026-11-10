@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Controller: Tra cứu, thống kê (Bám sát Trang tra cứu - thống kê.pdf)
  */
@@ -44,7 +45,7 @@ $danhSachPhongHoc = phong_hoc_danh_sach(true);
 $danhSachPhongTruc = phong_truc_danh_sach(true);
 
 // =========================================================================
-// TAB 1: MƯỢN – TRẢ (Khớp chính xác Trang tra cứu - thống kê.pdf)
+// TAB 1: MƯỢN - TRẢ (Khớp chính xác Trang tra cứu - thống kê.pdf)
 // =========================================================================
 if ($tab === 'muon-tra') {
     $where = " WHERE 1=1";
@@ -187,7 +188,7 @@ if ($tab === 'muon-tra') {
     $kpiDaTraDu = (int)($rowKpi['phieu_da_tra_du'] ?? 0);
     $kpiChuaTraDu = (int)($rowKpi['phieu_chua_tra_du'] ?? 0);
 
-    // Biểu đồ 1: Mượn – trả theo ngày (3 ngày gần nhất hoặc theo khoảng lọc)
+    // Biểu đồ 1: Mượn - trả theo ngày (3 ngày gần nhất hoặc theo khoảng lọc)
     $chartLabels = [];
     $chartMuon = [];
     $chartTra = [];

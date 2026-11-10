@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện Quản lý Chủng loại tài sản - Chuẩn Design System
  */
@@ -68,67 +69,67 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </thead>
                 <tbody>
                     <?php if (empty($danhSachLoai)): ?>
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">
-                            Chưa có loại tài sản nào.
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Chưa có loại tài sản nào.
+                            </td>
+                        </tr>
                     <?php else: ?>
-                    <?php foreach ($danhSachLoai as $loai): ?>
-                    <tr>
-                        <td class="fw-semibold text-primary">
-                            <span class="badge bg-light text-primary border">
-                                <?= e($loai['ma_loai']) ?>
-                            </span>
-                        </td>
-                        <td class="fw-medium text-dark">
-                            <?= e($loai['ten_loai']) ?>
-                        </td>
-                        <td class="text-secondary small">
-                            <?= e($loai['mo_ta'] ?: '—') ?>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-primary border px-2 py-1">
-                                <?= (int)$loai['so_tai_san'] ?> thiết bị
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <?php if ((int)$loai['dang_hoat_dong'] === 1): ?>
-                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang hoạt động</span>
-                            <?php else: ?>
-                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm tắt</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-end">
-                            <div class="d-flex justify-content-end gap-1">
-                                <button type="button" class="btn btn-sm btn-phu"
-                                        onclick='moModalSua(<?= json_encode($loai, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                    Sửa
-                                </button>
+                        <?php foreach ($danhSachLoai as $loai): ?>
+                            <tr>
+                                <td class="fw-semibold text-primary">
+                                    <span class="badge bg-light text-primary border">
+                                        <?= e($loai['ma_loai']) ?>
+                                    </span>
+                                </td>
+                                <td class="fw-medium text-dark">
+                                    <?= e($loai['ten_loai']) ?>
+                                </td>
+                                <td class="text-secondary small">
+                                    <?= e($loai['mo_ta'] ?: '-') ?>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-primary border px-2 py-1">
+                                        <?= (int)$loai['so_tai_san'] ?> thiết bị
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <?php if ((int)$loai['dang_hoat_dong'] === 1): ?>
+                                        <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang hoạt động</span>
+                                    <?php else: ?>
+                                        <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm tắt</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <button type="button" class="btn btn-sm btn-phu"
+                                            onclick='moModalSua(<?= json_encode($loai, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                                            Sửa
+                                        </button>
 
-                                <form action="<?= url('danh-muc/loai-tai-san.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái loại tài sản này?');">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="hanh_dong" value="doi_trang_thai">
-                                    <input type="hidden" name="id" value="<?= (int)$loai['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-phu">
-                                        <?= (int)$loai['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
-                                    </button>
-                                </form>
+                                        <form action="<?= url('danh-muc/loai-tai-san.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái loại tài sản này?');">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="hanh_dong" value="doi_trang_thai">
+                                            <input type="hidden" name="id" value="<?= (int)$loai['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-phu">
+                                                <?= (int)$loai['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
+                                            </button>
+                                        </form>
 
-                                <?php if ((int)$loai['so_tai_san'] === 0): ?>
-                                <form action="<?= url('danh-muc/loai-tai-san.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn XÓA loại tài sản này?');">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="hanh_dong" value="xoa">
-                                    <input type="hidden" name="id" value="<?= (int)$loai['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-phu text-danger">
-                                        Xóa
-                                    </button>
-                                </form>
-                                <?php endif; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                                        <?php if ((int)$loai['so_tai_san'] === 0): ?>
+                                            <form action="<?= url('danh-muc/loai-tai-san.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn XÓA loại tài sản này?');">
+                                                <?= csrf_field() ?>
+                                                <input type="hidden" name="hanh_dong" value="xoa">
+                                                <input type="hidden" name="id" value="<?= (int)$loai['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-phu text-danger">
+                                                    Xóa
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -185,27 +186,27 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <script>
-function moModalThem() {
-    document.getElementById('modalLoaiTieuDe').innerText = 'Thêm loại tài sản mới';
-    document.getElementById('modal_loai_id').value = '';
-    document.getElementById('modal_loai_ma').value = '';
-    document.getElementById('modal_loai_ma').readOnly = false;
-    document.getElementById('modal_loai_ten').value = '';
-    document.getElementById('modal_loai_mota').value = '';
-    document.getElementById('modal_loai_hoatdong').checked = true;
-}
+    function moModalThem() {
+        document.getElementById('modalLoaiTieuDe').innerText = 'Thêm loại tài sản mới';
+        document.getElementById('modal_loai_id').value = '';
+        document.getElementById('modal_loai_ma').value = '';
+        document.getElementById('modal_loai_ma').readOnly = false;
+        document.getElementById('modal_loai_ten').value = '';
+        document.getElementById('modal_loai_mota').value = '';
+        document.getElementById('modal_loai_hoatdong').checked = true;
+    }
 
-function moModalSua(loai) {
-    document.getElementById('modalLoaiTieuDe').innerText = 'Chỉnh sửa loại: ' + loai.ma_loai;
-    document.getElementById('modal_loai_id').value = loai.id;
-    document.getElementById('modal_loai_ma').value = loai.ma_loai;
-    document.getElementById('modal_loai_ten').value = loai.ten_loai;
-    document.getElementById('modal_loai_mota').value = loai.mo_ta || '';
-    document.getElementById('modal_loai_hoatdong').checked = parseInt(loai.dang_hoat_dong, 10) === 1;
+    function moModalSua(loai) {
+        document.getElementById('modalLoaiTieuDe').innerText = 'Chỉnh sửa loại: ' + loai.ma_loai;
+        document.getElementById('modal_loai_id').value = loai.id;
+        document.getElementById('modal_loai_ma').value = loai.ma_loai;
+        document.getElementById('modal_loai_ten').value = loai.ten_loai;
+        document.getElementById('modal_loai_mota').value = loai.mo_ta || '';
+        document.getElementById('modal_loai_hoatdong').checked = parseInt(loai.dang_hoat_dong, 10) === 1;
 
-    const modal = new bootstrap.Modal(document.getElementById('modalLoai'));
-    modal.show();
-}
+        const modal = new bootstrap.Modal(document.getElementById('modalLoai'));
+        modal.show();
+    }
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

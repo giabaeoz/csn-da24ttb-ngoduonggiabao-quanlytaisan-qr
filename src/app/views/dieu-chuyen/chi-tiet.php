@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện: Chi tiết phiếu điều chuyển và in biên bản bàn giao - Chuẩn Design System
  */
@@ -22,34 +23,49 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
 ?>
 
 <style>
-@media print {
-    #sidebarMenu, .topbar-app, .navbar, .btn-toolbar, .no-print, nav[aria-label="breadcrumb"], footer, .sidebar-app {
-        display: none !important;
+    @media print {
+
+        #sidebarMenu,
+        .topbar-app,
+        .navbar,
+        .btn-toolbar,
+        .no-print,
+        nav[aria-label="breadcrumb"],
+        footer,
+        .sidebar-app {
+            display: none !important;
+        }
+
+        .khung-ung-dung {
+            display: block !important;
+        }
+
+        .vung-noi-dung,
+        .noi-dung-chinh {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .the-noi-dung {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .print-only {
+            display: block !important;
+        }
+
+        body {
+            background-color: #fff !important;
+            color: #000 !important;
+            font-size: 13px !important;
+        }
     }
-    .khung-ung-dung {
-        display: block !important;
-    }
-    .vung-noi-dung, .noi-dung-chinh {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .the-noi-dung {
-        border: none !important;
-        box-shadow: none !important;
-    }
+
     .print-only {
-        display: block !important;
+        display: none;
     }
-    body {
-        background-color: #fff !important;
-        color: #000 !important;
-        font-size: 13px !important;
-    }
-}
-.print-only {
-    display: none;
-}
 </style>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
@@ -117,7 +133,7 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                     <div class="col-sm-6">
                         <label class="text-muted small">Cán bộ lập phiếu:</label>
                         <div class="fw-semibold text-dark">
-                            <?= e($phieu['ho_ten_nguoi_lap']) ?> 
+                            <?= e($phieu['ho_ten_nguoi_lap']) ?>
                             <span class="text-muted font-monospace">(<?= e($phieu['ma_nhan_vien_lap']) ?>)</span>
                         </div>
                     </div>
@@ -192,12 +208,13 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                                     <td colspan="6" class="text-center py-4 text-muted">Không có thiết bị trong phiếu.</td>
                                 </tr>
                             <?php else: ?>
-                                <?php $stt = 1; foreach ($dsChiTiet as $item): ?>
+                                <?php $stt = 1;
+                                foreach ($dsChiTiet as $item): ?>
                                     <tr>
                                         <td class="text-center text-muted small"><?= $stt++ ?></td>
                                         <td>
-                                            <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$item['tai_san_id']) ?>" 
-                                               class="font-monospace fw-semibold text-primary text-decoration-none">
+                                            <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$item['tai_san_id']) ?>"
+                                                class="font-monospace fw-semibold text-primary text-decoration-none">
                                                 <?= e($item['ma_tai_san']) ?>
                                             </a>
                                         </td>
@@ -206,7 +223,7 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                                             <div class="small text-muted"><?= e($item['ten_loai_tai_san']) ?></div>
                                         </td>
                                         <td class="small text-muted">
-                                            <?= e((string)($item['hang_san_xuat'] ?? '') . ($item['model'] ? ' / ' . $item['model'] : '')) ?: '—' ?>
+                                            <?= e((string)($item['hang_san_xuat'] ?? '') . ($item['model'] ? ' / ' . $item['model'] : '')) ?: '-' ?>
                                         </td>
                                         <td class="text-center">
                                             <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">
@@ -255,8 +272,8 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
         <div class="the-noi-dung text-center p-3 mb-3">
             <h3 class="tieu-de-khoi mb-3">Mã QR phiếu điều chuyển</h3>
             <div class="d-flex justify-content-center mb-3">
-                <div id="transfer_qr" data-qr="<?= e($phieu['ma_dieu_chuyen']) ?>" data-qr-size="160" 
-                     class="p-2 bg-white border" style="min-width: 164px; min-height: 164px;"></div>
+                <div id="transfer_qr" data-qr="<?= e($phieu['ma_dieu_chuyen']) ?>" data-qr-size="160"
+                    class="p-2 bg-white border" style="min-width: 164px; min-height: 164px;"></div>
             </div>
             <div class="font-monospace fw-semibold text-primary fs-6 mb-1"><?= e($phieu['ma_dieu_chuyen']) ?></div>
             <div class="mo-ta-phu mb-0">Quét mã QR này để tra cứu nhanh thông tin phiếu.</div>
@@ -285,12 +302,14 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const el = document.getElementById('transfer_qr');
-    if (el && typeof taoMaQr === 'function') {
-        taoMaQr(el, el.getAttribute('data-qr') || '', { size: 160 });
-    }
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        const el = document.getElementById('transfer_qr');
+        if (el && typeof taoMaQr === 'function') {
+            taoMaQr(el, el.getAttribute('data-qr') || '', {
+                size: 160
+            });
+        }
+    });
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

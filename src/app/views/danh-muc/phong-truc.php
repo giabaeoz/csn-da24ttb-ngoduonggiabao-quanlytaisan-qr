@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện Quản lý Phòng trực thiết bị - Chuẩn Design System
  */
@@ -69,72 +70,72 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </thead>
                 <tbody>
                     <?php if (empty($danhSachPhongTruc)): ?>
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            Chưa có phòng trực nào trong hệ thống.
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                Chưa có phòng trực nào trong hệ thống.
+                            </td>
+                        </tr>
                     <?php else: ?>
-                    <?php foreach ($danhSachPhongTruc as $pt): ?>
-                    <tr>
-                        <td class="fw-semibold text-primary">
-                            <span class="badge bg-light text-primary border">
-                                <?= e($pt['ma_phong_truc']) ?>
-                            </span>
-                        </td>
-                        <td class="fw-medium text-dark">
-                            <?= e($pt['ten_phong_truc']) ?>
-                        </td>
-                        <td class="text-secondary small">
-                            <?= e($pt['vi_tri'] ?: '—') ?>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-secondary border px-2 py-1">
-                                <?= (int)$pt['so_nhan_vien'] ?> cán bộ
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-primary border px-2 py-1">
-                                <?= (int)$pt['so_tai_san'] ?> thiết bị
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <?php if ((int)$pt['dang_hoat_dong'] === 1): ?>
-                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang hoạt động</span>
-                            <?php else: ?>
-                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm tắt</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-end">
-                            <div class="d-flex justify-content-end gap-1">
-                                <button type="button" class="btn btn-sm btn-phu" 
-                                        onclick='moModalSua(<?= json_encode($pt, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                    Sửa
-                                </button>
+                        <?php foreach ($danhSachPhongTruc as $pt): ?>
+                            <tr>
+                                <td class="fw-semibold text-primary">
+                                    <span class="badge bg-light text-primary border">
+                                        <?= e($pt['ma_phong_truc']) ?>
+                                    </span>
+                                </td>
+                                <td class="fw-medium text-dark">
+                                    <?= e($pt['ten_phong_truc']) ?>
+                                </td>
+                                <td class="text-secondary small">
+                                    <?= e($pt['vi_tri'] ?: '-') ?>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-secondary border px-2 py-1">
+                                        <?= (int)$pt['so_nhan_vien'] ?> cán bộ
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-primary border px-2 py-1">
+                                        <?= (int)$pt['so_tai_san'] ?> thiết bị
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <?php if ((int)$pt['dang_hoat_dong'] === 1): ?>
+                                        <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang hoạt động</span>
+                                    <?php else: ?>
+                                        <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm tắt</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <button type="button" class="btn btn-sm btn-phu"
+                                            onclick='moModalSua(<?= json_encode($pt, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                                            Sửa
+                                        </button>
 
-                                <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng trực này?');">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="hanh_dong" value="doi_trang_thai">
-                                    <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-phu">
-                                        <?= (int)$pt['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
-                                    </button>
-                                </form>
+                                        <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng trực này?');">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="hanh_dong" value="doi_trang_thai">
+                                            <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-phu">
+                                                <?= (int)$pt['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
+                                            </button>
+                                        </form>
 
-                                <?php if ((int)$pt['so_nhan_vien'] === 0 && (int)$pt['so_tai_san'] === 0): ?>
-                                <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA phòng trực này? Thao tác không thể hoàn tác.');">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="hanh_dong" value="xoa">
-                                    <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-phu text-danger">
-                                        Xóa
-                                    </button>
-                                </form>
-                                <?php endif; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                                        <?php if ((int)$pt['so_nhan_vien'] === 0 && (int)$pt['so_tai_san'] === 0): ?>
+                                            <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA phòng trực này? Thao tác không thể hoàn tác.');">
+                                                <?= csrf_field() ?>
+                                                <input type="hidden" name="hanh_dong" value="xoa">
+                                                <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-phu text-danger">
+                                                    Xóa
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -191,27 +192,27 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <script>
-function moModalThem() {
-    document.getElementById('modalTieuDe').innerText = 'Thêm phòng trực mới';
-    document.getElementById('modal_id').value = '';
-    document.getElementById('modal_ma').value = '';
-    document.getElementById('modal_ma').readOnly = false;
-    document.getElementById('modal_ten').value = '';
-    document.getElementById('modal_vi_tri').value = '';
-    document.getElementById('modal_hoat_dong').checked = true;
-}
+    function moModalThem() {
+        document.getElementById('modalTieuDe').innerText = 'Thêm phòng trực mới';
+        document.getElementById('modal_id').value = '';
+        document.getElementById('modal_ma').value = '';
+        document.getElementById('modal_ma').readOnly = false;
+        document.getElementById('modal_ten').value = '';
+        document.getElementById('modal_vi_tri').value = '';
+        document.getElementById('modal_hoat_dong').checked = true;
+    }
 
-function moModalSua(pt) {
-    document.getElementById('modalTieuDe').innerText = 'Chỉnh sửa phòng trực: ' + pt.ma_phong_truc;
-    document.getElementById('modal_id').value = pt.id;
-    document.getElementById('modal_ma').value = pt.ma_phong_truc;
-    document.getElementById('modal_ten').value = pt.ten_phong_truc;
-    document.getElementById('modal_vi_tri').value = pt.vi_tri || '';
-    document.getElementById('modal_hoat_dong').checked = parseInt(pt.dang_hoat_dong, 10) === 1;
+    function moModalSua(pt) {
+        document.getElementById('modalTieuDe').innerText = 'Chỉnh sửa phòng trực: ' + pt.ma_phong_truc;
+        document.getElementById('modal_id').value = pt.id;
+        document.getElementById('modal_ma').value = pt.ma_phong_truc;
+        document.getElementById('modal_ten').value = pt.ten_phong_truc;
+        document.getElementById('modal_vi_tri').value = pt.vi_tri || '';
+        document.getElementById('modal_hoat_dong').checked = parseInt(pt.dang_hoat_dong, 10) === 1;
 
-    const modal = new bootstrap.Modal(document.getElementById('modalPhongTruc'));
-    modal.show();
-}
+        const modal = new bootstrap.Modal(document.getElementById('modalPhongTruc'));
+        modal.show();
+    }
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

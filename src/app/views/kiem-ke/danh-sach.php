@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện: Danh sách các đợt kiểm kê tài sản (G8).
  */
@@ -49,7 +50,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 Đợt kiểm kê <span class="font-monospace">[<?= e($dotDangMo['ma_dot_kiem_ke']) ?>]</span> đang diễn ra
             </div>
             <div class="small text-muted">
-                <?= e($dotDangMo['ten_dot_kiem_ke']) ?> — Còn lại <strong><?= (int)($dotDangMo['thong_ke']['so_con_lai_can_kiem'] ?? 0) ?></strong> thiết bị cần đối chiếu thực tế.
+                <?= e($dotDangMo['ten_dot_kiem_ke']) ?> - Còn lại <strong><?= (int)($dotDangMo['thong_ke']['so_con_lai_can_kiem'] ?? 0) ?></strong> thiết bị cần đối chiếu thực tế.
             </div>
         </div>
         <div>
@@ -66,8 +67,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <form action="<?= url('kiem-ke/index.php') ?>" method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Từ khóa tìm kiếm</label>
-                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã đợt, tên đợt, cán bộ..." 
-                       value="<?= e($boLoc['tu_khoa']) ?>">
+                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã đợt, tên đợt, cán bộ..."
+                    value="<?= e($boLoc['tu_khoa']) ?>">
             </div>
 
             <div class="col-6 col-md-2">
@@ -196,13 +197,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             </td>
                             <td class="text-end pe-3">
                                 <?php if ($item['trang_thai'] === KIEM_KE_DANG_KIEM_KE): ?>
-                                    <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$item['id']) ?>" 
-                                       class="btn btn-chinh btn-sm">
+                                    <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$item['id']) ?>"
+                                        class="btn btn-chinh btn-sm">
                                         Kiểm tra
                                     </a>
                                 <?php else: ?>
-                                    <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$item['id']) ?>" 
-                                       class="btn btn-phu btn-sm">
+                                    <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$item['id']) ?>"
+                                        class="btn btn-phu btn-sm">
                                         Báo cáo
                                     </a>
                                 <?php endif; ?>

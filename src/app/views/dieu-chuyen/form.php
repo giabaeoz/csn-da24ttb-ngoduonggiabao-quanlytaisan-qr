@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện Lập phiếu Điều chuyển tài sản - Khớp chính xác Tra điều chuyển.pdf
  */
@@ -30,16 +31,16 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <?php if ($dangKiemKe): ?>
-<div class="alert alert-danger mb-4" role="alert">
-    Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.
-</div>
+    <div class="alert alert-danger mb-4" role="alert">
+        Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.
+    </div>
 <?php endif; ?>
 
 <?php if (!empty($loi)): ?>
-<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-    <?= e($loi) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-</div>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <?= e($loi) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
 <?php endif; ?>
 
 <form action="<?= url('dieu-chuyen/them.php') ?>" method="POST" id="formDieuChuyen" class="<?= $dangKiemKe ? 'opacity-50 pe-none' : '' ?>">
@@ -68,10 +69,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <select id="chonCamera" class="form-select form-select-sm">
                                 <option value="">Chọn camera</option>
                             </select>
-                            
+
                             <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" id="ma_quet_nhap" 
-                                       placeholder="Nhập mã khi không quét được" autocomplete="off">
+                                <input type="text" class="form-control" id="ma_quet_nhap"
+                                    placeholder="Nhập mã khi không quét được" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
                                     Thêm
                                 </button>
@@ -131,9 +132,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <select id="phong_hoc_di_id" name="phong_hoc_di_id" class="form-select" onchange="doiPhongDi(this)">
                                 <option value="">Chọn phòng đi</option>
                                 <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" <?= ((int)$duLieu['phong_hoc_di_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
-                                    <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
-                                </option>
+                                    <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" <?= ((int)$duLieu['phong_hoc_di_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
+                                        <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -142,9 +143,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <select id="phong_hoc_den_id" name="phong_hoc_den_id" class="form-select" onchange="doiPhongDen(this)">
                                 <option value="">Chọn phòng đến</option>
                                 <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" <?= ((int)$duLieu['phong_hoc_den_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
-                                    <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
-                                </option>
+                                    <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" <?= ((int)$duLieu['phong_hoc_den_id'] === (int)$ph['id']) ? 'selected' : '' ?>>
+                                        <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -152,17 +153,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
                     <div class="mb-2">
                         <label class="form-label">Lý do điều chuyển</label>
-                        <textarea class="form-control" name="ly_do" id="inputLyDo" rows="2" 
-                                  placeholder="Nhập lý do điều chuyển thiết bị..." oninput="capNhatPreview()"><?= e($duLieu['ly_do']) ?></textarea>
+                        <textarea class="form-control" name="ly_do" id="inputLyDo" rows="2"
+                            placeholder="Nhập lý do điều chuyển thiết bị..." oninput="capNhatPreview()"><?= e($duLieu['ly_do']) ?></textarea>
                     </div>
                     <div class="mo-ta-phu">Thời gian: tự ghi nhận khi xác nhận</div>
                 </div>
             </div>
 
-            <!-- Khối: Thiết bị điều chuyển — đã quét -->
+            <!-- Khối: Thiết bị điều chuyển - đã quét -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="tieu-de-khoi mb-0">Thiết bị điều chuyển — đã quét (<span id="demThietBi">0</span>)</h2>
+                    <h2 class="tieu-de-khoi mb-0">Thiết bị điều chuyển - đã quét (<span id="demThietBi">0</span>)</h2>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
@@ -227,24 +228,24 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </thead>
             <tbody>
                 <?php if (empty($dieuChuyenGanDay)): ?>
-                <tr>
-                    <td colspan="6" class="text-center py-4 text-phu">Chưa có phiếu điều chuyển nào gần đây.</td>
-                </tr>
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-phu">Chưa có phiếu điều chuyển nào gần đây.</td>
+                    </tr>
                 <?php else: ?>
-                <?php foreach ($dieuChuyenGanDay as $dc): ?>
-                <tr>
-                    <td class="fw-semibold text-primary"><?= e($dc['ma_dieu_chuyen']) ?></td>
-                    <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
-                    <td><?= e($dc['ma_phong_di']) ?></td>
-                    <td><?= e($dc['ma_phong_den']) ?></td>
-                    <td><?= (int)$dc['tong_so_thiet_bi'] ?></td>
-                    <td class="text-end">
-                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
-                            Xem phiếu
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($dieuChuyenGanDay as $dc): ?>
+                        <tr>
+                            <td class="fw-semibold text-primary"><?= e($dc['ma_dieu_chuyen']) ?></td>
+                            <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
+                            <td><?= e($dc['ma_phong_di']) ?></td>
+                            <td><?= e($dc['ma_phong_den']) ?></td>
+                            <td><?= (int)$dc['tong_so_thiet_bi'] ?></td>
+                            <td class="text-end">
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
+                                    Xem phiếu
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -253,95 +254,98 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <script src="<?= url('assets/vendor/jsqr/jsQR.js') ?>"></script>
 <script>
-const danhSachThietBi = [];
+    const danhSachThietBi = [];
 
-function doiPhongDi(sel) {
-    capNhatPreview();
-}
+    function doiPhongDi(sel) {
+        capNhatPreview();
+    }
 
-function doiPhongDen(sel) {
-    capNhatPreview();
-}
+    function doiPhongDen(sel) {
+        capNhatPreview();
+    }
 
-// Tìm & thêm thiết bị
-const inputMaQuet = document.getElementById('ma_quet_nhap');
-const thongBaoLoiQuet = document.getElementById('thongBaoQuetLoi');
+    // Tìm & thêm thiết bị
+    const inputMaQuet = document.getElementById('ma_quet_nhap');
+    const thongBaoLoiQuet = document.getElementById('thongBaoQuetLoi');
 
-if (inputMaQuet) {
-    inputMaQuet.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); xuLyThemMaThietBi(); }
-    });
-}
+    if (inputMaQuet) {
+        inputMaQuet.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                xuLyThemMaThietBi();
+            }
+        });
+    }
 
-async function xuLyThemMaThietBi() {
-    const ma = inputMaQuet.value.trim();
-    if (!ma) return;
-    await traCuuVaThem(ma);
-}
+    async function xuLyThemMaThietBi() {
+        const ma = inputMaQuet.value.trim();
+        if (!ma) return;
+        await traCuuVaThem(ma);
+    }
 
-async function traCuuVaThem(ma) {
-    thongBaoLoiQuet.classList.add('d-none');
-    try {
-        const res = await fetch('<?= url("api/tra-cuu-qr.php") ?>?ma=' + encodeURIComponent(ma) + '&hanh_dong=DIEU_CHUYEN');
-        const json = await res.json();
+    async function traCuuVaThem(ma) {
+        thongBaoLoiQuet.classList.add('d-none');
+        try {
+            const res = await fetch('<?= url("api/tra-cuu-qr.php") ?>?ma=' + encodeURIComponent(ma) + '&hanh_dong=DIEU_CHUYEN');
+            const json = await res.json();
 
-        if (!json.thanh_cong) {
-            hienLoiQuet(json.thong_diep || 'Không tìm thấy thiết bị hợp lệ.');
-            return;
+            if (!json.thanh_cong) {
+                hienLoiQuet(json.thong_diep || 'Không tìm thấy thiết bị hợp lệ.');
+                return;
+            }
+
+            const ts = json.du_lieu;
+            if (danhSachThietBi.some(item => item.id === ts.id)) {
+                hienLoiQuet(`Thiết bị [${ts.ma_tai_san}] đã có trong danh sách.`);
+                return;
+            }
+
+            danhSachThietBi.push(ts);
+            inputMaQuet.value = '';
+            capNhatBangThietBi();
+            capNhatPreview();
+        } catch (e) {
+            hienLoiQuet('Lỗi kết nối máy chủ.');
         }
+    }
 
-        const ts = json.du_lieu;
-        if (danhSachThietBi.some(item => item.id === ts.id)) {
-            hienLoiQuet(`Thiết bị [${ts.ma_tai_san}] đã có trong danh sách.`);
-            return;
-        }
+    function hienLoiQuet(msg) {
+        thongBaoLoiQuet.textContent = msg;
+        thongBaoLoiQuet.classList.remove('d-none');
+    }
 
-        danhSachThietBi.push(ts);
-        inputMaQuet.value = '';
+    function boThietBi(idx) {
+        danhSachThietBi.splice(idx, 1);
         capNhatBangThietBi();
         capNhatPreview();
-    } catch(e) {
-        hienLoiQuet('Lỗi kết nối máy chủ.');
-    }
-}
-
-function hienLoiQuet(msg) {
-    thongBaoLoiQuet.textContent = msg;
-    thongBaoLoiQuet.classList.remove('d-none');
-}
-
-function boThietBi(idx) {
-    danhSachThietBi.splice(idx, 1);
-    capNhatBangThietBi();
-    capNhatPreview();
-}
-
-function capNhatBangThietBi() {
-    const tbody = document.getElementById('bangThietBiDieuChuyen');
-    const demEl = document.getElementById('demThietBi');
-    const hiddenContainer = document.getElementById('vungTaiSanIds');
-    demEl.textContent = danhSachThietBi.length;
-
-    hiddenContainer.innerHTML = '';
-    if (danhSachThietBi.length === 0) {
-        tbody.innerHTML = '<tr id="hangChuaCoThietBi"><td colspan="3" class="text-center py-4 text-phu">Chưa có thiết bị nào được quét.</td></tr>';
-        return;
     }
 
-    tbody.innerHTML = '';
-    danhSachThietBi.forEach((ts, idx) => {
-        const inp = document.createElement('input');
-        inp.type = 'hidden';
-        inp.name = 'tai_san_ids[]';
-        inp.value = ts.id;
-        hiddenContainer.appendChild(inp);
+    function capNhatBangThietBi() {
+        const tbody = document.getElementById('bangThietBiDieuChuyen');
+        const demEl = document.getElementById('demThietBi');
+        const hiddenContainer = document.getElementById('vungTaiSanIds');
+        demEl.textContent = danhSachThietBi.length;
 
-        const phongHt = ts.phong_hoc_hien_tai_ma ? `Phòng hiện tại: ${ts.phong_hoc_hien_tai_ma}` : 'Phòng trực';
+        hiddenContainer.innerHTML = '';
+        if (danhSachThietBi.length === 0) {
+            tbody.innerHTML = '<tr id="hangChuaCoThietBi"><td colspan="3" class="text-center py-4 text-phu">Chưa có thiết bị nào được quét.</td></tr>';
+            return;
+        }
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+        tbody.innerHTML = '';
+        danhSachThietBi.forEach((ts, idx) => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'tai_san_ids[]';
+            inp.value = ts.id;
+            hiddenContainer.appendChild(inp);
+
+            const phongHt = ts.phong_hoc_hien_tai_ma ? `Phòng hiện tại: ${ts.phong_hoc_hien_tai_ma}` : 'Phòng trực';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
             <td>
-                <div class="fw-semibold text-dark">${escapeHtml(ts.ma_tai_san)} — ${escapeHtml(ts.ten_tai_san)}</div>
+                <div class="fw-semibold text-dark">${escapeHtml(ts.ma_tai_san)} - ${escapeHtml(ts.ten_tai_san)}</div>
                 <div class="mo-ta-phu">${escapeHtml(phongHt)}</div>
             </td>
             <td>Bình thường</td>
@@ -351,131 +355,147 @@ function capNhatBangThietBi() {
                 </button>
             </td>
         `;
-        tbody.appendChild(tr);
-    });
-}
-
-function capNhatPreview() {
-    const selDi = document.getElementById('phong_hoc_di_id');
-    const selDen = document.getElementById('phong_hoc_den_id');
-    const maDi = selDi.options[selDi.selectedIndex]?.getAttribute('data-ma') || '---';
-    const maDen = selDen.options[selDen.selectedIndex]?.getAttribute('data-ma') || '---';
-    const lyDo = document.getElementById('inputLyDo').value.trim() || '---';
-    const daCamKet = document.getElementById('xac_nhan_tuong_thich').checked;
-
-    document.getElementById('pvLoTrinh').textContent = `Phòng đi: ${maDi} → Phòng đến: ${maDen}`;
-    document.getElementById('pvLyDo').textContent = `Lý do: ${lyDo}`;
-
-    const pvTbody = document.getElementById('pvDanhSachThietBi');
-    if (danhSachThietBi.length === 0) {
-        pvTbody.innerHTML = '<tr><td colspan="2" class="text-center text-phu py-3">Chưa có thiết bị nào</td></tr>';
-    } else {
-        pvTbody.innerHTML = '';
-        danhSachThietBi.forEach(ts => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${escapeHtml(ts.ma_tai_san)} — ${escapeHtml(ts.ten_tai_san)}</td><td class="text-end">1</td>`;
-            pvTbody.appendChild(tr);
+            tbody.appendChild(tr);
         });
     }
-    document.getElementById('pvTongCongThietBi').textContent = `Tổng cộng: ${danhSachThietBi.length} thiết bị`;
 
-    const btnSubmit = document.getElementById('btnXacNhanDieuChuyen');
-    const hopLe = (maDi !== '---') && (maDen !== '---') && (maDi !== maDen) && (lyDo !== '---') && daCamKet && (danhSachThietBi.length > 0);
-    btnSubmit.disabled = !hopLe;
-}
+    function capNhatPreview() {
+        const selDi = document.getElementById('phong_hoc_di_id');
+        const selDen = document.getElementById('phong_hoc_den_id');
+        const maDi = selDi.options[selDi.selectedIndex]?.getAttribute('data-ma') || '---';
+        const maDen = selDen.options[selDen.selectedIndex]?.getAttribute('data-ma') || '---';
+        const lyDo = document.getElementById('inputLyDo').value.trim() || '---';
+        const daCamKet = document.getElementById('xac_nhan_tuong_thich').checked;
 
-// Camera Scanner
-let streamCamera = null;
-let dangQuet = false;
-const videoEl = document.getElementById('videoQuetCamera');
-const canvasEl = document.getElementById('canvasQuetCamera');
-const overlayEl = document.getElementById('overlayCamera');
-const btnCamera = document.getElementById('btnBatTatCamera');
-const selCamera = document.getElementById('chonCamera');
+        document.getElementById('pvLoTrinh').textContent = `Phòng đi: ${maDi} → Phòng đến: ${maDen}`;
+        document.getElementById('pvLyDo').textContent = `Lý do: ${lyDo}`;
 
-async function khoiTaoCamera() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-    try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(d => d.kind === 'videoinput');
-        selCamera.innerHTML = '<option value="">Chọn camera</option>';
-        videoDevices.forEach((d, idx) => {
-            const opt = document.createElement('option');
-            opt.value = d.deviceId;
-            opt.textContent = d.label || `Camera ${idx + 1}`;
-            selCamera.appendChild(opt);
-        });
-    } catch(e) {}
-}
-khoiTaoCamera();
+        const pvTbody = document.getElementById('pvDanhSachThietBi');
+        if (danhSachThietBi.length === 0) {
+            pvTbody.innerHTML = '<tr><td colspan="2" class="text-center text-phu py-3">Chưa có thiết bị nào</td></tr>';
+        } else {
+            pvTbody.innerHTML = '';
+            danhSachThietBi.forEach(ts => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${escapeHtml(ts.ma_tai_san)} - ${escapeHtml(ts.ten_tai_san)}</td><td class="text-end">1</td>`;
+                pvTbody.appendChild(tr);
+            });
+        }
+        document.getElementById('pvTongCongThietBi').textContent = `Tổng cộng: ${danhSachThietBi.length} thiết bị`;
 
-async function batTatCamera() {
-    if (dangQuet) {
-        dungCamera();
-    } else {
-        await batCamera();
+        const btnSubmit = document.getElementById('btnXacNhanDieuChuyen');
+        const hopLe = (maDi !== '---') && (maDen !== '---') && (maDi !== maDen) && (lyDo !== '---') && daCamKet && (danhSachThietBi.length > 0);
+        btnSubmit.disabled = !hopLe;
     }
-}
 
-async function batCamera() {
-    const devId = selCamera.value;
-    const constraints = {
-        video: devId ? { deviceId: { exact: devId } } : { facingMode: 'environment' }
-    };
-    try {
-        streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
-        videoEl.srcObject = streamCamera;
-        videoEl.style.display = 'block';
-        overlayEl.style.display = 'none';
-        await videoEl.play();
-        dangQuet = true;
-        btnCamera.textContent = 'Tắt camera';
-        btnCamera.classList.replace('btn-phu', 'btn-danger');
-        requestAnimationFrame(quetVongLap);
-    } catch(e) {
-        hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+    // Camera Scanner
+    let streamCamera = null;
+    let dangQuet = false;
+    const videoEl = document.getElementById('videoQuetCamera');
+    const canvasEl = document.getElementById('canvasQuetCamera');
+    const overlayEl = document.getElementById('overlayCamera');
+    const btnCamera = document.getElementById('btnBatTatCamera');
+    const selCamera = document.getElementById('chonCamera');
+
+    async function khoiTaoCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(d => d.kind === 'videoinput');
+            selCamera.innerHTML = '<option value="">Chọn camera</option>';
+            videoDevices.forEach((d, idx) => {
+                const opt = document.createElement('option');
+                opt.value = d.deviceId;
+                opt.textContent = d.label || `Camera ${idx + 1}`;
+                selCamera.appendChild(opt);
+            });
+        } catch (e) {}
     }
-}
+    khoiTaoCamera();
 
-function dungCamera() {
-    if (streamCamera) {
-        streamCamera.getTracks().forEach(t => t.stop());
-        streamCamera = null;
-    }
-    dangQuet = false;
-    videoEl.style.display = 'none';
-    overlayEl.style.display = 'flex';
-    btnCamera.textContent = 'Bật camera';
-    btnCamera.classList.replace('btn-danger', 'btn-phu');
-}
-
-function quetVongLap() {
-    if (!dangQuet) return;
-    if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
-        canvasEl.width = videoEl.videoWidth;
-        canvasEl.height = videoEl.videoHeight;
-        const ctx = canvasEl.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
-        const imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
-        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-
-        if (code && code.data) {
-            traCuuVaThem(code.data);
-            setTimeout(() => { if (dangQuet) requestAnimationFrame(quetVongLap); }, 1200);
-            return;
+    async function batTatCamera() {
+        if (dangQuet) {
+            dungCamera();
+        } else {
+            await batCamera();
         }
     }
-    requestAnimationFrame(quetVongLap);
-}
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>"']/g, function(m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-    });
-}
+    async function batCamera() {
+        const devId = selCamera.value;
+        const constraints = {
+            video: devId ? {
+                deviceId: {
+                    exact: devId
+                }
+            } : {
+                facingMode: 'environment'
+            }
+        };
+        try {
+            streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
+            videoEl.srcObject = streamCamera;
+            videoEl.style.display = 'block';
+            overlayEl.style.display = 'none';
+            await videoEl.play();
+            dangQuet = true;
+            btnCamera.textContent = 'Tắt camera';
+            btnCamera.classList.replace('btn-phu', 'btn-danger');
+            requestAnimationFrame(quetVongLap);
+        } catch (e) {
+            hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+        }
+    }
 
-capNhatPreview();
+    function dungCamera() {
+        if (streamCamera) {
+            streamCamera.getTracks().forEach(t => t.stop());
+            streamCamera = null;
+        }
+        dangQuet = false;
+        videoEl.style.display = 'none';
+        overlayEl.style.display = 'flex';
+        btnCamera.textContent = 'Bật camera';
+        btnCamera.classList.replace('btn-danger', 'btn-phu');
+    }
+
+    function quetVongLap() {
+        if (!dangQuet) return;
+        if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+            canvasEl.width = videoEl.videoWidth;
+            canvasEl.height = videoEl.videoHeight;
+            const ctx = canvasEl.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+            const imgData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+            const code = jsQR(imgData.data, imgData.width, imgData.height, {
+                inversionAttempts: 'dontInvert'
+            });
+
+            if (code && code.data) {
+                traCuuVaThem(code.data);
+                setTimeout(() => {
+                    if (dangQuet) requestAnimationFrame(quetVongLap);
+                }, 1200);
+                return;
+            }
+        }
+        requestAnimationFrame(quetVongLap);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            } [m];
+        });
+    }
+
+    capNhatPreview();
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

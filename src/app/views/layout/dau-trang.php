@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Layout phần đầu trang dùng chung (Header & Topbar) - Bám sát phác thảo
  */
@@ -36,7 +37,7 @@ $nhanVaiTro = match ($nguoiDung['vai_tro'] ?? '') {
 $tenTrang = match ($thuMucHienTai) {
     'tai-san'     => 'Tài sản',
     'nguoi-muon'  => 'Người mượn',
-    'muon-tra'    => 'Mượn – trả',
+    'muon-tra'    => 'Mượn - trả',
     'dieu-chuyen' => 'Điều chuyển',
     'kiem-ke'     => 'Kiểm kê',
     'thong-ke'    => 'Tra cứu, thống kê',
@@ -48,6 +49,7 @@ $tenTrang = match ($thuMucHienTai) {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,31 +57,32 @@ $tenTrang = match ($thuMucHienTai) {
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
 </head>
+
 <body>
 
-<div class="khung-ung-dung">
-    <!-- Sidebar điều hướng bên trái -->
-    <?php require __DIR__ . '/menu.php'; ?>
+    <div class="khung-ung-dung">
+        <!-- Sidebar điều hướng bên trái -->
+        <?php require __DIR__ . '/menu.php'; ?>
 
-    <!-- Vùng nội dung bên phải -->
-    <div class="vung-noi-dung">
-        <!-- Topbar điều hướng trên -->
-        <header class="topbar-app">
-            <div class="breadcrumb-app">
-                <a href="<?= url('tong-quan.php') ?>">Trang chủ</a> / <span><?= e($tenTrang) ?></span>
-            </div>
-
-            <?php if ($nguoiDung !== null): ?>
-            <div class="user-badge">
-                <div class="avatar-tron"><?= e($chuVietTat) ?></div>
-                <div class="user-info d-none d-sm-block">
-                    <div class="user-label">Tài khoản</div>
-                    <div class="user-role"><?= e($nhanVaiTro) ?></div>
+        <!-- Vùng nội dung bên phải -->
+        <div class="vung-noi-dung">
+            <!-- Topbar điều hướng trên -->
+            <header class="topbar-app">
+                <div class="breadcrumb-app">
+                    <a href="<?= url('tong-quan.php') ?>">Trang chủ</a> / <span><?= e($tenTrang) ?></span>
                 </div>
-            </div>
-            <?php endif; ?>
-        </header>
 
-        <!-- Khối hiển thị nội dung trang -->
-        <main class="noi-dung-chinh">
-            <?php require dirname(__DIR__) . '/partials/thong-bao.php'; ?>
+                <?php if ($nguoiDung !== null): ?>
+                    <div class="user-badge">
+                        <div class="avatar-tron"><?= e($chuVietTat) ?></div>
+                        <div class="user-info d-none d-sm-block">
+                            <div class="user-label">Tài khoản</div>
+                            <div class="user-role"><?= e($nhanVaiTro) ?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </header>
+
+            <!-- Khối hiển thị nội dung trang -->
+            <main class="noi-dung-chinh">
+                <?php require dirname(__DIR__) . '/partials/thong-bao.php'; ?>
