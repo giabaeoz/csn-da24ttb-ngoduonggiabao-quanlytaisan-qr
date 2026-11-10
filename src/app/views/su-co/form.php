@@ -21,7 +21,6 @@ $tieuDeTrang = 'Báo cáo sự cố thiết bị';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Báo cáo sự cố thiết bị</h1>
@@ -42,23 +41,19 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 <?php endif; ?>
 
-<div class="row g-4">
-    <!-- CỘT TRÁI: FORM BÁO CÁO SỰ CỐ -->
-    <div class="col-12 col-lg-7">
-        <div class="the-noi-dung mb-4 p-0">
-            <div class="the-noi-dung-dau">
-                <h3 class="tieu-de-khoi mb-0">Thông tin thiết bị & mô tả sự cố</h3>
-            </div>
-            <div class="the-noi-dung-than p-4">
+<div class="khung-bieu-mau">
+    <div class="the-noi-dung mb-4 p-0">
+        <div class="the-noi-dung-dau">
+            <h2 class="tieu-de-khoi mb-0">Thông tin thiết bị & mô tả sự cố</h2>
+        </div>
+        <div class="the-noi-dung-than p-4">
                 <form action="<?= url('su-co/bao-cao.php') ?>" method="POST" id="formBaoCaoSuCo">
                     <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
                     <input type="hidden" name="tai_san_id" id="inputTaiSanId" value="<?= (int)$duLieu['tai_san_id'] ?>">
 
-                    <!-- Khung chọn thiết bị gặp sự cố -->
                     <div class="mb-3">
                         <label class="nhan-truong">Thiết bị gặp sự cố <span class="text-danger">*</span></label>
                         
-                        <!-- Thẻ hiển thị thiết bị đã chọn -->
                         <div id="theThietBiChon" class="<?= $taiSanChon ? '' : 'd-none' ?> p-3 bg-light rounded border mb-2">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
@@ -81,7 +76,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             </div>
                         </div>
 
-                        <!-- Hoặc chọn từ danh sách dropdown hoặc quét QR -->
                         <div id="khungChonThietBi" class="<?= $taiSanChon ? 'd-none' : '' ?>">
                             <div class="d-flex gap-2 mb-2">
                                 <input type="text" id="inputTraCuuNhanh" class="o-nhap font-monospace" 
@@ -111,7 +105,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </div>
                     </div>
 
-                    <!-- Loại sự cố -->
                     <div class="mb-4">
                         <label class="nhan-truong">Phân loại sự cố <span class="text-danger">*</span></label>
                         <div class="row g-2">
@@ -122,7 +115,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <label class="form-check-label fw-bold d-block text-danger mt-1" for="loaiHuHong">
                                         Hư hỏng / Lỗi
                                     </label>
-                                    <small class="text-muted d-block mt-1">Hỏng linh kiện, bể vỡ. Chuyển sang <code>BẢO TRÌ</code>.</small>
+                                    
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -132,7 +125,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <label class="form-check-label fw-bold d-block text-dark mt-1" for="loaiMat">
                                         Mất / Thất lạc
                                     </label>
-                                    <small class="text-muted d-block mt-1">Không tìm thấy thiết bị. Chuyển sang <code>NGỪNG SỬ DỤNG</code>.</small>
+                                    
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -142,20 +135,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <label class="form-check-label fw-bold d-block text-warning-emphasis mt-1" for="loaiSaiViTri">
                                         Sai vị trí phòng
                                     </label>
-                                    <small class="text-muted d-block mt-1">Thiết bị bị di dời sang phòng khác chưa chuyển.</small>
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Mô tả chi tiết sự cố -->
                     <div class="mb-4">
                         <label class="nhan-truong">Mô tả hiện trạng sự cố <span class="text-danger">*</span></label>
                         <textarea name="mo_ta" id="txtMoTa" class="o-nhap" rows="4" required maxlength="2000"
                                   placeholder="Mô tả cụ thể biểu hiện lỗi, nguyên nhân nghi ngờ hoặc tình trạng thực tế phát hiện..."><?= e($duLieu['mo_ta']) ?></textarea>
                     </div>
 
-                    <!-- Nút lưu báo cáo -->
                     <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
                         <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">
                             <?= icon('x', 'bieu-tuong-sm') ?>
@@ -169,32 +160,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </form>
             </div>
         </div>
-    </div>
-
-    <!-- CỘT PHẢI: QUY TRÌNH TIẾP NHẬN & XỬ LÝ SỰ CỐ -->
-    <div class="col-12 col-lg-5">
-        <div class="the-noi-dung mb-4">
-            <div class="the-noi-dung-dau">
-                <h3 class="tieu-de-khoi mb-0">Quy trình xử lý sự cố</h3>
-            </div>
-            <div class="the-noi-dung-than p-3">
-                <div class="mb-3 pb-2 border-bottom">
-                    <div class="fw-semibold text-primary mb-1">1. Ghi nhận sự cố & Tự động khóa thiết bị</div>
-                    <p class="mo-ta-phu mb-0">Thiết bị tự động chuyển sang trạng thái <code>BẢO TRÌ</code> hoặc <code>NGỪNG SỬ DỤNG</code> để tránh cho mượn nhầm.</p>
-                </div>
-
-                <div class="mb-3 pb-2 border-bottom">
-                    <div class="fw-semibold text-warning-emphasis mb-1">2. Tiếp nhận xử lý (Đang xử lý)</div>
-                    <p class="mo-ta-phu mb-0">Cán bộ tiếp nhận, đưa thiết bị đi sửa chữa, bảo hành chính hãng hoặc rà soát tìm kiếm thiết bị thất lạc.</p>
-                </div>
-
-                <div>
-                    <div class="fw-semibold text-success mb-1">3. Hoàn tất xử lý & Khôi phục sử dụng</div>
-                    <p class="mo-ta-phu mb-0">Ghi nhận biên bản kết quả xử lý. Thiết bị được khôi phục sang trạng thái <code>SẴN SÀNG</code>.</p>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>

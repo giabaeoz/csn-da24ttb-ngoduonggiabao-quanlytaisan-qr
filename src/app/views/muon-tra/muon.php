@@ -31,7 +31,6 @@ $tieuDeTrang = 'Mượn - trả';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Tabs chuyển đổi -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Mượn - trả tài sản</h1>
@@ -64,9 +63,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div id="vungTaiSanIds"></div>
 
     <div class="row g-4">
-        <!-- CỘT TRÁI: QUÉT QR & XEM TRƯỚC PHIẾU MƯỢN -->
         <div class="col-12 col-lg-5">
-            <!-- Khối: Quét QR thiết bị -->
             <div class="card mb-4">
                 <div class="card-body p-3">
                     <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị</h2>
@@ -105,7 +102,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <!-- Khối: Phiếu mượn (Xem trước thời gian thực) -->
             <div class="card">
                 <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Phiếu mượn</h2>
@@ -138,9 +134,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
         </div>
 
-        <!-- CỘT PHẢI: THÔNG TIN MƯỢN & THIẾT BỊ ĐÃ QUÉT -->
         <div class="col-12 col-lg-7">
-            <!-- Khối: Khai báo thông tin người mượn & phòng học -->
             <div class="card mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
@@ -156,7 +150,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </div>
                     </div>
 
-                    <!-- Ô tìm nhanh người mượn cũ (tùy chọn) -->
                     <div class="mb-3 position-relative">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light text-phu">
@@ -170,7 +163,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <div id="goiYNguoiMuon" class="list-group position-absolute w-100 shadow-sm d-none mt-1 hop-goi-y-tim-kiem"></div>
                     </div>
 
-                    <!-- Khai báo trực tiếp thông tin người mượn -->
                     <div class="row g-2 mb-2">
                         <div class="col-12 col-sm-4">
                             <label class="form-label" for="inputMaSo">Mã số <span class="text-danger"></span></label>
@@ -226,7 +218,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <!-- Khối: Thiết bị cần mượn - đã quét -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h2 class="tieu-de-khoi mb-0">Thiết bị cần mượn - đã quét (<span id="demThietBi">0</span>)</h2>
@@ -252,7 +243,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <!-- Nút hành động chân trang -->
             <div class="d-flex justify-content-end gap-2">
                 <a href="<?= url('tong-quan.php') ?>" class="btn btn-phu">
                     <?= icon('x', 'bieu-tuong-sm') ?>

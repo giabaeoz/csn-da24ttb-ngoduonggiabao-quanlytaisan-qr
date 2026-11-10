@@ -30,7 +30,6 @@ foreach ($danhSachNguoiMuon as $nm) {
 }
 ?>
 
-<!-- Tiêu đề trang -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Người mượn</h1>
@@ -43,7 +42,6 @@ foreach ($danhSachNguoiMuon as $nm) {
     </div>
 </div>
 
-<!-- Tabs trạng thái trên cùng -->
 <div class="d-flex gap-2 mb-4">
     <a href="<?= url('nguoi-muon/index.php?tab=dang_muon') ?>" class="btn <?= ($tabHienTai === 'dang_muon') ? 'btn-chinh' : 'btn-phu' ?>">
         Đang mượn (<?= $tongDangMuon ?>)
@@ -56,7 +54,6 @@ foreach ($danhSachNguoiMuon as $nm) {
     </a>
 </div>
 
-<!-- Bộ lọc tìm kiếm -->
 <div class="card mb-4">
     <div class="card-body p-3">
         <form action="<?= url('nguoi-muon/index.php') ?>" method="GET" class="row g-2 align-items-end">
@@ -93,7 +90,6 @@ foreach ($danhSachNguoiMuon as $nm) {
     </div>
 </div>
 
-<!-- Bảng: Người đang mượn tài sản -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
@@ -164,10 +160,8 @@ foreach ($danhSachNguoiMuon as $nm) {
     </div>
 </div>
 
-<!-- Khối Chi tiết người mượn đang chọn (2 Cột) -->
 <?php if ($nguoiMuonChon): ?>
 <div class="row g-4 mb-4">
-    <!-- Cột trái: Thông tin người mượn đang chọn -->
     <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4">
@@ -213,7 +207,6 @@ foreach ($danhSachNguoiMuon as $nm) {
         </div>
     </div>
 
-    <!-- Cột phải: Lịch sử mượn của người đang chọn -->
     <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4 d-flex flex-column">

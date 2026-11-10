@@ -44,7 +44,6 @@ $tieuDeTrang = 'Tra cứu, thống kê';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Tra cứu, thống kê</h1>
@@ -61,7 +60,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Tabs chuyển đổi phạm vi tra cứu -->
 <ul class="nav nav-tabs mb-3 border-bottom">
     <li class="nav-item">
         <a class="nav-link <?= $tab === 'muon-tra' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=muon-tra') ?>">
@@ -82,7 +80,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <?php if ($tab === 'muon-tra'): ?>
 
-    <!-- Khối bộ lọc tìm kiếm -->
     <div class="the-noi-dung p-3 mb-4">
         <form method="GET" action="<?= url('thong-ke/index.php') ?>">
             <input type="hidden" name="tab" value="muon-tra">
@@ -150,7 +147,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </form>
     </div>
 
-    <!-- 4 Thẻ chỉ số KPI -->
     <div class="row g-3 mb-4">
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="the-so-lieu">
@@ -190,14 +186,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
     </div>
 
-    <!-- 2 Biểu đồ thống kê -->
     <div class="row g-3 mb-4">
-        <!-- Biểu đồ 1: Mượn – trả theo ngày -->
         <div class="col-12 col-lg-6">
             <div class="the-noi-dung h-100 p-4">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <div class="tieu-de-khoi mb-0">Mượn – trả theo ngày</div>
-                    <div class="mo-ta-phu">Đơn vị: phiếu / ngày</div>
+                    
                 </div>
                 <div class="d-flex align-items-center gap-3 mb-3 small">
                     <div class="d-flex align-items-center gap-1">
@@ -215,12 +209,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
         </div>
 
-        <!-- Biểu đồ 2: Thiết bị cho mượn theo loại -->
         <div class="col-12 col-lg-6">
             <div class="the-noi-dung h-100 p-4">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <div class="tieu-de-khoi mb-0">Thiết bị cho mượn theo loại</div>
-                    <div class="mo-ta-phu">Đơn vị: thiết bị • Tổng cộng: <?= (int)$tongThietBiLoai ?></div>
+                    
                 </div>
                 <div class="mb-3 small text-secondary">
                     Phân bố thiết bị được mượn theo từng nhóm loại.
@@ -232,12 +225,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
     </div>
 
-    <!-- Bảng kết quả tra cứu mượn – trả -->
     <div class="the-noi-dung mb-4">
         <div class="the-noi-dung-dau d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu mượn – trả</h3>
-                <div class="mo-ta-phu">Trạng thái cập nhật đến thời điểm tra cứu.</div>
+                
             </div>
             <div>
                 <span class="badge bg-light text-secondary border px-2 py-1 fw-semibold">
@@ -318,7 +310,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
         </div>
 
-        <!-- Phân trang -->
         <?php if ($tongSo > 0): ?>
             <?php
             $tuBanGhi = $offset + 1;
@@ -363,7 +354,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <?php elseif ($tab === 'dieu-chuyen'): ?>
 
-    <!-- Khối bộ lọc Điều chuyển -->
     <div class="the-noi-dung p-3 mb-4">
         <form method="GET" action="<?= url('thong-ke/index.php') ?>" class="row g-3 align-items-end">
             <input type="hidden" name="tab" value="dieu-chuyen">
@@ -387,7 +377,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </form>
     </div>
 
-    <!-- Bảng danh sách Điều chuyển -->
     <div class="the-noi-dung mb-4">
         <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
             <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu điều chuyển</h3>
@@ -437,7 +426,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <?php elseif ($tab === 'kiem-ke'): ?>
 
-    <!-- Khối bộ lọc Kiểm kê -->
     <div class="the-noi-dung p-3 mb-4">
         <form method="GET" action="<?= url('thong-ke/index.php') ?>" class="row g-3 align-items-end">
             <input type="hidden" name="tab" value="kiem-ke">
@@ -461,7 +449,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </form>
     </div>
 
-    <!-- Bảng danh sách Kiểm kê -->
     <div class="the-noi-dung mb-4">
         <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
             <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu kiểm kê</h3>
@@ -515,7 +502,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <?php endif; ?>
 
-<!-- Nạp Chart.js từ Vendor cục bộ và khởi tạo 2 biểu đồ -->
 <script src="<?= url('assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
 <?php if ($tab === 'muon-tra'): ?>
 <script>

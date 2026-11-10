@@ -30,7 +30,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
 ?>
 
 <div class="container-fluid py-3">
-<!-- Tiêu đề & Nút thao tác (NO PRINT) -->
 <div class="thanh-cong-cu-trang no-print">
     <div>
         <h1 class="tieu-de-trang mb-1">Biên bản kiểm kê: <?= e($dot['ma_dot_kiem_ke']) ?></h1>
@@ -62,9 +61,7 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
     </div>
 </div>
 
-    <!-- KHUNG IN BIÊN BẢN CHÍNH THỨC (HIỂN THỊ KHI IN & TRÊN WEB) -->
     <div class="card border-0 shadow-sm p-4 bg-white" id="khungBienBanIn">
-        <!-- TIÊU NGỮ QUỐC GIA & ĐƠN VỊ (CHUẨN HÀNH CHÍNH) -->
         <div class="row align-items-start pb-3 border-bottom mb-4">
             <div class="col-6 text-center">
                 <div class="text-uppercase fw-bold text-secondary small">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ</div>
@@ -78,7 +75,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </div>
         </div>
 
-        <!-- TIÊU ĐỀ BIÊN BẢN -->
         <div class="text-center mb-4">
             <h3 class="fw-bold text-uppercase text-dark mb-1">BIÊN BẢN KIỂM KÊ TÀI SẢN & THIẾT BỊ</h3>
             <div class="text-muted small">
@@ -87,7 +83,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </div>
         </div>
 
-        <!-- THÔNG TIN CHUNG ĐỢT KIỂM KÊ -->
         <div class="p-3 bg-light rounded-3 mb-4 border">
             <div class="row g-2 small">
                 <div class="col-md-6">
@@ -123,7 +118,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </div>
         </div>
 
-        <!-- PHẦN I: TỔNG HỢP SỐ LIỆU ĐỐI CHIẾU -->
         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
             I. TỔNG HỢP SỐ LIỆU ĐỐI CHIẾU SỔ SÁCH & THỰC TẾ
         </h5>
@@ -164,7 +158,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </table>
         </div>
 
-        <!-- PHẦN II: DANH SÁCH THIẾT BỊ PHÁT HIỆN CHÊNH LỆCH / SỰ CỐ -->
         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex justify-content-between align-items-center">
             <span>II. DANH MỤC THIẾT BỊ PHÁT SINH CHÊNH LỆCH & SỰ CỐ (<?= count($dsChenhLech) ?>)</span>
             <?php if (count($dsChenhLech) === 0): ?>
@@ -228,7 +221,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </div>
         <?php endif; ?>
 
-        <!-- PHẦN III: TOÀN BỘ SỔ SÁCH KIỂM KÊ -->
         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
             III. CHI TIẾT TOÀN BỘ DANH MỤC THIẾT BỊ KIỂM KÊ (<?= count($danhSachChiTiet) ?>)
         </h5>
@@ -287,7 +279,6 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </table>
         </div>
 
-        <!-- PHẦN IV: CHỮ KÝ VÀ XÁC NHẬN CÁC BÊN -->
         <div class="row text-center mt-5 pt-3">
             <div class="col-4">
                 <div class="fw-bold text-uppercase small text-dark">CÁN BỘ KIỂM KÊ LẬP BIÊN BẢN</div>

@@ -43,7 +43,6 @@ $tenHamXuLy = $tenHamXuLy ?? 'xuLyMaQuet';
         </button>
     </div>
     <div class="card-body p-3">
-        <!-- Khung Camera quét QR -->
         <div id="khuVucCamera" class="d-none text-center mb-3">
             <div class="khung-quet-camera">
                 <video id="videoQuet" playsinline></video>
@@ -55,7 +54,6 @@ $tenHamXuLy = $tenHamXuLy ?? 'xuLyMaQuet';
             </div>
         </div>
 
-        <!-- Ô nhập tay / hỗ trợ máy quét Barcode USB -->
         <div class="input-group">
             <input type="text" class="form-control font-monospace fs-6" id="<?= e($idInputTay) ?>" 
                    placeholder="<?= e($placeholderNhaptay) ?>" autocomplete="off">

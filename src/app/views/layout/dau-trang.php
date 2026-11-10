@@ -63,12 +63,9 @@ $tenTrang = match ($thuMucHienTai) {
 <body>
 
     <div class="khung-ung-dung">
-        <!-- Sidebar điều hướng bên trái -->
         <?php require __DIR__ . '/menu.php'; ?>
 
-        <!-- Vùng nội dung bên phải -->
         <div class="vung-noi-dung">
-            <!-- Topbar điều hướng trên -->
             <header class="topbar-app">
                 <div class="breadcrumb-app">
                     <a href="<?= url('tong-quan.php') ?>">Trang chủ</a> / <span><?= e($tenTrang) ?></span>
@@ -85,6 +82,5 @@ $tenTrang = match ($thuMucHienTai) {
                 <?php endif; ?>
             </header>
 
-            <!-- Khối hiển thị nội dung trang -->
             <main class="noi-dung-chinh">
                 <?php require dirname(__DIR__) . '/partials/thong-bao.php'; ?>

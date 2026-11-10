@@ -37,13 +37,12 @@ try {
 }
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">
             <?= $laThemMoi ? 'Thêm thiết bị mới' : 'Chỉnh sửa thông tin thiết bị' ?>
         </h1>
-        <div class="mo-ta-phu">Mã tài sản được tạo ngắn gọn từ tên thiết bị và dùng trực tiếp để sinh mã QR.</div>
+        
     </div>
     <div>
         <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
@@ -95,7 +94,7 @@ try {
                                     <span>Gợi ý mã</span>
                                 </button>
                             </div>
-                            <div class="mo-ta-phu mt-1">Viết tắt tên thiết bị + số thứ tự (VD: MC-01, RMC-01, MIC-01).</div>
+                            
                         </div>
 
                         <div class="col-12 col-sm-6">
@@ -114,7 +113,6 @@ try {
                     </div>
                 </div>
 
-                <!-- Khung xem trước mã QR trực tiếp từ Mã tài sản -->
                 <div class="col-12 col-md-4">
                     <label class="nhan-truong">Mã QR sinh từ Mã tài sản</label>
                     <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
@@ -154,7 +152,6 @@ try {
                 </div>
             </div>
 
-            <!-- Khu vực thông số hãng, model & độ tương thích -->
             <div class="the-noi-dung p-3 mb-3 bg-light">
                 <h4 class="tieu-de-khoi mb-2">Thông số kỹ thuật & phạm vi sử dụng</h4>
 
@@ -211,7 +208,6 @@ try {
                     </div>
                 </div>
 
-                <!-- Danh sách phòng tương thích nếu chọn THEO_PHONG -->
                 <div id="khuVucTheoPhong" class="mt-3 <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? '' : 'd-none' ?>">
                     <label class="nhan-truong">
                         Danh sách mã phòng học được phép mượn (phân cách bằng dấu phẩy)
@@ -272,7 +268,6 @@ try {
 
 </div>
 
-<!-- Nạp thư viện tạo mã QR offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
 <script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>

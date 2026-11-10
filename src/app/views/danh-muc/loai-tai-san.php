@@ -19,11 +19,10 @@ $tieuDeTrang = 'Quản lý loại tài sản';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý danh mục</h1>
-        <div class="mo-ta-phu">Cấu hình phòng học, phòng trực và loại tài sản trong hệ thống.</div>
+        
     </div>
     <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalLoai" onclick="moModalThem()">
         <?= icon('plus', 'bieu-tuong-sm') ?>
@@ -31,7 +30,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </button>
 </div>
 
-<!-- Thanh điều hướng Tab Danh mục -->
 <ul class="nav nav-tabs mb-3 border-bottom">
     <li class="nav-item">
         <a class="nav-link text-secondary fw-semibold" href="<?= url('danh-muc/phong-hoc.php') ?>">
@@ -50,7 +48,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </li>
 </ul>
 
-<!-- Bảng danh sách loại tài sản -->
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau">
         <h3 class="tieu-de-khoi mb-0">Danh mục chủng loại thiết bị</h3>
@@ -152,7 +149,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Modal Thêm / Sửa Loại tài sản -->
 <div class="modal fade" id="modalLoai" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <form action="<?= url('danh-muc/loai-tai-san.php') ?>" method="POST" class="modal-content border-0 shadow">
@@ -171,7 +167,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         Mã loại tài sản <span class="text-danger">*</span>
                     </label>
                     <input type="text" class="o-nhap text-uppercase" id="modal_loai_ma" name="ma_loai" placeholder="Ví dụ: MC, RM, MIC, LOA, CAP, OD" required>
-                    <div class="mo-ta-phu mt-1">Viết tắt 2-5 ký tự in hoa đại diện chủng loại.</div>
+                    
                 </div>
 
                 <div class="mb-3">

@@ -29,7 +29,6 @@ $daKiem = (int)($thongKe['so_tim_thay'] ?? 0) + (int)($thongKe['so_chua_tim_thay
 $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
 ?>
 
-<!-- Tiêu đề trang & Nút Tạo đợt kiểm kê -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Kiểm kê tài sản</h1>
@@ -56,7 +55,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
 <?php endif; ?>
 
 <div class="row g-4 mb-4 luong-quet-qr">
-    <!-- CỘT TRÁI: QUÉT QR ĐỐI CHIẾU -->
     <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-body p-3">
@@ -97,7 +95,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
         </div>
     </div>
 
-    <!-- CỘT PHẢI: THÔNG TIN ĐỢT KIỂM KÊ -->
     <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4">
@@ -131,7 +128,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<!-- 4 Thẻ số liệu đợt kiểm kê -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
@@ -171,7 +167,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<!-- Bộ lọc tìm thiết bị trong đợt -->
 <div class="card mb-4">
     <div class="card-body p-3">
         <form action="<?= url('kiem-ke/thuc-hien.php') ?>" method="GET" class="row g-2 align-items-end">
@@ -207,7 +202,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<!-- Bảng: Danh sách đối chiếu -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
@@ -306,7 +300,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<!-- Khối: Kết quả tạm thời & Hành động hoàn tất -->
 <div class="card mb-4">
     <div class="card-body p-4">
         <h2 class="tieu-de-khoi mb-2">Kết quả tạm thời</h2>
@@ -342,7 +335,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<!-- Khối: Đợt kiểm kê gần đây -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
@@ -397,7 +389,6 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<!-- Modal Ghi nhận kết quả kiểm kê từng thiết bị -->
 <div class="modal fade" id="modalGhiNhan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

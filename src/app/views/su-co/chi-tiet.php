@@ -24,11 +24,10 @@ $daXuLy = ($suCo['trang_thai'] === 'DA_XU_LY');
 $coQuyenXuLy = co_quyen('xu_ly_su_co');
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Sự cố: <?= e($suCo['ma_su_co']) ?></h1>
-        <div class="mo-ta-phu">Theo dõi hiện trạng, tiếp nhận và ghi nhận biên bản xử lý khắc phục sự cố thiết bị.</div>
+        
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">
@@ -55,9 +54,7 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
 </div>
 
 <div class="row g-3 mb-4">
-    <!-- CỘT TRÁI: CHI TIẾT SỰ CỐ & LỊCH SỬ KHẮC PHỤC -->
     <div class="col-12 col-lg-7">
-        <!-- Thẻ 1: Thông tin sự cố -->
         <div class="the-noi-dung mb-3">
             <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
                 <h3 class="tieu-de-khoi mb-0">Hiện trạng sự cố</h3>
@@ -127,7 +124,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
             </div>
         </div>
 
-        <!-- Thẻ 2: Kết quả xử lý / khắc phục (nếu đã xử lý) -->
         <?php if ($daXuLy): ?>
             <div class="the-noi-dung mb-3 border-start border-success border-4">
                 <div class="the-noi-dung-dau">
@@ -167,9 +163,7 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
         <?php endif; ?>
     </div>
 
-    <!-- CỘT PHẢI: THÔNG TIN THIẾT BỊ & THAO TÁC XỬ LÝ -->
     <div class="col-12 col-lg-5">
-        <!-- Thẻ 3: Thông tin thiết bị gặp sự cố -->
         <div class="the-noi-dung mb-3">
             <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
                 <h3 class="tieu-de-khoi mb-0">Thông tin thiết bị</h3>
@@ -217,7 +211,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
     </div>
 </div>
 
-<!-- MODAL HOÀN TẤT XỬ LÝ SỰ CỐ -->
 <?php if (!$daXuLy && $coQuyenXuLy): ?>
 <div class="modal fade" id="modalHoanTatXuLy" tabindex="-1" aria-labelledby="modalHoanTatXuLyLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -237,7 +230,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                         Ghi nhận chi tiết kết quả sửa chữa, giải trình hoặc thay thế linh kiện cho thiết bị <strong><?= e($suCo['ten_tai_san']) ?></strong>.
                     </div>
 
-                    <!-- Kết quả xử lý -->
                     <div class="mb-3">
                         <label class="nhan-truong">Chi tiết kết quả xử lý / Khắc phục <span class="text-danger">*</span></label>
                         <textarea name="ket_qua_xu_ly" class="o-nhap" rows="4" required maxlength="2000"
@@ -245,7 +237,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                     </div>
 
                     <div class="row g-3">
-                        <!-- Tình trạng tài sản mới -->
                         <div class="col-md-6">
                             <label class="nhan-truong">Tình trạng hoạt động sau xử lý <span class="text-danger">*</span></label>
                             <select name="tinh_trang_tai_san" class="o-nhap">
@@ -254,7 +245,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                             </select>
                         </div>
 
-                        <!-- Trạng thái tài sản mới -->
                         <div class="col-md-6">
                             <label class="nhan-truong">Trạng thái đưa vào sử dụng <span class="text-danger">*</span></label>
                             <select name="trang_thai_tai_san" class="o-nhap">
@@ -264,7 +254,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                             </select>
                         </div>
 
-                        <!-- Vị trí phòng học mới (nếu cần cập nhật vị trí) -->
                         <div class="col-md-12">
                             <label class="nhan-truong">Cập nhật vị trí phòng học mới (tùy chọn)</label>
                             <select name="phong_hoc_moi_id" class="o-nhap">

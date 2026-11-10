@@ -20,11 +20,10 @@ $tieuDeTrang = 'Quản lý phòng học';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý danh mục</h1>
-        <div class="mo-ta-phu">Cấu hình phòng học, phòng trực và loại tài sản trong hệ thống.</div>
+        
     </div>
     <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalPhongHoc" onclick="moModalThem()">
         <?= icon('plus', 'bieu-tuong-sm') ?>
@@ -32,7 +31,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </button>
 </div>
 
-<!-- Thanh điều hướng Tab Danh mục -->
 <ul class="nav nav-tabs mb-3 border-bottom">
     <li class="nav-item">
         <a class="nav-link active fw-semibold" href="<?= url('danh-muc/phong-hoc.php') ?>">
@@ -51,7 +49,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </li>
 </ul>
 
-<!-- Thanh tìm kiếm -->
 <div class="the-noi-dung p-3 mb-4">
     <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="GET" class="row g-2 align-items-center">
         <div class="col-12 col-md-5">
@@ -78,7 +75,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </form>
 </div>
 
-<!-- Bảng danh sách phòng học -->
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau">
         <h3 class="tieu-de-khoi mb-0">Danh sách phòng học & cấu hình thiết bị cố định</h3>
@@ -204,7 +200,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Modal Thêm / Sửa Phòng học -->
 <div class="modal fade" id="modalPhongHoc" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="modal-content border-0 shadow">
@@ -250,12 +245,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </div>
                 </div>
 
-                <!-- Cấu hình thiết bị cố định trong phòng -->
                 <div class="the-noi-dung p-3 bg-light">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
                             <h4 class="tieu-de-khoi mb-0">Thiết bị cố định trong phòng (Hãng / Model)</h4>
-                            <p class="mo-ta-phu mb-0">Dùng để so khớp độ tương thích khi mượn hoặc điều chuyển remote, micro...</p>
+                            
                         </div>
                         <button type="button" class="btn btn-sm btn-phu" onclick="themDongThietBi()">
                             <?= icon('plus', 'bieu-tuong-sm') ?>
@@ -264,7 +258,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </div>
 
                     <div id="danhSachThietBiContainer" class="d-flex flex-column gap-2 mt-2">
-                        <!-- Các dòng thiết bị sẽ được JavaScript tự động chèn vào đây -->
                     </div>
                 </div>
             </div>

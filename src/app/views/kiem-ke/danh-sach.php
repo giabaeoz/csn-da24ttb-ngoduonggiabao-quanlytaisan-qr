@@ -27,11 +27,10 @@ $tieuDeTrang = 'Kiểm kê tài sản';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút mở đợt -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Kiểm kê tài sản theo phòng trực</h1>
-        <div class="mo-ta-phu">Chụp sổ sách, đối chiếu thực tế bằng mã QR, phát hiện chênh lệch và tự động ghi nhận sự cố.</div>
+        
     </div>
     <div>
         <?php if (co_quyen('mo_dot_kiem_ke') && $dotDangMo === null): ?>
@@ -43,7 +42,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Cảnh báo đợt đang mở -->
 <?php if ($dotDangMo !== null): ?>
     <div class="alert alert-warning d-flex justify-content-between align-items-center p-3 mb-4 rounded-2">
         <div class="d-flex align-items-center gap-2">
@@ -66,7 +64,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 <?php endif; ?>
 
-<!-- Bộ lọc tìm kiếm -->
 <div class="card the-noi-dung mb-4">
     <div class="card-body p-3">
         <form action="<?= url('kiem-ke/index.php') ?>" method="GET" class="row g-2 align-items-end">
@@ -129,7 +126,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Bảng danh sách các đợt kiểm kê -->
 <div class="card the-noi-dung">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
         <h2 class="tieu-de-khoi mb-0">
@@ -226,7 +222,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </table>
     </div>
 
-    <!-- Phân trang -->
     <?php if ($tongTrang > 1): ?>
         <div class="card-footer bg-white d-flex justify-content-between align-items-center py-2 border-top">
             <span class="small mo-ta-phu">Trang <?= (int)$trangHienTai ?> / <?= (int)$tongTrang ?></span>

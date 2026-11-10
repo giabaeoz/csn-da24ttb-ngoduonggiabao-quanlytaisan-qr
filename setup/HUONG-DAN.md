@@ -244,55 +244,62 @@ Hệ thống giao diện được thiết kế theo định hướng **sinh đ�
 
 ### 7.1. Bảng màu chính thức (`:root` trong `src/assets/css/app.css`)
 
+Áp dụng nguyên tắc tỷ lệ màu **60–30–10** (60% trung tính, 30% họ xanh dương, tối đa 10% màu nhấn và màu ngữ nghĩa):
+
 | Biến CSS | Mã màu | Ý nghĩa & Phạm vi sử dụng |
 | :--- | :--- | :--- |
-| `--mau-chinh` | `#1E4E8C` | Màu chủ đạo (xanh dương đậm hành chính): nút chính `.btn-chinh`, mục menu đang chọn, viền ô nhập đang focus, đường biểu đồ chính. |
-| `--mau-chinh-dam` | `#173D6D` | Trạng thái rê chuột (hover) hoặc nhấn giữ của nút chính. |
-| `--mau-chinh-nhat` | `#E8EFF8` | Nền mục menu đang chọn, nền ô biểu tượng thẻ thống kê `.o-bieu-tuong-thong-ke`, huy hiệu thông tin `.huy-hieu-chinh`. |
-| `--nen-trang` | `#F5F7FA` | Nền tổng thể của trang làm việc. |
-| `--nen-the` | `#FFFFFF` | Nền thẻ nội dung `.card`, `.the-noi-dung`, bảng dữ liệu, thanh bên và thanh đầu trang. |
-| `--nen-tieu-de-bang` | `#F9FAFB` | Nền hàng tiêu đề bảng (`thead th`) và nền xen kẽ nhẹ. |
-| `--vien` | `#E5E7EB` | Đường viền mảnh `1px` của thẻ, bảng, ô nhập liệu và thanh ngăn cách. |
-| `--chu-chinh` | `#1F2937` | Màu chữ nội dung chính, tiêu đề trang, số liệu thống kê. |
-| `--chu-phu` | `#6B7280` | Màu chữ mô tả phụ `.mo-ta-phu`, nhãn cột bảng, biểu tượng mặc định. |
-| `--thanh-cong` / `--thanh-cong-nhat` | `#15803D` / `#DCFCE7` | Trạng thái tích cực (Sẵn sàng, Tốt, Đã trả đủ, Đã hoàn tất). |
-| `--canh-bao` / `--canh-bao-nhat` | `#B45309` / `#FEF3C7` | Trạng thái lưu ý (Đang xử lý, Bảo trì, Chưa trả). |
-| `--nguy-hiem` / `--nguy-hiem-nhat` | `#B91C1C` / `#FEE2E2` | Trạng thái cảnh báo nghiêm trọng (Hư hỏng, Mất, Quá hạn, Nút xóa `.btn-nguy-hiem`). |
+| `--mau-chinh` | `#1D5BBF` | Màu chủ đạo: nút chính `.btn-chinh`, liên kết, mục menu đang chọn, viền 2px tiêu đề bảng. |
+| `--mau-chinh-dam` | `#164A9A` | Trạng thái rê chuột (hover) hoặc nhấn giữ của nút chính. |
+| `--mau-navy` | `#0F2747` | Thanh bên sidebar, chữ tiêu đề trang `.tieu-de-trang`, số liệu lớn thẻ KPI. |
+| `--mau-chinh-nhat` | `#E1EBFA` | Nền huy hiệu thông tin, hàng bảng được chọn hoặc rê chuột (hover). |
+| `--mau-nhan` | `#0F8B8D` | Màu nhấn xanh ngọc: chuỗi dữ liệu thứ hai biểu đồ, vạch nhấn trang trí (tiết chế < 5%). |
+| `--mau-nhan-chu` | `#0B6E70` | Màu chữ nhấn khi cần thiết. |
+| `--chu-chinh` | `#1F2937` | Màu chữ nội dung chính trong bảng, biểu mẫu. |
+| `--chu-phu` | `#5B6676` | Màu chữ phụ, nhãn trường, nhãn số liệu. |
+| `--vien` | `#D8DFE8` | Đường viền mảnh 1px của thẻ, bảng, đường phân cách. |
+| `--vien-dam` | `#C5CEDA` | Viền ô nhập liệu `.form-control`, nút phụ `.btn-phu`. |
+| `--nen-trang` | `#EDF1F6` | Nền tổng thể của ứng dụng (đủ độ đậm để các thẻ trắng nổi rõ). |
+| `--nen-the` | `#FFFFFF` | Nền thẻ nội dung `.card`, bảng dữ liệu, biểu mẫu. |
+| `--nen-tieu-de-bang` | `#EAF0F8` | Nền hàng tiêu đề bảng (`thead th`). |
+| `--chu-tieu-de-bang` | `#1F3A5F` | Màu chữ hàng tiêu đề bảng (đậm 600, 13px). |
+| `--thanh-cong` / `--thanh-cong-nhat` | `#16803C` / `#DFF3E6` | Trạng thái tích cực (Sẵn sàng, Tốt, Đã trả đủ, Đã hoàn tất). |
+| `--canh-bao` / `--canh-bao-nhat` | `#92400E` / `#FEF3C7` | Trạng thái lưu ý (Đang xử lý, Bảo trì, Chưa trả, vạch cảnh báo `#D97706`). |
+| `--nguy-hiem` / `--nguy-hiem-nhat` | `#C0262D` / `#FBE4E4` | Trạng thái nghiêm trọng (Hư hỏng, Mất, Quá hạn, nút `.btn-nguy-hiem`). |
+| `--trung-tinh-nhat` | `#EAEEF3` | Huy hiệu trạng thái trung tính, chữ `--chu-phu`. |
 
-### 7.2. Thang khoảng cách và thang cỡ chữ
+### 7.2. Thang khoảng cách, quy chuẩn bo góc và cỡ chữ
 
+- **Quy chuẩn bo góc (Border Radius):**
+  - Ô nhập liệu (`.form-control`, `.o-nhap`), nút bấm (`.btn`), huy hiệu (`.huy-hieu`): bo đúng **4px**.
+  - Thẻ (`.card`, `.the-noi-dung`), bảng (`.table-responsive`): bo đúng **6px**.
+  - Tuyệt đối không dùng bo góc lớn dạng viên thuốc, không dùng bóng mềm đổ bóng lan rộng.
 - **Thang khoảng cách (Spacing Scale):**
   - `--kc-1`: `4px` | `--kc-2`: `8px` | `--kc-3`: `12px` | `--kc-4`: `16px` | `--kc-5`: `24px` | `--kc-6`: `32px`.
 - **Thang cỡ chữ (Typography Scale):**
-  - Font hệ thống: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`.
-  - Tiêu đề trang (`.tieu-de-trang`): `22px`, đậm `600`.
-  - Tiêu đề khối/thẻ (`.tieu-de-khoi`): `16px`, đậm `600`.
+  - Tiêu đề trang (`.tieu-de-trang`): `24px`, đậm `700`, màu `--mau-navy`.
+  - Tiêu đề khối/thẻ (`.tieu-de-khoi`): `16px`, đậm `600`, màu `--mau-navy`.
   - Chữ nội dung & ô nhập: `14px`, đậm `400`.
-  - Nhãn trường (`.form-label`, `.nhan-truong`) & tiêu đề cột bảng: `13px`, đậm `500-600`.
-  - Chữ phụ (`.mo-ta-phu`) & huy hiệu trạng thái (`.huy-hieu`): `12px`.
-  - Số liệu lớn trên thẻ KPI (`.the-so-lieu .so-lieu`): `28px`, đậm `600`, `font-variant-numeric: tabular-nums`.
+  - Nhãn trường (`.form-label`, `.nhan-truong`): `13.5px`, đậm `600`.
+  - Tiêu đề cột bảng: `13px`, đậm `600`, màu `--chu-tieu-de-bang`.
+  - Số liệu lớn trên thẻ KPI: `28px`, đậm `700`, màu `--mau-navy`, `font-variant-numeric: tabular-nums`.
 
 ### 7.3. Danh mục 30 biểu tượng SVG Lucide (`src/assets/icons/sprite.svg`)
 
 Toàn bộ biểu tượng được đóng gói nội bộ tại `src/assets/vendor/lucide/` (kèm giấy phép ISC `LICENSE`) và gộp thành `src/assets/icons/sprite.svg`. Giao diện gọi hàm trợ giúp `icon(string $ten, string $lop = ''): string` trong `src/app/views/partials/icon.php`.
 
-1. **Điều hướng thanh bên (10 biểu tượng):** `layout-dashboard` (Tổng quan), `package` (Tài sản), `repeat` (Mượn - Trả), `arrow-left-right` (Điều chuyển), `clipboard-check` (Kiểm kê), `users` (Người mượn), `folder-tree` (Danh mục), `user-cog` (Tài khoản), `wrench` (Sự cố - Bảo trì), `bar-chart-3` (Thống kê).
-2. **Nghiệp vụ & thao tác (13 biểu tượng):** `qr-code` (Mã QR), `scan-line` (Quét camera QR), `plus` (Thêm mới), `pencil` (Sửa), `trash-2` (Xóa), `eye` (Xem chi tiết), `search` (Tìm kiếm), `printer` (In), `save` (Lưu), `log-out` (Đăng xuất), `menu` (Mở menu di động), `x` (Đóng/Hủy), `filter` (Lọc), `rotate-ccw` (Đặt lại / Nhận trả / Mở khóa), `lock` (Khóa), `arrow-left` (Quay lại).
-3. **Thông báo & trạng thái (4 biểu tượng):** `check-circle-2` (Thành công), `alert-triangle` (Cảnh báo), `alert-circle` (Lỗi), `info` (Thông tin).
+1. **Điều hướng thanh bên (10 biểu tượng):** `layout-dashboard`, `package`, `repeat`, `arrow-left-right`, `clipboard-check`, `users`, `folder-tree`, `user-cog`, `wrench`, `bar-chart-3`.
+2. **Nghiệp vụ & thao tác (13 biểu tượng):** `qr-code`, `scan-line`, `plus`, `pencil`, `trash-2`, `eye`, `search`, `printer`, `save`, `log-out`, `menu`, `x`, `filter`, `rotate-ccw`, `lock`, `arrow-left`.
+3. **Thông báo & trạng thái (4 biểu tượng):** `check-circle-2`, `alert-triangle`, `alert-circle`, `info`.
 
 **Vị trí được phép đặt biểu tượng:**
-- Mục điều hướng thanh bên, ô biểu tượng thẻ KPI (`.o-bieu-tuong-thong-ke`), các nút hành động chính/phụ, nút thao tác cuối dòng bảng (`.btn-bieu-tuong`), bên trái ô tìm kiếm (`.o-tim-kiem`), và đầu thông báo flash (`.alert`).
+- Mục điều hướng thanh bên, góc phải trên thẻ KPI (biểu tượng nét xám 20px, không có ô vuông hay hình tròn màu bao quanh), nút hành động chính/phụ/nguy hiểm, nút thao tác cuối dòng bảng (`.btn-bieu-tuong`), bên trái ô tìm kiếm (`.o-tim-kiem`), và đầu thông báo flash (`.alert`).
 - **Không đặt biểu tượng** trong huy hiệu trạng thái (`.huy-hieu`), tiêu đề cột bảng (`<th>`), nhãn trường biểu mẫu (`<label>`), hoặc tiêu đề thẻ (`<h2>`, `<h3>`).
 
-### 7.4. Quy trình thêm biểu tượng mới vào `sprite.svg`
+### 7.4. Ba kiểu nút bấm thống nhất toàn hệ thống
 
-1. Tải tệp SVG gốc từ bộ **Lucide Icons** (`viewBox="0 0 24 24"`, `stroke-width="1.75"`) và lưu vào `src/assets/vendor/lucide/<ten-icon>.svg`.
-2. Khai báo tên biểu tượng vào danh sách trong `setup/tao_sprite_icon.php`.
-3. Chạy lệnh tạo lại sprite:
-   ```powershell
-   C:\xampp\php\php.exe setup/tao_sprite_icon.php
-   ```
-4. Sử dụng trong View qua hàm `<?= icon('ten-icon', 'bieu-tuong-sm') ?>`.
+1. **Nút chính (`.btn-chinh`, `.btn-primary`):** Nền `--mau-chinh`, viền `--mau-chinh`, chữ trắng. Dùng cho hành động xác nhận, lưu, thêm mới quan trọng nhất.
+2. **Nút phụ (`.btn-phu`, `.btn-outline-secondary`):** Nền trắng, viền `--vien-dam`, chữ `--chu-chinh`. Dùng cho hủy, quay lại, lọc, tác vụ thứ cấp.
+3. **Nút nguy hiểm (`.btn-nguy-hiem`, `.btn-danger`):** Nền `--nguy-hiem`, chữ trắng. Dùng cho xóa, khóa đợt, hủy bỏ giao dịch.
 
 ### 7.5. Quy tắc kỷ luật giao diện & Hộp thoại tương tác bật lên (Popup Modal)
 

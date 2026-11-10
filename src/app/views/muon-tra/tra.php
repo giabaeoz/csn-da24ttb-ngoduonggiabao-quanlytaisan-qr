@@ -34,9 +34,24 @@ foreach ($dsChiTiet as $it) {
         $soChuaTra++;
     }
 }
+
+// Thiết bị vừa được quét để trả
+$thietBiVuaQuet = strtoupper(trim((string)($_GET['tu_khoa'] ?? $_GET['ma_qr'] ?? '')));
+$coThietBiKhop = false;
+if ($thietBiVuaQuet !== '') {
+    foreach ($dsChiTiet as $it) {
+        if (empty($it['thoi_gian_tra'])) {
+            $m1 = strtoupper(trim((string)($it['ma_tai_san'] ?? '')));
+            $m2 = strtoupper(trim((string)($it['ma_qr'] ?? '')));
+            if ($m1 === $thietBiVuaQuet || $m2 === $thietBiVuaQuet) {
+                $coThietBiKhop = true;
+                break;
+            }
+        }
+    }
+}
 ?>
 
-<!-- Tiêu đề trang & Tabs chuyển đổi -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Mượn - trả tài sản</h1>
@@ -67,9 +82,7 @@ foreach ($dsChiTiet as $it) {
     <input type="hidden" name="phieu_muon_id" value="<?= (int)($phieuHienTai['id'] ?? 0) ?>">
 
     <div class="row g-4">
-        <!-- CỘT TRÁI: QUÉT QR TRẢ & PHIẾU TRẢ TÀI SẢN -->
         <div class="col-12 col-lg-5">
-            <!-- Khối: Quét QR thiết bị trả -->
             <div class="card mb-4">
                 <div class="card-body p-3">
                     <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị trả</h2>
@@ -91,8 +104,8 @@ foreach ($dsChiTiet as $it) {
 
                             <div class="input-group input-group-sm">
                                 <input type="text" class="form-control" id="ma_tra_cuu_nhap"
-                                    placeholder="Mã thiết bị / mã phiếu / mã số"
-                                    value="<?= e($_GET['tu_khoa'] ?? $_GET['ma_phieu'] ?? '') ?>" autocomplete="off">
+                                    placeholder="Nhập mã thiết bị (VD: OCD-02, CAP-01)..."
+                                    value="<?= e($thietBiVuaQuet) ?>" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="thucHienTraCuu()">
                                     <?= icon('search', 'bieu-tuong-sm') ?>
                                     <span>Tìm</span>
@@ -105,23 +118,20 @@ foreach ($dsChiTiet as $it) {
                             </button>
                         </div>
                     </div>
-                    <?php if ($thongBaoLoiTimKiem !== ''): ?>
-                        <div class="ket-qua-quet ket-qua-quet-loi mt-2">
-                            <?= icon('alert-circle', 'bieu-tuong-sm') ?>
-                            <span><?= e($thongBaoLoiTimKiem) ?></span>
-                        </div>
-                    <?php endif; ?>
+                    <div id="thongBaoQuetKetQua" class="ket-qua-quet mt-2 <?= $thongBaoLoiTimKiem !== '' ? 'ket-qua-quet-loi' : 'd-none' ?>">
+                        <?= icon('alert-circle', 'bieu-tuong-sm') ?>
+                        <span id="noiDungThongBaoQuet"><?= e($thongBaoLoiTimKiem) ?></span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Khối: Phiếu trả tài sản -->
             <div class="card">
                 <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Phiếu trả tài sản</h2>
                     <?php if ($phieuHienTai): ?>
                         <div class="mb-3">
                             <div class="fw-semibold text-dark">
-                                <?= e($phieuHienTai['ho_ten_nguoi_muon']) ?> - <?= e($phieuHienTai['ma_so_nguoi_muon']) ?> - <?= e($phieuHienTai['lop_don_vi'] ?? '---') ?>
+                                <?= e($phieuHienTai['ho_ten_nguoi_muon'] ?? $phieuHienTai['ten_nguoi_muon'] ?? $phieuHienTai['ho_ten'] ?? '') ?> - <?= e($phieuHienTai['ma_so_nguoi_muon'] ?? $phieuHienTai['ma_so_truong'] ?? '') ?> - <?= e($phieuHienTai['lop_don_vi'] ?? '---') ?>
                             </div>
                             <div class="mo-ta-phu">
                                 Phiếu mượn: <?= e($phieuHienTai['ma_phieu_muon']) ?> • Phòng: <?= e($phieuHienTai['ma_phong']) ?>
@@ -143,7 +153,6 @@ foreach ($dsChiTiet as $it) {
                                     </tr>
                                 </thead>
                                 <tbody id="pvDanhSachNhanTra">
-                                    <!-- Cập nhật qua JS khi tick chọn -->
                                 </tbody>
                             </table>
                         </div>
@@ -153,16 +162,14 @@ foreach ($dsChiTiet as $it) {
                         </div>
                     <?php else: ?>
                         <div class="text-center py-4 text-phu">
-                            Chưa chọn phiếu mượn cần trả. Hãy quét QR hoặc tra cứu ở khung bên trên.
+                            Chưa quét thiết bị cần trả. Hãy đưa mã QR trên thiết bị vào khung camera hoặc nhập mã bên trên.
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <!-- CỘT PHẢI: THÔNG TIN PHIẾU MƯỢN & THIẾT BỊ NHẬN TRẢ -->
         <div class="col-12 col-lg-7">
-            <!-- Khối: Thông tin phiếu mượn -->
             <div class="card mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -176,11 +183,11 @@ foreach ($dsChiTiet as $it) {
                         <div class="row g-2 mb-2">
                             <div class="col-12 col-sm-4">
                                 <label class="form-label">Mã số</label>
-                                <input type="text" class="form-control" value="<?= e($phieuHienTai['ma_so_nguoi_muon']) ?>" readonly>
+                                <input type="text" class="form-control" value="<?= e($phieuHienTai['ma_so_nguoi_muon'] ?? $phieuHienTai['ma_so_truong'] ?? '') ?>" readonly>
                             </div>
                             <div class="col-12 col-sm-4">
                                 <label class="form-label">Họ tên</label>
-                                <input type="text" class="form-control" value="<?= e($phieuHienTai['ho_ten_nguoi_muon']) ?>" readonly>
+                                <input type="text" class="form-control" value="<?= e($phieuHienTai['ho_ten_nguoi_muon'] ?? $phieuHienTai['ten_nguoi_muon'] ?? $phieuHienTai['ho_ten'] ?? '') ?>" readonly>
                             </div>
                             <div class="col-12 col-sm-4">
                                 <label class="form-label">Số điện thoại</label>
@@ -205,52 +212,79 @@ foreach ($dsChiTiet as $it) {
                         </div>
                     <?php else: ?>
                         <div class="text-center py-4 text-phu">
-                            Vui lòng quét tem thiết bị hoặc nhập mã phiếu để nạp thông tin.
+                            Vui lòng quét mã QR trên thiết bị để nạp thông tin phiếu mượn.
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
 
-            <!-- Khối: Thiết bị nhận trả - đã quét -->
             <div class="card mb-4">
-                <div class="card-header">
-                    <h2 class="tieu-de-khoi mb-0">Thiết bị nhận trả - đã quét (<span id="demNhanTra"><?= $soChuaTra ?></span>)</h2>
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h2 class="tieu-de-khoi mb-0">Danh sách thiết bị trong phiếu (<span id="demNhanTra">0</span>/<?= $soChuaTra ?> nhận trả)</h2>
+                    <?php if (!empty($dsChiTiet) && $soChuaTra > 0): ?>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-phu btn-sm" onclick="chonTatCaThietBi(true)">
+                                <span>Trả tất cả</span>
+                            </button>
+                            <?php if ($coThietBiKhop): ?>
+                                <button type="button" class="btn btn-phu btn-sm" onclick="chonChiThietBiQuet()">
+                                    <span>Chỉ trả thiết bị vừa quét</span>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th class="cot-50">Nhận</th>
+                                <th class="cot-50 text-center">Trả</th>
                                 <th>Mã / tên thiết bị</th>
-                                <th class="cot-170">Tình trạng khi nhận</th>
+                                <th class="cot-180">Trạng thái trong phiếu</th>
+                                <th class="cot-160">Tình trạng khi nhận</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($dsChiTiet)): ?>
                                 <tr>
-                                    <td colspan="3" class="text-center py-4 text-phu">
+                                    <td colspan="4" class="text-center py-4 text-phu">
                                         Chưa có thiết bị nào.
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($dsChiTiet as $it):
                                     $daTra = !empty($it['thoi_gian_tra']);
+                                    $m1 = strtoupper(trim((string)($it['ma_tai_san'] ?? '')));
+                                    $m2 = strtoupper(trim((string)($it['ma_qr'] ?? '')));
+                                    $laThietBiVuaQuet = ($thietBiVuaQuet !== '' && ($m1 === $thietBiVuaQuet || $m2 === $thietBiVuaQuet));
+                                    // Mặc định chọn: nếu có thiết bị vừa quét cụ thể thì chỉ tick thiết bị đó; nếu tra cứu chung thì tick tất cả chưa trả
+                                    $macDinhChon = !$daTra && ($coThietBiKhop ? $laThietBiVuaQuet : true);
                                 ?>
-                                    <tr class="<?= $daTra ? 'opacity-50 bg-light' : '' ?>">
-                                        <td>
+                                    <tr class="<?= $daTra ? 'opacity-50 bg-light' : ($laThietBiVuaQuet ? 'table-active' : '') ?>" id="hang_tb_<?= (int)$it['id'] ?>">
+                                        <td class="text-center">
                                             <?php if (!$daTra): ?>
                                                 <input type="checkbox" class="form-check-input check-nhan-tra"
                                                     name="chi_tiet_id[]" value="<?= (int)$it['id'] ?>"
                                                     data-ma="<?= e($it['ma_tai_san']) ?>"
+                                                    data-qr="<?= e($it['ma_qr']) ?>"
                                                     data-ten="<?= e($it['ten_tai_san']) ?>"
-                                                    onchange="capNhatPreviewTra()" checked>
+                                                    onchange="capNhatPreviewTra()" <?= $macDinhChon ? 'checked' : '' ?>>
                                             <?php else: ?>
                                                 <span class="text-success fw-bold">✓</span>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <div class="fw-semibold text-dark"><?= e($it['ma_tai_san']) ?> - <?= e($it['ten_tai_san']) ?></div>
-                                            <div class="mo-ta-phu"><?= e($phieuHienTai['ma_phong']) ?></div>
+                                            <div class="mo-ta-phu">Phòng: <?= e($phieuHienTai['ma_phong']) ?></div>
+                                        </td>
+                                        <td>
+                                            <?php if ($daTra): ?>
+                                                <span class="huy-hieu huy-hieu-thanh-cong">Đã trả (<?= dinh_dang_ngay_gio($it['thoi_gian_tra']) ?>)</span>
+                                            <?php elseif ($laThietBiVuaQuet): ?>
+                                                <span class="huy-hieu huy-hieu-chinh badge-trang-thai-tb">Thiết bị vừa quét</span>
+                                            <?php else: ?>
+                                                <span class="huy-hieu huy-hieu-xam badge-trang-thai-tb">Còn lại trong phiếu</span>
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <?php if (!$daTra): ?>
@@ -260,7 +294,7 @@ foreach ($dsChiTiet as $it) {
                                                     <option value="HU_HONG">Hư hỏng</option>
                                                 </select>
                                             <?php else: ?>
-                                                <span class="text-phu small">Đã trả (<?= dinh_dang_ngay_gio($it['thoi_gian_tra']) ?>)</span>
+                                                <span class="text-phu small">Hoàn tất</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -276,7 +310,6 @@ foreach ($dsChiTiet as $it) {
                 </div>
             </div>
 
-            <!-- Nút hành động chân trang -->
             <div class="d-flex justify-content-end gap-2">
                 <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">
                     <?= icon('x', 'bieu-tuong-sm') ?>
@@ -296,7 +329,7 @@ foreach ($dsChiTiet as $it) {
     function thucHienTraCuu() {
         const val = document.getElementById('ma_tra_cuu_nhap').value.trim();
         if (!val) return;
-        window.location.href = '<?= url("muon-tra/tra.php") ?>?tu_khoa=' + encodeURIComponent(val);
+        xuLyQuetThietBi(val);
     }
 
     document.getElementById('ma_tra_cuu_nhap')?.addEventListener('keypress', function(e) {
@@ -306,16 +339,71 @@ foreach ($dsChiTiet as $it) {
         }
     });
 
+    function chonTatCaThietBi(check) {
+        document.querySelectorAll('.check-nhan-tra').forEach(cb => {
+            cb.checked = check;
+        });
+        capNhatPreviewTra();
+    }
+
+    function chonChiThietBiQuet() {
+        const maQuet = <?= json_encode($thietBiVuaQuet) ?>;
+        document.querySelectorAll('.check-nhan-tra').forEach(cb => {
+            const ma = (cb.getAttribute('data-ma') || '').toUpperCase();
+            const qr = (cb.getAttribute('data-qr') || '').toUpperCase();
+            cb.checked = (maQuet !== '' && (ma === maQuet || qr === maQuet));
+        });
+        capNhatPreviewTra();
+    }
+
+    function hienThongBaoQuet(msg, loai = 'thanh-cong') {
+        const box = document.getElementById('thongBaoQuetKetQua');
+        const text = document.getElementById('noiDungThongBaoQuet');
+        if (!box || !text) return;
+        text.textContent = msg;
+        box.className = 'ket-qua-quet mt-2 ' + (loai === 'thanh-cong' ? 'ket-qua-quet-dat' : 'ket-qua-quet-loi');
+        box.classList.remove('d-none');
+    }
+
+    function xuLyQuetThietBi(codeStr) {
+        if (!codeStr) return;
+        const ma = codeStr.trim().toUpperCase();
+
+        // 1. Kiểm tra xem thiết bị này có nằm trong số các thiết bị chưa trả của phiếu đang mở không
+        const cb = document.querySelector(`.check-nhan-tra[data-ma="${ma}"], .check-nhan-tra[data-qr="${ma}"]`);
+        if (cb) {
+            cb.checked = true;
+            const tr = cb.closest('tr');
+            if (tr) {
+                tr.classList.add('table-active');
+                const badge = tr.querySelector('.badge-trang-thai-tb');
+                if (badge) {
+                    badge.className = 'huy-hieu huy-hieu-chinh badge-trang-thai-tb';
+                    badge.textContent = 'Thiết bị vừa quét';
+                }
+            }
+            capNhatPreviewTra();
+            hienThongBaoQuet(`Đã quét nhận thiết bị [${ma}].`, 'thanh-cong');
+            return;
+        }
+
+        // 2. Nếu chưa mở phiếu hoặc thiết bị thuộc phiếu khác -> Chuyển hướng để nạp phiếu của thiết bị đó
+        window.location.href = '<?= url("muon-tra/tra.php") ?>?tu_khoa=' + encodeURIComponent(ma);
+    }
+
     function capNhatPreviewTra() {
         const checkedItems = document.querySelectorAll('.check-nhan-tra:checked');
         const dem = checkedItems.length;
-        document.getElementById('demNhanTra').textContent = dem;
+        const tongChuaTra = <?= (int)$soChuaTra ?>;
+        
+        const demEl = document.getElementById('demNhanTra');
+        if (demEl) demEl.textContent = dem;
 
         const pvTbody = document.getElementById('pvDanhSachNhanTra');
         if (!pvTbody) return;
 
         if (dem === 0) {
-            pvTbody.innerHTML = '<tr><td colspan="2" class="text-center text-phu py-2">Chưa chọn thiết bị nào</td></tr>';
+            pvTbody.innerHTML = '<tr><td colspan="2" class="text-center text-phu py-2">Chưa chọn thiết bị nào để nhận trả</td></tr>';
             document.getElementById('pvTongNhan').textContent = 'Tổng nhận: 0 thiết bị';
             document.getElementById('btnXacNhanTra').disabled = true;
             return;
@@ -327,16 +415,21 @@ foreach ($dsChiTiet as $it) {
             const ma = cb.getAttribute('data-ma');
             const ten = cb.getAttribute('data-ten');
             const sel = document.querySelector(`.sel-tinh-trang[data-id="${id}"]`);
-            const ttText = (sel && sel.value === 'HU_HONG') ? 'Hỏng' : 'Bình thường';
+            const ttText = (sel && sel.value === 'HU_HONG') ? 'Hư hỏng' : 'Bình thường';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `<td>${escapeHtml(ma)} - ${escapeHtml(ten)}</td><td class="text-end text-phu">${ttText}</td>`;
             pvTbody.appendChild(tr);
         });
 
-        const tongChuaTra = <?= (int)$soChuaTra ?>;
-        const trangThaiDu = (dem === tongChuaTra && tongChuaTra > 0) ? ' • Đã trả đủ' : '';
-        document.getElementById('pvTongNhan').textContent = `Tổng nhận: ${dem} thiết bị${trangThaiDu}`;
+        const conLai = tongChuaTra - dem;
+        let thongTinDem = `Tổng nhận: ${dem} thiết bị`;
+        if (dem === tongChuaTra && tongChuaTra > 0) {
+            thongTinDem += ' • Đã trả đủ toàn bộ phiếu';
+        } else if (conLai > 0) {
+            thongTinDem += ` (Còn lại ${conLai} thiết bị chưa trả)`;
+        }
+        document.getElementById('pvTongNhan').textContent = thongTinDem;
         document.getElementById('btnXacNhanTra').disabled = false;
     }
 
@@ -426,8 +519,10 @@ foreach ($dsChiTiet as $it) {
             });
 
             if (code && code.data) {
-                dungCamera();
-                window.location.href = '<?= url("muon-tra/tra.php") ?>?tu_khoa=' + encodeURIComponent(code.data);
+                xuLyQuetThietBi(code.data);
+                setTimeout(() => {
+                    if (dangQuet) requestAnimationFrame(quetVongLap);
+                }, 1200);
                 return;
             }
         }

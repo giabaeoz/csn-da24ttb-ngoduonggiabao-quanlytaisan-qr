@@ -19,11 +19,10 @@ $tieuDeTrang = 'Chi tiết thiết bị: ' . ($taiSan['ma_tai_san'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Chi tiết thiết bị: <?= e($taiSan['ma_tai_san']) ?></h1>
-        <div class="mo-ta-phu">Thông số kỹ thuật, tem mã QR và lịch sử sử dụng của thiết bị.</div>
+        
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="<?= url('tai-san/in-qr.php?id=' . (int)$taiSan['id']) ?>" class="btn btn-phu" target="_blank">
@@ -44,7 +43,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <div class="row g-3 mb-4">
-    <!-- Cột trái: Thẻ hiển thị Tem mã QR -->
     <div class="col-12 col-md-4">
         <div class="the-noi-dung text-center p-3 h-100">
             <div class="tieu-de-khoi mb-3">Mã QR tài sản</div>
@@ -71,7 +69,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
     </div>
 
-    <!-- Cột phải: Thông số chi tiết của thiết bị -->
     <div class="col-12 col-md-8">
         <div class="the-noi-dung p-3 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
@@ -152,7 +149,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Lịch sử mượn trả gần nhất -->
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau">
         <h3 class="tieu-de-khoi mb-0">Lịch sử mượn trả gần nhất</h3>
@@ -220,7 +216,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Nạp thư viện tạo mã QR offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
 <script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>

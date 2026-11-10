@@ -37,7 +37,6 @@ $viTriBatDau = ($trang - 1) * 15 + (count($danhSachTaiSan) > 0 ? 1 : 0);
 $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
 ?>
 
-<!-- Tiêu đề trang & Các nút hành động chính -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Tài sản</h1>
@@ -56,7 +55,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
     </div>
 </div>
 
-<!-- 4 Thẻ số liệu thống kê -->
 <div class="row g-3 mb-3">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
@@ -96,7 +94,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
     </div>
 </div>
 
-<!-- Khối Bộ lọc tìm kiếm gọn 1 hàng -->
 <div class="card mb-3">
     <div class="card-body py-2 px-3">
         <form action="<?= url('tai-san/index.php') ?>" method="GET" class="row g-2 align-items-center">
@@ -154,7 +151,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
     </div>
 </div>
 
-<!-- Bảng Danh sách tài sản -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center py-3">
         <div class="d-flex align-items-center gap-2">
@@ -271,7 +267,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
         </table>
     </div>
 
-    <!-- Phân trang dưới bảng -->
     <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
         <div class="mo-ta-phu">
             Hiển thị <?= $viTriBatDau ?>-<?= $viTriKetThuc ?> trong tổng số <?= $tongSo ?> tài sản
@@ -298,7 +293,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
     </div>
 </div>
 
-<!-- Modal Xem mã QR nhanh -->
 <div class="modal fade" id="modalXemQr" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content">

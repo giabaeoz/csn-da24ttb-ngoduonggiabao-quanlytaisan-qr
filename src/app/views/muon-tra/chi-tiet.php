@@ -36,7 +36,6 @@ foreach ($dsChiTiet as $item) {
 ?>
 
 <div class="container-fluid py-3">
-    <!-- Breadcrumb & Tiêu đề -->
     <div class="row align-items-center mb-3">
         <div class="col-md-7">
             <nav aria-label="breadcrumb">
@@ -82,7 +81,6 @@ foreach ($dsChiTiet as $item) {
         </div>
     </div>
 
-    <!-- Thông báo nếu quá hạn -->
     <?php if ($quaHan): ?>
         <div class="alert alert-danger d-flex align-items-center" role="alert">
             <?= icon('alert-triangle', 'bieu-tuong-md') ?>
@@ -92,9 +90,7 @@ foreach ($dsChiTiet as $item) {
         </div>
     <?php endif; ?>
 
-    <!-- Khối thông tin chung -->
     <div class="row g-3 mb-4">
-        <!-- Thông tin người mượn -->
         <div class="col-lg-5">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
@@ -156,7 +152,6 @@ foreach ($dsChiTiet as $item) {
             </div>
         </div>
 
-        <!-- Thông tin phiên mượn -->
         <div class="col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
@@ -214,7 +209,6 @@ foreach ($dsChiTiet as $item) {
             </div>
         </div>
 
-        <!-- Thẻ Mã QR Phiếu mượn -->
         <div class="col-lg-3">
             <div class="card shadow-sm h-100 text-center p-3 bg-white">
                 <div class="card-header bg-white py-2 border-0">
@@ -233,7 +227,6 @@ foreach ($dsChiTiet as $item) {
         </div>
     </div>
 
-    <!-- Danh sách thiết bị trong phiếu mượn -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="tieu-de-khoi mb-0">
@@ -338,7 +331,6 @@ foreach ($dsChiTiet as $item) {
                 </tbody>
             </table>
         </div>
-    <!-- Phần chữ ký dành riêng cho bản in thực tế -->
     <div class="d-none d-print-block mt-5 pt-3">
         <div class="row text-center">
             <div class="col-6">
@@ -356,7 +348,6 @@ foreach ($dsChiTiet as $item) {
 </div>
 </div>
 
-<!-- Nạp thư viện tạo mã QR offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
 <script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>

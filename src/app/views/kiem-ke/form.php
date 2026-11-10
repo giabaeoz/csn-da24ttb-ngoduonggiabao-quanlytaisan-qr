@@ -22,7 +22,6 @@ $tieuDeTrang = 'Mở đợt kiểm kê';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút quay lại -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Mở đợt kiểm kê tài sản</h1>
@@ -44,7 +43,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <?php endif; ?>
 
 <div class="row g-4">
-    <!-- CỘT TRÁI: FORM KHỞI TẠO ĐỢT -->
     <div class="col-lg-7">
         <div class="card the-noi-dung">
             <div class="card-header bg-white py-3 border-bottom">
@@ -56,7 +54,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <form action="<?= url('kiem-ke/tao.php') ?>" method="POST" id="formTaoKiemKe">
                     <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
 
-                    <!-- Phòng trực -->
                     <div class="mb-3">
                         <label class="form-label">Bàn trực áp dụng kiểm kê <span class="text-danger">*</span></label>
                         <?php if ($nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI): ?>
@@ -76,7 +73,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <?php endif; ?>
                     </div>
 
-                    <!-- Tên đợt kiểm kê -->
                     <div class="mb-3">
                         <label class="form-label">Tên đợt kiểm kê <span class="text-danger">*</span></label>
                         <input type="text" name="ten_dot_kiem_ke" class="form-control" required maxlength="150"
@@ -84,7 +80,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                value="<?= e($duLieu['ten_dot_kiem_ke']) ?>">
                     </div>
 
-                    <!-- Loại kiểm kê -->
                     <div class="mb-3">
                         <label class="form-label">Hình thức kiểm kê <span class="text-danger">*</span></label>
                         <div class="row g-2">
@@ -127,7 +122,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </div>
                     </div>
 
-                    <!-- Ghi chú / Phạm vi -->
                     <div class="mb-4">
                         <label class="form-label">Ghi chú / Mục đích kiểm kê</label>
                         <textarea name="ghi_chu" class="form-control" rows="3" maxlength="2000"
@@ -135,7 +129,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <div class="form-text">Tối đa 2000 ký tự.</div>
                     </div>
 
-                    <!-- Nút hành động -->
                     <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
                         <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu">
                             <?= icon('x', 'bieu-tuong-sm') ?>
@@ -151,7 +144,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
     </div>
 
-    <!-- CỘT PHẢI: QUY TRÌNH & LƯU Ý NGHIỆP VỤ -->
     <div class="col-lg-5">
         <div class="card the-noi-dung mb-4">
             <div class="card-header bg-white py-3 border-bottom">

@@ -19,7 +19,6 @@ $nguoiDung = nguoi_dung_hien_tai();
 $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
 ?>
 <aside class="sidebar-app">
-    <!-- Đầu Sidebar: Logo và Tên hệ thống -->
     <div class="sidebar-dau">
         <div class="d-flex align-items-center">
             <div class="logo-box">LOGO</div>
@@ -30,7 +29,6 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
         </div>
     </div>
 
-    <!-- Danh sách Menu chức năng -->
     <nav class="sidebar-menu">
         <div class="menu-tieu-de">CHỨC NĂNG</div>
 
@@ -83,7 +81,6 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
             </a>
         <?php endif; ?>
 
-        <!-- Các mục quản trị nâng cao cho Quản trị viên / Quản lý -->
         <?php if (co_quyen('ghi_nhan_su_co') || co_quyen('xem_su_co')): ?>
             <a class="menu-item <?= (str_contains($duongDanHienTai, '/su-co/')) ? 'active' : '' ?>" href="<?= url('su-co/index.php') ?>">
                 <?= icon('wrench') ?>
@@ -106,7 +103,6 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
         <?php endif; ?>
     </nav>
 
-    <!-- Chân Sidebar: Nút Đăng xuất -->
     <div class="sidebar-chan">
         <form action="<?= url('logout.php') ?>" method="POST" class="m-0">
             <?= csrf_field() ?>

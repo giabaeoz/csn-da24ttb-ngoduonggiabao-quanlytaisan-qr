@@ -42,18 +42,37 @@ foreach ($teps as $tep) {
 }
 
 echo "\n============================================================\n";
-// Khôi phục dữ liệu mẫu sạch sẽ sau khi chạy kiểm thử để không để lại dữ liệu rác (TS_MUON_..., SV_TEST_...)
+// Dọn dẹp dữ liệu kiểm thử an toàn - KHÔNG reset toàn bộ CSDL trừ khi có cờ --reset-db
 require_once dirname(__DIR__, 2) . '/src/app/core/khoi-dong.php';
-$sqlMau = file_get_contents(dirname(__DIR__) . '/du_lieu_mau.sql');
-if ($sqlMau !== false) {
-    $db = db();
-    $db->multi_query($sqlMau);
-    while ($db->more_results() && $db->next_result()) {
-        if ($r = $db->store_result()) {
-            $r->free();
+$db = db();
+
+$canResetDb = in_array('--reset-db', $argv ?? [], true);
+if ($canResetDb) {
+    $sqlMau = file_get_contents(dirname(__DIR__) . '/du_lieu_mau.sql');
+    if ($sqlMau !== false) {
+        $db->multi_query($sqlMau);
+        while ($db->more_results() && $db->next_result()) {
+            if ($r = $db->store_result()) {
+                $r->free();
+            }
         }
+        echo "  [CLEANUP] Đã khôi phục dữ liệu mẫu chuẩn theo yêu cầu (--reset-db).\n";
     }
-    echo "  [CLEANUP] Đã dọn sạch dữ liệu kiểm thử tạm thời và khôi phục dữ liệu mẫu chuẩn.\n";
+} else {
+    // Chỉ dọn các bản ghi phát sinh trong quá trình chạy test (chứa tiền tố TEST, TRA1, KHACBAN, ...)
+    $db->query("DELETE FROM chi_tiet_muon WHERE ghi_chu_tra LIKE '%Test%' OR tai_san_id IN (SELECT id FROM tai_san WHERE ma_tai_san LIKE '%TEST%' OR ma_tai_san LIKE '%TRA1%')");
+    $db->query("DELETE FROM phieu_muon WHERE ghi_chu LIKE '%Test%' OR nguoi_muon_id IN (SELECT id FROM nguoi_muon WHERE ma_so_truong LIKE '%TEST%' OR ma_so_truong LIKE '%TRA%')");
+    $db->query("DELETE FROM chi_tiet_dieu_chuyen WHERE dieu_chuyen_id IN (SELECT id FROM dieu_chuyen WHERE ly_do LIKE '%Test%')");
+    $db->query("DELETE FROM dieu_chuyen WHERE ly_do LIKE '%Test%'");
+    $db->query("DELETE FROM chi_tiet_kiem_ke WHERE dot_kiem_ke_id IN (SELECT id FROM dot_kiem_ke WHERE ten_dot_kiem_ke LIKE '%Test%')");
+    $db->query("DELETE FROM dot_kiem_ke WHERE ten_dot_kiem_ke LIKE '%Test%'");
+    $db->query("DELETE FROM su_co_tai_san WHERE mo_ta_su_co LIKE '%Test%'");
+    $db->query("DELETE FROM tai_san WHERE ma_tai_san LIKE '%TEST%' OR ma_tai_san LIKE '%TRA1%' OR ma_tai_san LIKE '%KHACBAN%' OR ma_tai_san LIKE '%PANA%'");
+    $db->query("DELETE FROM nguoi_muon WHERE ma_so_truong LIKE '%TEST%' OR ma_so_truong LIKE '%TRA%'");
+    $db->query("DELETE FROM phong_hoc WHERE ma_phong LIKE '%TEST%' OR ma_phong LIKE '%DICH%'");
+    $db->query("DELETE FROM loai_tai_san WHERE ma_loai LIKE '%TEST%'");
+    $db->query("DELETE FROM phong_truc WHERE ma_phong_truc LIKE '%TEST%'");
+    echo "  [CLEANUP] Đã dọn sạch các bản ghi kiểm thử tạm thời (bảo toàn toàn bộ dữ liệu người dùng tạo).\n";
 }
 
 if ($tongLoi === 0) {

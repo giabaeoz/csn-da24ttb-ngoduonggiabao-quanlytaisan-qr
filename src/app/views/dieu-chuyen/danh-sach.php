@@ -28,11 +28,10 @@ $viTriBatDau = ($trangHienTai - 1) * $soMoiTrang + (count($danhSachDieuChuyen) >
 $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
 ?>
 
-<!-- Tiêu đề trang & Nút hành động -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Điều chuyển tài sản</h1>
-        <div class="mo-ta-phu">Lịch sử điều chuyển thiết bị giữa các phòng học.</div>
+        
     </div>
     <div>
         <?php if (co_quyen('tao_dieu_chuyen')): ?>
@@ -44,7 +43,6 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
     </div>
 </div>
 
-<!-- Bộ lọc tìm kiếm -->
 <div class="card mb-4">
     <div class="card-body p-3">
         <form action="<?= url('dieu-chuyen/index.php') ?>" method="GET" class="row g-2 align-items-end">
@@ -105,7 +103,6 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
     </div>
 </div>
 
-<!-- Bảng lịch sử điều chuyển -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h2 class="tieu-de-khoi mb-0">Danh sách phiếu điều chuyển</h2>
@@ -152,7 +149,6 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
         </table>
     </div>
 
-    <!-- Phân trang -->
     <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
         <div class="mo-ta-phu">
             <?= $viTriBatDau ?>-<?= $viTriKetThuc ?> trong <?= $tongSo ?> phiếu

@@ -26,7 +26,6 @@ $tieuDeTrang = 'Lịch sử mượn - trả';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút thao tác -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Lịch sử mượn - trả</h1>
@@ -46,7 +45,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Bộ lọc tìm kiếm lịch sử -->
 <div class="card the-noi-dung mb-4">
     <div class="card-body p-3">
         <form action="<?= url('muon-tra/index.php') ?>" method="GET" class="row g-2 align-items-end">
@@ -104,7 +102,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Bảng danh sách phiếu mượn -->
 <div class="card the-noi-dung">
     <div class="table-responsive">
         <table class="table bang-du-lieu mb-0">
@@ -190,7 +187,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </table>
     </div>
 
-    <!-- Phân trang -->
     <?php if ($tongSoTrang > 1): ?>
     <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center">
         <span class="small mo-ta-phu">

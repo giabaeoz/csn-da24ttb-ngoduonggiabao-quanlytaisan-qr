@@ -32,11 +32,10 @@ $viTriBatDau = ($trang - 1) * 15 + (count($danhSachTaiKhoan) > 0 ? 1 : 0);
 $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
 ?>
 
-<!-- Tiêu đề trang & Nút hành động chính -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Tài khoản cán bộ</h1>
-        <div class="mo-ta-phu">Quản lý thông tin đăng nhập, phân quyền vai trò và phân công phòng trực.</div>
+        
     </div>
     <div>
         <a href="<?= url('tai-khoan/them.php') ?>" class="btn btn-chinh">
@@ -46,7 +45,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
     </div>
 </div>
 
-<!-- 4 Thẻ số liệu thống kê -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
@@ -88,7 +86,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
     </div>
 </div>
 
-<!-- Khối Bộ lọc tìm kiếm -->
 <div class="card mb-4">
     <div class="card-body p-3">
         <form action="<?= url('tai-khoan/index.php') ?>" method="GET">
@@ -151,7 +148,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
     </div>
 </div>
 
-<!-- Bảng danh sách tài khoản cán bộ -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
@@ -288,7 +284,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
         </table>
     </div>
 
-    <!-- Phân trang dưới bảng -->
     <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
         <div class="mo-ta-phu">
             <?= $viTriBatDau ?>–<?= $viTriKetThuc ?> trong <?= $tongSo ?> tài khoản
@@ -311,7 +306,6 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
     </div>
 </div>
 
-<!-- Modal Đặt lại mật khẩu -->
 <div class="modal fade" id="modalDatLaiMatKhau" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <form action="<?= url('tai-khoan/index.php') ?>" method="POST" class="modal-content border-0 shadow">

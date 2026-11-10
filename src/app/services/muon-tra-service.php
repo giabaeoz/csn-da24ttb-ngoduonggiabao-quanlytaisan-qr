@@ -508,7 +508,9 @@ function muon_tim_theo_id(int $id): ?array {
     $db = db();
     $sql = "SELECT pm.*,
                    pm.ma_phieu_muon AS ma_phieu,
-                   nm.ho_ten AS ten_nguoi_muon, nm.ma_so_truong, nm.so_dien_thoai, nm.lop_don_vi, nm.loai_nguoi_muon,
+                   nm.ho_ten AS ten_nguoi_muon, nm.ho_ten AS ho_ten_nguoi_muon, nm.ho_ten,
+                   nm.ma_so_truong, nm.ma_so_truong AS ma_so_nguoi_muon,
+                   nm.so_dien_thoai, nm.lop_don_vi, nm.loai_nguoi_muon,
                    ph.ma_phong, ph.ten_phong, ph.toa_nha, ph.tang,
                    pt.ten_phong_truc, pt.ma_phong_truc,
                    nv.ho_ten AS ten_nhan_vien_lap

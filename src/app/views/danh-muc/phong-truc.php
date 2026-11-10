@@ -19,11 +19,10 @@ $tieuDeTrang = 'Quản lý phòng trực';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý danh mục</h1>
-        <div class="mo-ta-phu">Cấu hình phòng học, phòng trực và loại tài sản trong hệ thống.</div>
+        
     </div>
     <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalPhongTruc" onclick="moModalThem()">
         <?= icon('plus', 'bieu-tuong-sm') ?>
@@ -31,7 +30,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </button>
 </div>
 
-<!-- Thanh điều hướng Tab Danh mục -->
 <ul class="nav nav-tabs mb-3 border-bottom">
     <li class="nav-item">
         <a class="nav-link text-secondary fw-semibold" href="<?= url('danh-muc/phong-hoc.php') ?>">
@@ -50,7 +48,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </li>
 </ul>
 
-<!-- Bảng danh sách phòng trực -->
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau">
         <h3 class="tieu-de-khoi mb-0">Danh sách phòng trực thiết bị</h3>
@@ -117,7 +114,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             ['nhan' => 'Nhân sự phân công', 'gia_tri' => (int)($pt['so_nhan_vien'] ?? 0) . ' nhân viên'],
                                             ['nhan' => 'Tài sản quản lý', 'gia_tri' => (int)($pt['so_tai_san'] ?? 0) . ' thiết bị'],
                                             ['nhan' => 'Trạng thái', 'gia_tri' => (int)($pt['dang_hoat_dong'] ?? 0) === 1 ? 'Đang hoạt động' : 'Tạm tắt'],
-                                            ['nhan' => 'Ghi chú', 'gia_tri' => ($pt['ghi_chu'] ?? '') ?: '---'],
                                         ];
                                         ?>
                                         <button type="button" class="btn-bieu-tuong" aria-label="Xem" title="Xem"
@@ -160,7 +156,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Modal Thêm / Sửa Phòng trực -->
 <div class="modal fade" id="modalPhongTruc" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="modal-content border-0 shadow">
@@ -179,7 +174,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         Mã phòng trực <span class="text-danger">*</span>
                     </label>
                     <input type="text" class="o-nhap text-uppercase" id="modal_ma" name="ma_phong_truc" placeholder="Ví dụ: D6, B2" required>
-                    <div class="mo-ta-phu mt-1">Mã viết tắt duy nhất định danh phòng trực.</div>
+                    
                 </div>
 
                 <div class="mb-3">

@@ -319,6 +319,8 @@ function nguoi_muon_lich_su_muon(int $nguoiMuonId): array {
 
     // 1. Lấy danh sách phiếu mượn
     $sql = "SELECT pm.*, 
+                   pm.ma_phieu_muon AS ma_phieu,
+                   pm.ghi_chu AS muc_dich_su_dung,
                    ph.ma_phong, ph.ten_phong,
                    pt.ten_phong_truc,
                    nv.ho_ten AS ten_nhan_vien_lap

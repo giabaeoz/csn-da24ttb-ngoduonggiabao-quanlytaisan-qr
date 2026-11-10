@@ -24,7 +24,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId);
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">
@@ -68,7 +67,7 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                         <input type="text" class="form-control text-uppercase font-monospace" id="ma_nhan_vien" name="ma_nhan_vien"
                                value="<?= e($taiKhoan['ma_nhan_vien'] ?? '') ?>"
                                placeholder="Ví dụ: NV-TRUC01, NV-QL01" required autofocus>
-                        <div class="mo-ta-phu mt-1">Mã định danh duy nhất của cán bộ trong hệ thống.</div>
+                        
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -78,7 +77,7 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                         <input type="text" class="form-control font-monospace" id="ten_dang_nhap" name="ten_dang_nhap"
                                value="<?= e($taiKhoan['ten_dang_nhap'] ?? '') ?>"
                                placeholder="Ví dụ: nhanvien01, quanly01" required>
-                        <div class="mo-ta-phu mt-1">Viết liền không dấu, từ 3 đến 50 ký tự.</div>
+                        
                     </div>
                 </div>
 
@@ -114,7 +113,7 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <div class="mo-ta-phu mt-1">Quyết định quyền hạn truy cập các chức năng trên hệ thống.</div>
+                        
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -129,11 +128,10 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <div class="mo-ta-phu mt-1" id="moTaPhongTruc">Bắt buộc chọn đối với tài khoản Nhân viên trực.</div>
+                        
                     </div>
                 </div>
 
-                <!-- Khối mật khẩu -->
                 <div class="p-3 border rounded bg-light mb-3">
                     <div class="fw-semibold text-dark mb-1">
                         <?= $laThemMoi ? 'Mật khẩu khởi tạo' : 'Đổi mật khẩu (tùy chọn)' ?>
@@ -163,7 +161,6 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                     </div>
                 </div>
 
-                <!-- Trạng thái hoạt động -->
                 <div class="mb-4">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="dang_hoat_dong" name="dang_hoat_dong" value="1"
@@ -174,7 +171,7 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                         </label>
                     </div>
                     <?php if ($laChinhMinh): ?>
-                        <div class="mo-ta-phu mt-1">Tài khoản đang đăng nhập hiện tại luôn ở trạng thái hoạt động.</div>
+                        
                     <?php endif; ?>
                 </div>
 

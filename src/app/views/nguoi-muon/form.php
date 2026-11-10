@@ -20,7 +20,6 @@ $tieuDeTrang = $laThemMoi ? 'Thêm người mượn mới' : 'Chỉnh sửa hồ
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">
@@ -64,7 +63,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <input type="text" class="o-nhap" id="ma_so_truong" name="ma_so_truong" 
                                value="<?= e($nguoiMuon['ma_so_truong'] ?? '') ?>" 
                                placeholder="Ví dụ: 110124001 hoặc GV001" required autofocus>
-                        <div class="mo-ta-phu mt-1">Mã định danh duy nhất trong trường Đại học / Cao đẳng.</div>
+                        
                     </div>
 
                     <div class="col-12 col-md-6">

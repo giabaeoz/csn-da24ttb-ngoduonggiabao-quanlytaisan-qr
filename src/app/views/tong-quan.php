@@ -36,24 +36,17 @@ $duLieuNhom = $nhomTaiSan['data'] ?? $nhomTaiSan['so_luong'] ?? [0];
 $tongNhomMuon = array_sum($duLieuNhom);
 ?>
 
-<!-- Tiêu đề trang & Lời chào cán bộ -->
-<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Tổng quan</h1>
-        <div class="mo-ta-phu">Tình hình tài sản và mượn – trả tại phòng trực.</div>
     </div>
-    <div class="d-flex align-items-center gap-3 text-end">
-        <div>
-            <div class="fw-semibold text-dark">Xin chào "<?= e($nguoiDung['ho_ten'] ?? 'Nhân viên phòng trực') ?>"</div>
-            <div class="mo-ta-phu">Hôm nay ngày <?= date('d/m/Y') ?></div>
-        </div>
-        <button class="btn btn-phu">
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-phu">
             Tuần này
         </button>
     </div>
 </div>
 
-<!-- 4 Thẻ số liệu chính -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
@@ -93,7 +86,6 @@ $tongNhomMuon = array_sum($duLieuNhom);
     </div>
 </div>
 
-<!-- Thao tác nhanh -->
 <div class="card mb-4">
     <div class="card-body py-3 d-flex align-items-center gap-3 flex-wrap">
         <span class="text-phu fw-semibold me-2">Thao tác nhanh</span>
@@ -103,13 +95,12 @@ $tongNhomMuon = array_sum($duLieuNhom);
     </div>
 </div>
 
-<!-- Biểu đồ: Xu hướng mượn – trả trong tuần -->
 <div class="card mb-4">
     <div class="card-body p-4">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
                 <h2 class="tieu-de-khoi">Xu hướng mượn – trả trong tuần</h2>
-                <div class="mo-ta-phu">Đơn vị: lượt giao dịch • Dữ liệu thời gian thực</div>
+                
             </div>
             <div class="d-flex align-items-center gap-3 small">
                 <span class="d-flex align-items-center gap-1">
@@ -126,14 +117,12 @@ $tongNhomMuon = array_sum($duLieuNhom);
     </div>
 </div>
 
-<!-- Hàng 2 Biểu đồ: Nhóm tài sản & Tình trạng tài sản -->
 <div class="row g-4 mb-4">
-    <!-- Cột trái: Lượt mượn theo nhóm tài sản -->
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4 d-flex flex-column">
                 <h2 class="tieu-de-khoi">Lượt mượn theo nhóm tài sản</h2>
-                <div class="mo-ta-phu mb-3">Cùng thời gian • Đơn vị: lượt</div>
+                
                 <div class="khung-bieu-do-200 flex-grow-1">
                     <canvas id="chartDashboardNhomTaiSan"></canvas>
                 </div>
@@ -142,12 +131,11 @@ $tongNhomMuon = array_sum($duLieuNhom);
         </div>
     </div>
 
-    <!-- Cột phải: Tình trạng tài sản -->
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4">
                 <h2 class="tieu-de-khoi">Tình trạng tài sản</h2>
-                <div class="mo-ta-phu mb-3">Cơ cấu <?= (int)($thongKe['tong_so'] ?? 0) ?> tài sản</div>
+                
                 <div class="row align-items-center">
                     <div class="col-sm-6 text-center">
                         <div class="khung-bieu-do-tron">
@@ -180,7 +168,6 @@ $tongNhomMuon = array_sum($duLieuNhom);
     </div>
 </div>
 
-<!-- Bảng: Lượt mượn cần theo dõi -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
@@ -253,7 +240,6 @@ $tongNhomMuon = array_sum($duLieuNhom);
     </div>
 </div>
 
-<!-- SCRIPTS KHỞI TẠO 3 BIỂU ĐỒ CHART.JS -->
 <script src="<?= url('assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

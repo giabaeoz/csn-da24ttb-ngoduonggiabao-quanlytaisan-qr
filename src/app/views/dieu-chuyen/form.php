@@ -23,7 +23,6 @@ $tieuDeTrang = 'Điều chuyển';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang -->
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="tieu-de-trang">Điều chuyển tài sản</h1>
@@ -50,9 +49,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div id="vungTaiSanIds"></div>
 
     <div class="row g-4 mb-4">
-        <!-- CỘT TRÁI: QUÉT QR & XEM TRƯỚC PHIẾU ĐIỀU CHUYỂN -->
         <div class="col-12 col-lg-5">
-            <!-- Khối: Quét QR thiết bị điều chuyển -->
             <div class="card mb-4">
                 <div class="card-body p-3">
                     <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị điều chuyển</h2>
@@ -91,7 +88,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <!-- Khối: Phiếu điều chuyển (Xem trước) -->
             <div class="card">
                 <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Phiếu điều chuyển</h2>
@@ -124,9 +120,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
         </div>
 
-        <!-- CỘT PHẢI: THÔNG TIN ĐIỀU CHUYỂN & THIẾT BỊ ĐÃ QUÉT -->
         <div class="col-12 col-lg-7">
-            <!-- Khối: Thông tin điều chuyển -->
             <div class="card mb-4">
                 <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Thông tin điều chuyển</h2>
@@ -164,7 +158,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <!-- Khối: Thiết bị điều chuyển - đã quét -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h2 class="tieu-de-khoi mb-0">Thiết bị điều chuyển - đã quét (<span id="demThietBi">0</span>)</h2>
@@ -197,7 +190,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <!-- Nút hành động chân trang -->
             <div class="d-flex justify-content-end gap-2">
                 <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">
                     <?= icon('x', 'bieu-tuong-sm') ?>
@@ -212,7 +204,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </form>
 
-<!-- Bảng: Điều chuyển gần đây -->
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>

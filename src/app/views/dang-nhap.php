@@ -32,7 +32,6 @@ $tieuDe = 'Đăng nhập';
 <body>
 
 <div class="trang-dang-nhap-khung">
-    <!-- Cột bên trái: Thương hiệu & Thông tin hệ thống -->
     <div class="cot-thuong-hieu">
         <div></div>
         <div class="vung-giua">
@@ -43,7 +42,6 @@ $tieuDe = 'Đăng nhập';
         <div class="chan-thuong-hieu">Phòng trực thiết bị</div>
     </div>
 
-    <!-- Cột bên phải: Khung đăng nhập -->
     <div class="cot-bieu-mau">
         <div class="hop-dang-nhap">
             <div class="tieu-de-dang-nhap">Đăng nhập</div>

@@ -14,7 +14,6 @@ if (!defined('APP_KHOI_DONG')) {
     </div>
 </div>
 
-<!-- Modal tương tác bật lên dùng chung (Xem / Thêm / Sửa) -->
 <div class="modal fade" id="modalTuongTac" tabindex="-1" aria-labelledby="modalTuongTacLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" id="modalTuongTacDialog">
         <div class="modal-content border-0 shadow">
@@ -27,7 +26,6 @@ if (!defined('APP_KHOI_DONG')) {
     </div>
 </div>
 
-<!-- Modal xác nhận thao tác bật lên dùng chung (Xóa / Khóa / Mở khóa) -->
 <div class="modal fade" id="modalXacNhan" tabindex="-1" aria-labelledby="modalXacNhanLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">

@@ -20,11 +20,9 @@ $tieuDeTrang = 'Hồ sơ người mượn: ' . ($nguoiMuon['ho_ten'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Hồ sơ người mượn: <?= e($nguoiMuon['ho_ten']) ?></h1>
-        <div class="mo-ta-phu">Thông tin cá nhân và lịch sử tất cả các giao dịch mượn - trả tài sản.</div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="<?= url('nguoi-muon/sua.php?id=' . (int)$nguoiMuon['id']) ?>" class="btn btn-phu">
@@ -33,18 +31,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </a>
         <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">
             <?= icon('arrow-left', 'bieu-tuong-sm') ?>
-            <span>Quay lại danh sách</span>
+            <span>Quay lại</span>
         </a>
     </div>
 </div>
 
-<!-- Thẻ tóm tắt thông tin người mượn -->
 <div class="the-noi-dung p-4 mb-4">
     <div class="row align-items-center">
         <div class="col-12 col-md-8">
             <div class="mb-2">
                 <h3 class="tieu-de-khoi mb-1"><?= e($nguoiMuon['ho_ten']) ?></h3>
-                <div class="mo-ta-phu">
+                <div class="text-secondary small">
                     Mã số trường: <strong><?= e($nguoiMuon['ma_so_truong']) ?></strong> &bull; Mã hệ thống: <?= e($nguoiMuon['ma_nguoi_muon']) ?>
                 </div>
             </div>
@@ -68,10 +65,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
 
         <div class="col-12 col-md-4 mt-3 mt-md-0 text-md-end border-start-md ps-md-4">
-            <div class="mo-ta-phu mb-2">Trạng thái giữ thiết bị hiện tại:</div>
+            <div class="text-secondary small mb-1">Trạng thái:</div>
             <?php if ((int)$nguoiMuon['so_thiet_bi_dang_muon'] > 0): ?>
                 <div class="huy-hieu-tt huy-hieu-tt-canh-bao fs-6 px-3 py-2 mb-2 d-inline-block">
-                    Đang giữ <?= (int)$nguoiMuon['so_thiet_bi_dang_muon'] ?> thiết bị chưa trả
+                    Đang giữ <?= (int)$nguoiMuon['so_thiet_bi_dang_muon'] ?> thiết bị
                 </div>
             <?php else: ?>
                 <div class="huy-hieu-tt huy-hieu-tt-thanh-cong fs-6 px-3 py-2 mb-2 d-inline-block">
@@ -83,7 +80,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <div>
                     <a href="<?= url('muon-tra/muon.php?ma_so=' . urlencode($nguoiMuon['ma_so_truong'])) ?>" class="btn btn-sm btn-chinh">
                         <?= icon('plus', 'bieu-tuong-sm') ?>
-                        <span>Lập phiếu mượn mới</span>
+                        <span>Lập phiếu mượn</span>
                     </a>
                 </div>
             <?php endif; ?>
@@ -91,7 +88,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Lịch sử mượn trả tài sản -->
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
         <h3 class="tieu-de-khoi mb-0">Lịch sử mượn trả tài sản</h3>
@@ -150,7 +146,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     </div>
                                 </div>
 
-                                <!-- Bảng chi tiết thiết bị trong phiếu -->
                                 <div class="table-responsive bg-white rounded border">
                                     <table class="bang-du-lieu mb-0">
                                         <thead>

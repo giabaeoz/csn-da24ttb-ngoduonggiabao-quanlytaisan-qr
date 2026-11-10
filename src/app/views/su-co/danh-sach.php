@@ -27,7 +27,6 @@ $tieuDeTrang = 'Quản lý sự cố & bảo trì';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý sự cố & bảo trì</h1>
@@ -43,7 +42,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- 4 Thẻ thống kê KPI -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
@@ -86,7 +84,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<!-- Bộ lọc tìm kiếm sự cố -->
 <div class="the-noi-dung p-3 mb-4">
     <form action="<?= url('su-co/index.php') ?>" method="GET" class="row g-3 align-items-end">
         <div class="col-12 col-md-4">
@@ -145,7 +142,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </form>
 </div>
 
-<!-- Bảng danh sách sự cố -->
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
         <h3 class="tieu-de-khoi mb-0">Danh sách sự cố tài sản</h3>
@@ -248,7 +244,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
     </div>
 
-    <!-- Phân trang -->
     <?php if ($tongTrang > 1): ?>
         <div class="the-noi-dung-chan d-flex justify-content-between align-items-center py-2">
             <span class="small text-muted">Trang <?= $trangHienTai ?> / <?= $tongTrang ?> (Tổng <?= $tongSo ?> bản ghi)</span>

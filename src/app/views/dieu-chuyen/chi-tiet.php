@@ -22,11 +22,10 @@ $tongThietBi = count($dsChiTiet);
 $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
 ?>
 
-<!-- Tiêu đề trang & Nút tác vụ -->
 <div class="thanh-cong-cu-trang no-print">
     <div>
         <h1 class="tieu-de-trang mb-0">Phiếu điều chuyển: <?= e($phieu['ma_dieu_chuyen']) ?></h1>
-        <div class="mo-ta-phu">Biên bản bàn giao và điều chuyển thiết bị giữa các phòng học.</div>
+        
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">
@@ -52,7 +51,6 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
     </div>
 </div>
 
-<!-- KHỐI IN BIÊN BẢN CHÍNH THỨC (HIỂN THỊ KHI IN) -->
 <div class="print-only mb-4">
     <div class="row align-items-center border-bottom pb-3 mb-3">
         <div class="col-7 text-center">
@@ -73,7 +71,6 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
 </div>
 
 <div class="row g-3">
-    <!-- CỘT TRÁI: THÔNG TIN CHI TIẾT PHIẾU -->
     <div class="col-12 col-lg-8">
         <div class="the-noi-dung mb-3">
             <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
@@ -139,7 +136,6 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
             </div>
         </div>
 
-        <!-- BẢNG DANH SÁCH THIẾT BỊ ĐIỀU CHUYỂN -->
         <div class="the-noi-dung mb-4">
             <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
                 <h3 class="tieu-de-khoi mb-0">
@@ -200,7 +196,6 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
             </div>
         </div>
 
-        <!-- CHỮ KÝ XÁC NHẬN KHI IN (PRINT ONLY) -->
         <div class="print-only mt-4 pt-3">
             <div class="row text-center">
                 <div class="col-4">
@@ -225,7 +220,6 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
         </div>
     </div>
 
-    <!-- CỘT PHẢI: MÃ QR PHIẾU & THÔNG TIN TIỆN ÍCH -->
     <div class="col-12 col-lg-4 no-print">
         <div class="the-noi-dung text-center p-3 mb-3">
             <h3 class="tieu-de-khoi mb-3">Mã QR phiếu điều chuyển</h3>
@@ -234,7 +228,7 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                     class="p-2 bg-white border khung-qr-164"></div>
             </div>
             <div class="font-monospace fw-semibold text-primary fs-6 mb-1"><?= e($phieu['ma_dieu_chuyen']) ?></div>
-            <div class="mo-ta-phu mb-0">Quét mã QR này để tra cứu nhanh thông tin phiếu.</div>
+            
         </div>
 
         <div class="the-noi-dung p-3">
@@ -254,7 +248,6 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
     </div>
 </div>
 
-<!-- Nạp thư viện tạo mã QR offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>
 <script src="<?= url('assets/vendor/qrcode/qrcode_UTF8.js') ?>"></script>
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>
