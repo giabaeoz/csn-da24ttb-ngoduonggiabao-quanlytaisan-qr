@@ -44,3 +44,4 @@ $cauHinhHuyHieu = match ($ma) {
 $chuHienThi = $nhan ?? $cauHinhHuyHieu['mac_dinh'];
 ?>
 <span class="huy-hieu <?= $cauHinhHuyHieu['kieu'] ?>"><?= e($chuHienThi) ?></span>
+

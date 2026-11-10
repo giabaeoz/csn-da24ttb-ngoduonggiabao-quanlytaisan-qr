@@ -267,7 +267,7 @@ foreach ($dsChiTiet as $item) {
                                 <td class="text-center font-monospace"><?= $idx + 1 ?></td>
                                 <td>
                                     <div class="fw-bold">
-                                        <a href="/tai-san/chi-tiet.php?id=<?= (int)$item['tai_san_id'] ?>" class="text-decoration-none <?= $daTra ? 'text-secondary' : 'text-primary' ?>">
+                                        <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$item['tai_san_id']) ?>" class="text-decoration-none <?= $daTra ? 'text-secondary' : 'text-primary' ?>">
                                             <?= e($item['ten_tai_san'] ?? '') ?>
                                         </a>
                                     </div>

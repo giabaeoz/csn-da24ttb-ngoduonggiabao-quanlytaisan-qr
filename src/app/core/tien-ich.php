@@ -26,6 +26,52 @@ function e(mixed $chuoi): string {
 }
 
 /**
+ * Lấy tiền tố đường dẫn cơ sở (Base URL path) của ứng dụng web.
+ * Tự động nhận diện khi chạy dưới thư mục con của Apache (ví dụ: /quanlytaisan-qr hoặc /quanlytaisan-qr/src)
+ * hoặc khi chạy tại thư mục gốc / máy chủ nội bộ PHP (ví dụ: '').
+ *
+ * @return string Tiền tố đường dẫn không có dấu gạch chéo ở cuối (ví dụ: '/quanlytaisan-qr' hoặc '')
+ */
+function duong_dan_goc(): string {
+    static $basePath = null;
+    if ($basePath !== null) {
+        return $basePath;
+    }
+
+    if (PHP_SAPI === 'cli' || empty($_SERVER['SCRIPT_NAME'])) {
+        $basePath = '';
+        return $basePath;
+    }
+
+    $cauHinhBase = cau_hinh('ung_dung.duong_dan_goc', null);
+    if ($cauHinhBase !== null) {
+        $basePath = rtrim((string)$cauHinhBase, '/');
+        return $basePath;
+    }
+
+    $srcDir = str_replace('\\', '/', realpath(dirname(__DIR__, 2)));
+    $scriptFile = !empty($_SERVER['SCRIPT_FILENAME']) ? str_replace('\\', '/', (string)realpath($_SERVER['SCRIPT_FILENAME'])) : '';
+
+    if ($srcDir !== '' && $scriptFile !== '' && str_starts_with($scriptFile, $srcDir)) {
+        $rel = ltrim(substr($scriptFile, strlen($srcDir)), '/');
+        $scriptName = str_replace('\\', '/', (string)$_SERVER['SCRIPT_NAME']);
+        if ($rel !== '' && str_ends_with($scriptName, $rel)) {
+            $prefix = substr($scriptName, 0, -strlen($rel));
+            $basePath = rtrim($prefix, '/');
+            return $basePath;
+        }
+    }
+
+    if (!empty($_SERVER['CONTEXT_PREFIX'])) {
+        $basePath = rtrim((string)$_SERVER['CONTEXT_PREFIX'], '/');
+        return $basePath;
+    }
+
+    $basePath = '';
+    return $basePath;
+}
+
+/**
  * Tạo đường dẫn URL tương đối hoặc chuẩn hóa cho toàn hệ thống.
  *
  * @param string $duongDan Đường dẫn tương đối từ thư mục gốc web (ví dụ: 'muon-tra/index.php')
@@ -33,7 +79,11 @@ function e(mixed $chuoi): string {
  */
 function url(string $duongDan = ''): string {
     $duongDan = ltrim($duongDan, '/');
-    return '/' . $duongDan;
+    $goc = duong_dan_goc();
+    if ($duongDan === '') {
+        return $goc !== '' ? $goc . '/' : '/';
+    }
+    return ($goc !== '' ? $goc : '') . '/' . $duongDan;
 }
 
 /**
@@ -42,8 +92,15 @@ function url(string $duongDan = ''): string {
  * @param string $duongDan URL cần chuyển hướng tới
  */
 function chuyen_huong(string $duongDan): void {
-    if (!preg_match('~^https?://~i', $duongDan) && !str_starts_with($duongDan, '/')) {
-        $duongDan = url($duongDan);
+    if (!preg_match('~^https?://~i', $duongDan)) {
+        $goc = duong_dan_goc();
+        if ($goc !== '' && str_starts_with($duongDan, $goc . '/')) {
+            // Đã có tiền tố gốc
+        } elseif (str_starts_with($duongDan, '/')) {
+            $duongDan = ($goc !== '' ? $goc : '') . $duongDan;
+        } else {
+            $duongDan = url($duongDan);
+        }
     }
     if (!headers_sent()) {
         header('Location: ' . $duongDan);

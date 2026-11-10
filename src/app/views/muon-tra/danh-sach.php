@@ -10,21 +10,22 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$tieuDeTrang = 'Lịch sử Mượn - Trả tài sản';
+$tieuDeTrang = 'Lịch sử mượn - trả';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3 border-bottom">
+<!-- Tiêu đề trang & Nút thao tác -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">📋 Lịch sử Mượn - Trả thiết bị</h1>
-        <p class="text-secondary small mb-0">Theo dõi toàn bộ nhật ký giao dịch mượn, trả và hiện trạng thiết bị theo thời gian thực.</p>
+        <h1 class="tieu-de-trang">Lịch sử mượn - trả</h1>
+        <div class="mo-ta-phu">Theo dõi toàn bộ nhật ký giao dịch mượn, trả và hiện trạng thiết bị theo thời gian thực.</div>
     </div>
     <div class="d-flex gap-2">
         <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
-        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-outline-success fw-semibold shadow-sm">
-            📥 Nhận trả thiết bị
+        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">
+            Nhận trả thiết bị
         </a>
-        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-primary fw-semibold shadow-sm">
+        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-chinh">
             + Lập phiếu mượn mới
         </a>
         <?php endif; ?>
@@ -32,26 +33,29 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <!-- Bộ lọc tìm kiếm lịch sử -->
-<div class="card border-0 shadow-sm rounded-3 mb-4">
+<div class="card the-noi-dung mb-4">
     <div class="card-body p-3">
-        <form action="<?= url('muon-tra/index.php') ?>" method="GET" class="row g-2 align-items-center">
+        <form action="<?= url('muon-tra/index.php') ?>" method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
+                <label class="form-label">Tìm kiếm</label>
                 <input type="text" name="q" class="form-control" 
-                       placeholder="Mã phiếu (PM-...), MSSV, tên người mượn, phòng..." 
+                       placeholder="Mã phiếu, MSSV, họ tên, phòng..." 
                        value="<?= e($tuKhoa ?? '') ?>">
             </div>
 
             <div class="col-6 col-md-2">
+                <label class="form-label">Trạng thái</label>
                 <select name="trang_thai" class="form-select">
-                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="">Tất cả trạng thái</option>
                     <option value="DANG_MUON" <?= ($trangThai === 'DANG_MUON') ? 'selected' : '' ?>>Đang mượn</option>
                     <option value="DA_TRA" <?= ($trangThai === 'DA_TRA') ? 'selected' : '' ?>>Đã hoàn tất trả</option>
                 </select>
             </div>
 
             <div class="col-6 col-md-2">
+                <label class="form-label">Bàn trực</label>
                 <select name="phong_truc_id" class="form-select">
-                    <option value="">-- Tất cả bàn trực --</option>
+                    <option value="">Tất cả bàn trực</option>
                     <?php foreach ($danhSachPhongTruc as $pt): ?>
                     <option value="<?= (int)$pt['id'] ?>" <?= ((int)$phongTrucId === (int)$pt['id']) ? 'selected' : '' ?>>
                         <?= e($pt['ten_phong_truc']) ?>
@@ -61,15 +65,16 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
 
             <div class="col-6 col-md-2">
+                <label class="form-label">Ngày mượn</label>
                 <input type="date" name="ngay_muon" class="form-control" value="<?= e($ngayMuon ?? '') ?>">
             </div>
 
-            <div class="col-6 col-md-auto">
-                <button type="submit" class="btn btn-primary fw-semibold">Lọc</button>
-                <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-outline-secondary">Xóa lọc</a>
+            <div class="col-6 col-md-auto d-flex gap-2">
+                <button type="submit" class="btn btn-phu">Lọc</button>
+                <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-phu">Đặt lại</a>
             </div>
 
-            <div class="col-12 col-md text-md-end text-muted small">
+            <div class="col-12 col-md text-md-end mo-ta-phu">
                 Tổng cộng: <strong><?= $tongSo ?></strong> phiếu mượn
             </div>
         </form>
@@ -77,10 +82,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <!-- Bảng danh sách phiếu mượn -->
-<div class="card border-0 shadow-sm rounded-3">
+<div class="card the-noi-dung">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table bang-du-lieu mb-0">
+            <thead>
                 <tr>
                     <th class="ps-3" style="width: 140px;">Mã phiếu</th>
                     <th>Người mượn</th>
@@ -96,7 +101,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <tbody>
                 <?php if (empty($danhSachPhieu)): ?>
                 <tr>
-                    <td colspan="9" class="text-center py-5 text-muted">
+                    <td colspan="9" class="text-center py-5 mo-ta-phu">
                         Chưa có phiếu mượn nào được ghi nhận.
                     </td>
                 </tr>
@@ -104,22 +109,22 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <?php foreach ($danhSachPhieu as $pm): ?>
                 <tr>
                     <td class="ps-3">
-                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="font-monospace fw-bold text-decoration-none text-primary">
+                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="font-monospace fw-semibold text-primary">
                             <?= e($pm['ma_phieu']) ?>
                         </a>
                     </td>
                     <td>
-                        <div class="fw-semibold text-dark"><?= e($pm['ten_nguoi_muon']) ?></div>
-                        <div class="text-muted small">MSSV: <?= e($pm['ma_so_truong']) ?></div>
+                        <div class="fw-semibold"><?= e($pm['ten_nguoi_muon']) ?></div>
+                        <div class="mo-ta-phu">MSSV: <?= e($pm['ma_so_truong']) ?></div>
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border">
+                        <span class="huy-hieu huy-hieu-trung-tinh">
                             <?= e($pm['ma_phong']) ?>
                         </span>
-                        <div class="small text-muted text-truncate" style="max-width: 140px;"><?= e($pm['ten_phong']) ?></div>
+                        <div class="mo-ta-phu text-truncate" style="max-width: 140px;"><?= e($pm['ten_phong']) ?></div>
                     </td>
                     <td>
-                        <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                        <span class="mo-ta-phu">
                             <?= e($pm['ma_phong_truc']) ?>
                         </span>
                     </td>
@@ -128,30 +133,30 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <?php
                             $quaHan = ($pm['trang_thai'] === 'DANG_MUON' && strtotime($pm['han_tra']) < time());
                         ?>
-                        <span class="<?= $quaHan ? 'text-danger fw-bold' : '' ?>">
+                        <span class="<?= $quaHan ? 'text-danger fw-semibold' : '' ?>">
                             <?= dinh_dang_ngay_gio($pm['han_tra']) ?>
                             <?php if ($quaHan): ?>
-                                <span class="badge bg-danger small ms-1">Quá hạn</span>
+                                <span class="huy-hieu huy-hieu-nguy-hiem ms-1">Quá hạn</span>
                             <?php endif; ?>
                         </span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-light text-dark border">
+                        <span class="huy-hieu huy-hieu-trung-tinh">
                             <?= (int)$pm['tong_so_thiet_bi'] ?> thiết bị
                         </span>
                         <?php if ((int)$pm['so_chua_tra'] > 0): ?>
-                            <div class="small text-warning fw-bold mt-1">Còn giữ: <?= (int)$pm['so_chua_tra'] ?></div>
+                            <div class="small text-danger fw-semibold mt-1">Còn giữ: <?= (int)$pm['so_chua_tra'] ?></div>
                         <?php endif; ?>
                     </td>
                     <td class="text-center">
                         <?php if ($pm['trang_thai'] === 'DA_TRA'): ?>
-                            <span class="badge bg-success">Đã trả đủ</span>
+                            <span class="huy-hieu huy-hieu-thanh-cong">Đã trả đủ</span>
                         <?php else: ?>
-                            <span class="badge bg-warning text-dark">Đang mượn</span>
+                            <span class="huy-hieu huy-hieu-canh-bao">Đang mượn</span>
                         <?php endif; ?>
                     </td>
                     <td class="text-end pe-3">
-                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="btn btn-sm btn-outline-info">
+                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="btn btn-phu btn-sm">
                             Chi tiết
                         </a>
                     </td>
@@ -165,7 +170,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <!-- Phân trang -->
     <?php if ($tongSoTrang > 1): ?>
     <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center">
-        <span class="small text-muted">
+        <span class="small mo-ta-phu">
             Trang <strong><?= $trang ?></strong> / <strong><?= $tongSoTrang ?></strong>
         </span>
         <nav aria-label="Phân trang">
@@ -184,4 +189,3 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
-

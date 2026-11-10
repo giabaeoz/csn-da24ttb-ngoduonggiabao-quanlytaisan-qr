@@ -1,6 +1,6 @@
 <?php
 /**
- * Giao diện Quản lý Phòng trực thiết bị.
+ * Giao diện Quản lý Phòng trực thiết bị - Chuẩn Design System
  */
 
 declare(strict_types=1);
@@ -10,126 +10,131 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$tieuDeTrang = 'Quản lý Phòng trực thiết bị';
+$tieuDeTrang = 'Quản lý phòng trực';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3 border-bottom">
-    <h1 class="h3 fw-bold text-dark mb-0">🏢 Quản lý Danh mục hệ thống</h1>
-    <button type="button" class="btn btn-primary fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhongTruc" onclick="moModalThem()">
+<!-- Tiêu đề trang & Nút tác vụ -->
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="tieu-de-trang mb-0">Quản lý danh mục</h1>
+        <div class="mo-ta-phu">Cấu hình phòng học, phòng trực và loại tài sản trong hệ thống.</div>
+    </div>
+    <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalPhongTruc" onclick="moModalThem()">
         + Thêm phòng trực
     </button>
 </div>
 
 <!-- Thanh điều hướng Tab Danh mục -->
-<ul class="nav nav-pills mb-4 gap-2">
+<ul class="nav nav-tabs mb-3 border-bottom">
     <li class="nav-item">
-        <a class="nav-link fw-semibold" href="<?= url('danh-muc/phong-hoc.php') ?>">
-            🏫 Phòng học (Kèm Thiết bị phòng)
+        <a class="nav-link text-secondary fw-semibold" href="<?= url('danh-muc/phong-hoc.php') ?>">
+            Phòng học
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link active fw-semibold" href="<?= url('danh-muc/phong-truc.php') ?>">
-            🏢 Phòng trực thiết bị
+            Phòng trực
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link fw-semibold" href="<?= url('danh-muc/loai-tai-san.php') ?>">
-            🏷️ Loại tài sản
+        <a class="nav-link text-secondary fw-semibold" href="<?= url('danh-muc/loai-tai-san.php') ?>">
+            Loại tài sản
         </a>
     </li>
 </ul>
 
 <!-- Bảng danh sách phòng trực -->
-<div class="card border-0 shadow-sm rounded-3">
-    <div class="card-header bg-white py-3 border-bottom">
-        <h5 class="fw-bold mb-0 text-dark">Danh sách các điểm trực thiết bị (Bàn trực)</h5>
+<div class="the-noi-dung mb-4">
+    <div class="the-noi-dung-dau">
+        <h3 class="tieu-de-khoi mb-0">Danh sách phòng trực thiết bị</h3>
     </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th class="ps-3" style="width: 80px;">Mã</th>
-                    <th>Tên phòng trực</th>
-                    <th>Vị trí vật lý</th>
-                    <th class="text-center" style="width: 140px;">Cán bộ trực</th>
-                    <th class="text-center" style="width: 140px;">Tài sản quản lý</th>
-                    <th class="text-center" style="width: 130px;">Trạng thái</th>
-                    <th class="text-end pe-3" style="width: 160px;">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($danhSachPhongTruc)): ?>
-                <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">
-                        Chưa có phòng trực nào trong hệ thống.
-                    </td>
-                </tr>
-                <?php else: ?>
-                <?php foreach ($danhSachPhongTruc as $pt): ?>
-                <tr>
-                    <td class="ps-3 fw-bold text-primary">
-                        <span class="badge bg-light text-primary border">
-                            <?= e($pt['ma_phong_truc']) ?>
-                        </span>
-                    </td>
-                    <td class="fw-semibold text-dark">
-                        <?= e($pt['ten_phong_truc']) ?>
-                    </td>
-                    <td class="text-secondary small">
-                        <?= e($pt['vi_tri'] ?: '-') ?>
-                    </td>
-                    <td class="text-center">
-                        <span class="badge bg-info bg-opacity-10 text-info fw-semibold px-2 py-1">
-                            <?= (int)$pt['so_nhan_vien'] ?> cán bộ
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1">
-                            <?= (int)$pt['so_tai_san'] ?> thiết bị
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <?php if ((int)$pt['dang_hoat_dong'] === 1): ?>
-                            <span class="badge bg-success">Đang hoạt động</span>
-                        <?php else: ?>
-                            <span class="badge bg-secondary">Tạm tắt</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-end pe-3">
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-outline-primary" 
-                                    onclick='moModalSua(<?= json_encode($pt, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'
-                                    title="Chỉnh sửa thông tin">
-                                Sửa
-                            </button>
-
-                            <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng trực này?');">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="hanh_dong" value="doi_trang_thai">
-                                <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
-                                <button type="submit" class="btn btn-outline-secondary" title="Bật/Tắt hoạt động">
-                                    <?= (int)$pt['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
-                                </button>
-                            </form>
-
-                            <?php if ((int)$pt['so_nhan_vien'] === 0 && (int)$pt['so_tai_san'] === 0): ?>
-                            <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA phòng trực này? Thao tác không thể hoàn tác.');">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="hanh_dong" value="xoa">
-                                <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
-                                <button type="submit" class="btn btn-outline-danger" title="Xóa phòng trực">
-                                    Xóa
-                                </button>
-                            </form>
+    <div class="the-noi-dung-than p-0">
+        <div class="table-responsive">
+            <table class="bang-du-lieu mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Mã</th>
+                        <th>Tên phòng trực</th>
+                        <th>Vị trí vật lý</th>
+                        <th class="text-center" style="width: 140px;">Cán bộ trực</th>
+                        <th class="text-center" style="width: 140px;">Tài sản quản lý</th>
+                        <th class="text-center" style="width: 140px;">Trạng thái</th>
+                        <th class="text-end" style="width: 160px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($danhSachPhongTruc)): ?>
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            Chưa có phòng trực nào trong hệ thống.
+                        </td>
+                    </tr>
+                    <?php else: ?>
+                    <?php foreach ($danhSachPhongTruc as $pt): ?>
+                    <tr>
+                        <td class="fw-semibold text-primary">
+                            <span class="badge bg-light text-primary border">
+                                <?= e($pt['ma_phong_truc']) ?>
+                            </span>
+                        </td>
+                        <td class="fw-medium text-dark">
+                            <?= e($pt['ten_phong_truc']) ?>
+                        </td>
+                        <td class="text-secondary small">
+                            <?= e($pt['vi_tri'] ?: '—') ?>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-secondary border px-2 py-1">
+                                <?= (int)$pt['so_nhan_vien'] ?> cán bộ
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-primary border px-2 py-1">
+                                <?= (int)$pt['so_tai_san'] ?> thiết bị
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <?php if ((int)$pt['dang_hoat_dong'] === 1): ?>
+                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang hoạt động</span>
+                            <?php else: ?>
+                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm tắt</span>
                             <?php endif; ?>
-                        </div>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                <button type="button" class="btn btn-sm btn-phu" 
+                                        onclick='moModalSua(<?= json_encode($pt, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                                    Sửa
+                                </button>
+
+                                <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng trực này?');">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="hanh_dong" value="doi_trang_thai">
+                                    <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-phu">
+                                        <?= (int)$pt['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
+                                    </button>
+                                </form>
+
+                                <?php if ((int)$pt['so_nhan_vien'] === 0 && (int)$pt['so_tai_san'] === 0): ?>
+                                <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA phòng trực này? Thao tác không thể hoàn tác.');">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="hanh_dong" value="xoa">
+                                    <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-phu text-danger">
+                                        Xóa
+                                    </button>
+                                </form>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -141,30 +146,30 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <input type="hidden" name="hanh_dong" value="luu">
             <input type="hidden" name="id" id="modal_id" value="">
 
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header border-bottom">
                 <h5 class="modal-title fw-bold" id="modalTieuDe">Thêm phòng trực mới</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
 
             <div class="modal-body p-4">
                 <div class="mb-3">
-                    <label for="modal_ma" class="form-label fw-semibold small text-secondary">
+                    <label for="modal_ma" class="nhan-truong">
                         Mã phòng trực <span class="text-danger">*</span>
                     </label>
-                    <input type="text" class="form-control text-uppercase" id="modal_ma" name="ma_phong_truc" placeholder="Ví dụ: D6, B2, VICTORY" required>
-                    <div class="form-text small">Mã viết tắt duy nhất định danh phòng trực.</div>
+                    <input type="text" class="o-nhap text-uppercase" id="modal_ma" name="ma_phong_truc" placeholder="Ví dụ: D6, B2" required>
+                    <div class="mo-ta-phu mt-1">Mã viết tắt duy nhất định danh phòng trực.</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="modal_ten" class="form-label fw-semibold small text-secondary">
+                    <label for="modal_ten" class="nhan-truong">
                         Tên phòng trực <span class="text-danger">*</span>
                     </label>
-                    <input type="text" class="form-control" id="modal_ten" name="ten_phong_truc" placeholder="Ví dụ: Phòng trực thiết bị D6" required>
+                    <input type="text" class="o-nhap" id="modal_ten" name="ten_phong_truc" placeholder="Ví dụ: Phòng trực thiết bị D6" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="modal_vi_tri" class="form-label fw-semibold small text-secondary">Vị trí thực tế</label>
-                    <input type="text" class="form-control" id="modal_vi_tri" name="vi_tri" placeholder="Ví dụ: Tầng trệt tòa D6">
+                    <label for="modal_vi_tri" class="nhan-truong">Vị trí thực tế</label>
+                    <input type="text" class="o-nhap" id="modal_vi_tri" name="vi_tri" placeholder="Ví dụ: Tầng trệt tòa D6">
                 </div>
 
                 <div class="form-check form-switch mb-2">
@@ -173,9 +178,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary fw-semibold" data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn btn-primary fw-semibold">Lưu thông tin</button>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" class="btn btn-chinh">Lưu thông tin</button>
             </div>
         </form>
     </div>
@@ -206,4 +211,3 @@ function moModalSua(pt) {
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>
-

@@ -56,41 +56,34 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
 </style>
 
 <div class="container-fluid py-3">
-    <!-- Breadcrumb & Tiêu đề thanh công cụ (NO PRINT) -->
-    <div class="row align-items-center mb-3 no-print">
-        <div class="col-md-7">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="<?= url('tong-quan.php') ?>" class="text-decoration-none">Tổng quan</a></li>
-                    <li class="breadcrumb-item"><a href="<?= url('kiem-ke/index.php') ?>" class="text-decoration-none">Kiểm kê tài sản</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><?= e($dot['ma_dot_kiem_ke']) ?></li>
-                </ol>
-            </nav>
-            <h1 class="h3 mb-0 text-gray-800 fw-bold d-flex align-items-center gap-2 flex-wrap">
-                <span>📑 Biên bản kiểm kê: <?= e($dot['ma_dot_kiem_ke']) ?></span>
-                <?php if ($laHoanTat): ?>
-                    <span class="badge bg-success font-monospace fs-6">Đã hoàn tất</span>
-                <?php elseif ($laDaHuy): ?>
-                    <span class="badge bg-danger font-monospace fs-6">Đã hủy</span>
-                <?php else: ?>
-                    <span class="badge bg-warning text-dark font-monospace fs-6">Đang kiểm kê</span>
-                <?php endif; ?>
-            </h1>
-        </div>
-        <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
-            <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Quay lại
-            </a>
-            <?php if (!$laHoanTat && !$laDaHuy): ?>
-                <a href="<?= url('kiem-ke/thuc-hien.php?id=' . $dot['id']) ?>" class="btn btn-warning fw-semibold shadow-sm">
-                    <i class="bi bi-play-circle me-1"></i> Bàn làm việc kiểm kê
-                </a>
+<!-- Tiêu đề & Nút thao tác (NO PRINT) -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 no-print">
+    <div>
+        <h1 class="tieu-de-trang mb-1">Biên bản kiểm kê: <?= e($dot['ma_dot_kiem_ke']) ?></h1>
+        <div class="mo-ta-phu">
+            <?php if ($laHoanTat): ?>
+                <span class="huy-hieu huy-hieu-thanh-cong">Đã hoàn tất</span>
+            <?php elseif ($laDaHuy): ?>
+                <span class="huy-hieu huy-hieu-nguy-hiem">Đã hủy</span>
+            <?php else: ?>
+                <span class="huy-hieu huy-hieu-canh-bao">Đang kiểm kê</span>
             <?php endif; ?>
-            <button type="button" class="btn btn-primary shadow-sm fw-semibold" onclick="window.print()">
-                <i class="bi bi-printer me-1"></i> In biên bản kiểm kê
-            </button>
         </div>
     </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu">
+            Quay lại
+        </a>
+        <?php if (!$laHoanTat && !$laDaHuy): ?>
+            <a href="<?= url('kiem-ke/thuc-hien.php?id=' . $dot['id']) ?>" class="btn btn-chinh">
+                Bàn làm việc kiểm kê
+            </a>
+        <?php endif; ?>
+        <button type="button" class="btn btn-phu" onclick="window.print()">
+            In biên bản
+        </button>
+    </div>
+</div>
 
     <!-- KHUNG IN BIÊN BẢN CHÍNH THỨC (HIỂN THỊ KHI IN & TRÊN WEB) -->
     <div class="card border-0 shadow-sm p-4 bg-white" id="khungBienBanIn">

@@ -4,8 +4,22 @@ declare(strict_types=1);
 $cookieFile = sys_get_temp_dir() . '/cookie_admin.txt';
 if (file_exists($cookieFile)) unlink($cookieFile);
 
+// Xác định base host: Ưu tiên Apache localhost nếu có, ngược lại dùng cổng 8000
+$baseUrl = 'http://localhost/quanlytaisan-qr';
+$ch = curl_init($baseUrl . '/login.php');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+$checkApache = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($httpCode !== 200) {
+    $baseUrl = 'http://127.0.0.1:8000';
+}
+echo "Đang kiểm tra trên máy chủ: " . $baseUrl . "\n";
+
 // 1. Đăng nhập admin
-$ch = curl_init('http://127.0.0.1:8000/login.php');
+$ch = curl_init($baseUrl . '/login.php');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEJAR, $cookieFile);
 $html = curl_exec($ch);
@@ -14,7 +28,7 @@ curl_close($ch);
 preg_match('/name="csrf_token"\s+value="([^"]+)"/', (string)$html, $m);
 $csrf = $m[1] ?? '';
 
-$ch = curl_init('http://127.0.0.1:8000/login.php');
+$ch = curl_init($baseUrl . '/login.php');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
@@ -91,7 +105,7 @@ echo "  KIỂM TRA HTTP TOÀN BỘ GIAO DIỆN TRANG WEB\n";
 echo "============================================================\n";
 
 foreach ($trangCanKiemTra as $uri) {
-    $ch = curl_init('http://127.0.0.1:8000' . $uri);
+    $ch = curl_init($baseUrl . $uri);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);

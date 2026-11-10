@@ -22,21 +22,21 @@ $nguoiDung = nguoi_dung_hien_tai();
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
 </head>
-<body class="bg-light d-flex align-items-center min-vh-100 py-5">
+<body class="d-flex align-items-center min-vh-100 py-5" style="background-color: var(--nen-trang);">
 <div class="container text-center">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
-                <div class="display-1 text-danger fw-bold mb-3">403</div>
-                <h3 class="fw-bold mb-2">Truy cập bị từ chối</h3>
-                <p class="text-secondary mb-4">
+            <div class="card the-noi-dung p-4 p-md-5">
+                <div class="display-1 fw-bold mb-3" style="color: var(--nguy-hiem);">403</div>
+                <h2 class="tieu-de-khoi mb-2">Truy cập bị từ chối</h2>
+                <p class="mo-ta-phu mb-4">
                     <?= e($noiDungLoi ?? 'Bạn không có đủ quyền hạn để truy cập vào tài nguyên hoặc thực thi chức năng này.') ?>
                 </p>
                 <div>
-                    <a href="<?= url('tong-quan.php') ?>" class="btn btn-primary fw-semibold px-4 py-2 me-2">
+                    <a href="<?= url('tong-quan.php') ?>" class="btn btn-chinh me-2">
                         Về trang Tổng quan
                     </a>
-                    <a href="<?= url('login.php') ?>" class="btn btn-outline-secondary fw-semibold px-4 py-2">
+                    <a href="<?= url('login.php') ?>" class="btn btn-phu">
                         Đăng nhập tài khoản khác
                     </a>
                 </div>
@@ -46,4 +46,3 @@ $nguoiDung = nguoi_dung_hien_tai();
 </div>
 </body>
 </html>
-

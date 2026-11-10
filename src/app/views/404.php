@@ -21,18 +21,18 @@ $tieuDeTrang = '404 - Không tìm thấy trang';
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
 </head>
-<body class="bg-light d-flex align-items-center min-vh-100 py-5">
+<body class="d-flex align-items-center min-vh-100 py-5" style="background-color: var(--nen-trang);">
 <div class="container text-center">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
-                <div class="display-1 text-warning fw-bold mb-3">404</div>
-                <h3 class="fw-bold mb-2">Không tìm thấy trang</h3>
-                <p class="text-secondary mb-4">
+            <div class="card the-noi-dung p-4 p-md-5">
+                <div class="display-1 fw-bold mb-3" style="color: var(--canh-bao);">404</div>
+                <h2 class="tieu-de-khoi mb-2">Không tìm thấy trang</h2>
+                <p class="mo-ta-phu mb-4">
                     <?= e($noiDungLoi ?? 'Đường dẫn hoặc chức năng bạn yêu cầu không tồn tại trên hệ thống.') ?>
                 </p>
                 <div>
-                    <a href="<?= url('tong-quan.php') ?>" class="btn btn-primary fw-semibold px-4 py-2">
+                    <a href="<?= url('tong-quan.php') ?>" class="btn btn-chinh">
                         Về trang Tổng quan
                     </a>
                 </div>
@@ -42,4 +42,3 @@ $tieuDeTrang = '404 - Không tìm thấy trang';
 </div>
 </body>
 </html>
-
