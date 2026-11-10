@@ -28,7 +28,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý sự cố & bảo trì</h1>
         <div class="mo-ta-phu">Theo dõi, tiếp nhận và ghi nhận kết quả xử lý sửa chữa thiết bị hư hỏng, mất mát, sai vị trí.</div>
@@ -36,7 +36,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div>
         <?php if (co_quyen('ghi_nhan_su_co')): ?>
             <a href="<?= url('su-co/bao-cao.php') ?>" class="btn btn-chinh">
-                + Báo cáo sự cố mới
+                <?= icon('plus', 'bieu-tuong-sm') ?>
+                <span>Báo cáo sự cố mới</span>
             </a>
         <?php endif; ?>
     </div>
@@ -44,31 +45,43 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <!-- 4 Thẻ thống kê KPI -->
 <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="nhan-so-lieu">Tổng sự cố</div>
-            <div class="so-lieu"><?= sprintf('%02d', (int)$thongKe['tong_so']) ?></div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('wrench', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="nhan-so-lieu">Tổng sự cố</div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)$thongKe['tong_so']) ?></div>
+            </div>
         </div>
     </div>
 
-    <div class="col-6 col-lg-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="nhan-so-lieu">Chưa xử lý</div>
-            <div class="so-lieu text-danger"><?= sprintf('%02d', (int)$thongKe['so_chua_xu_ly']) ?></div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('alert-circle', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="nhan-so-lieu">Chưa xử lý</div>
+                <div class="so-lieu chu-nguy-hiem"><?= sprintf('%02d', (int)$thongKe['so_chua_xu_ly']) ?></div>
+            </div>
         </div>
     </div>
 
-    <div class="col-6 col-lg-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="nhan-so-lieu">Đang xử lý / Bảo trì</div>
-            <div class="so-lieu text-warning"><?= sprintf('%02d', (int)$thongKe['so_dang_xu_ly']) ?></div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('alert-triangle', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="nhan-so-lieu">Đang xử lý / Bảo trì</div>
+                <div class="so-lieu chu-canh-bao"><?= sprintf('%02d', (int)$thongKe['so_dang_xu_ly']) ?></div>
+            </div>
         </div>
     </div>
 
-    <div class="col-6 col-lg-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="nhan-so-lieu">Đã xử lý xong</div>
-            <div class="so-lieu text-success"><?= sprintf('%02d', (int)$thongKe['so_da_xu_ly']) ?></div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="nhan-so-lieu">Đã xử lý xong</div>
+                <div class="so-lieu chu-thanh-cong"><?= sprintf('%02d', (int)$thongKe['so_da_xu_ly']) ?></div>
+            </div>
         </div>
     </div>
 </div>
@@ -78,8 +91,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <form action="<?= url('su-co/index.php') ?>" method="GET" class="row g-3 align-items-end">
         <div class="col-12 col-md-4">
             <label class="nhan-truong">Từ khóa tìm kiếm</label>
-            <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã SC, mã TS, tên thiết bị, người lập..." 
-                   value="<?= e($boLoc['tu_khoa']) ?>">
+            <div class="o-tim-kiem">
+                <?= icon('search', 'bieu-tuong-sm') ?>
+                <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã SC, mã TS, tên thiết bị, người lập..." 
+                       value="<?= e($boLoc['tu_khoa']) ?>">
+            </div>
         </div>
 
         <div class="col-12 col-sm-6 col-md-2">
@@ -117,8 +133,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
 
         <div class="col-12 col-sm-6 col-md-2 d-flex gap-2">
-            <button type="submit" class="btn btn-chinh w-100">Lọc</button>
-            <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">Xóa</a>
+            <button type="submit" class="btn btn-chinh w-100">
+                <?= icon('filter', 'bieu-tuong-sm') ?>
+                <span>Lọc</span>
+            </button>
+            <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">
+                <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                <span>Xóa</span>
+            </a>
         </div>
     </form>
 </div>
@@ -135,15 +157,15 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <table class="bang-du-lieu mb-0">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">#</th>
-                        <th style="width: 140px;">Mã sự cố</th>
+                        <th class="cot-50">#</th>
+                        <th class="cot-140">Mã sự cố</th>
                         <th>Thiết bị gặp sự cố</th>
-                        <th style="width: 150px;">Bàn trực / Vị trí</th>
-                        <th style="width: 130px;">Phân loại</th>
-                        <th style="width: 140px;">Nguồn phát sinh</th>
-                        <th style="width: 130px;">Trạng thái</th>
-                        <th style="width: 140px;">Thời gian phát hiện</th>
-                        <th style="width: 80px;" class="text-end">Chi tiết</th>
+                        <th class="cot-150">Bàn trực / Vị trí</th>
+                        <th class="cot-130">Phân loại</th>
+                        <th class="cot-140">Nguồn phát sinh</th>
+                        <th class="cot-130">Trạng thái</th>
+                        <th class="cot-140">Thời gian phát hiện</th>
+                        <th class="text-end cot-80">Chi tiết</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -209,13 +231,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </td>
                                 <td>
                                     <div class="small fw-semibold"><?= dinh_dang_ngay_gio($sc['thoi_gian_phat_hien']) ?></div>
-                                    <div class="text-muted small text-truncate" style="max-width: 140px;">
+                                    <div class="text-muted small text-truncate cat-chu-140">
                                         bởi <?= e($sc['ho_ten_nguoi_lap']) ?>
                                     </div>
                                 </td>
                                 <td class="text-end">
-                                    <a href="<?= url('su-co/chi-tiet.php?id=' . $sc['id']) ?>" class="btn btn-sm btn-phu">
-                                        Xem
+                                    <a href="<?= url('su-co/chi-tiet.php?id=' . $sc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
+                                        <?= icon('eye', 'bieu-tuong-sm') ?>
                                     </a>
                                 </td>
                             </tr>

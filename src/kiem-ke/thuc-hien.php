@@ -59,7 +59,9 @@ if (la_post()) {
                 dat_thong_bao('nguy_hiem', $thongBaoLoi);
             }
         } elseif ($hanhDong === 'ghi_nhan') {
-            $kq = kiem_ke_ghi_nhan($_POST, (int)$nguoiDung['id'], $phongTrucId);
+            $duLieuGhiNhan = $_POST;
+            $duLieuGhiNhan['dot_kiem_ke_id'] = (int)$dot['id'];
+            $kq = kiem_ke_ghi_nhan($duLieuGhiNhan, (int)$nguoiDung['id'], $phongTrucId);
             if ($kq['thanh_cong']) {
                 dat_thong_bao('thanh_cong', 'Đã lưu kết quả đối chiếu thiết bị.');
                 chuyen_huong('kiem-ke/thuc-hien.php?id=' . $dot['id']);

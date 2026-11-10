@@ -28,7 +28,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút mở đợt -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Kiểm kê tài sản theo phòng trực</h1>
         <div class="mo-ta-phu">Chụp sổ sách, đối chiếu thực tế bằng mã QR, phát hiện chênh lệch và tự động ghi nhận sự cố.</div>
@@ -36,7 +36,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div>
         <?php if (co_quyen('mo_dot_kiem_ke') && $dotDangMo === null): ?>
             <a href="<?= url('kiem-ke/tao.php') ?>" class="btn btn-chinh">
-                + Mở đợt kiểm kê mới
+                <?= icon('plus', 'bieu-tuong-sm') ?>
+                <span>Mở đợt kiểm kê mới</span>
             </a>
         <?php endif; ?>
     </div>
@@ -45,17 +46,21 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <!-- Cảnh báo đợt đang mở -->
 <?php if ($dotDangMo !== null): ?>
     <div class="alert alert-warning d-flex justify-content-between align-items-center p-3 mb-4 rounded-2">
-        <div>
-            <div class="fw-semibold">
-                Đợt kiểm kê <span class="font-monospace">[<?= e($dotDangMo['ma_dot_kiem_ke']) ?>]</span> đang diễn ra
-            </div>
-            <div class="small text-muted">
-                <?= e($dotDangMo['ten_dot_kiem_ke']) ?> - Còn lại <strong><?= (int)($dotDangMo['thong_ke']['so_con_lai_can_kiem'] ?? 0) ?></strong> thiết bị cần đối chiếu thực tế.
+        <div class="d-flex align-items-center gap-2">
+            <?= icon('alert-triangle') ?>
+            <div>
+                <div class="fw-semibold">
+                    Đợt kiểm kê <span class="font-monospace">[<?= e($dotDangMo['ma_dot_kiem_ke']) ?>]</span> đang diễn ra
+                </div>
+                <div class="small text-muted">
+                    <?= e($dotDangMo['ten_dot_kiem_ke']) ?> - Còn lại <strong><?= (int)($dotDangMo['thong_ke']['so_con_lai_can_kiem'] ?? 0) ?></strong> thiết bị cần đối chiếu thực tế.
+                </div>
             </div>
         </div>
         <div>
             <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$dotDangMo['id']) ?>" class="btn btn-chinh">
-                Tiếp tục kiểm kê
+                <?= icon('scan-line', 'bieu-tuong-sm') ?>
+                <span>Tiếp tục kiểm kê</span>
             </a>
         </div>
     </div>
@@ -67,8 +72,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <form action="<?= url('kiem-ke/index.php') ?>" method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Từ khóa tìm kiếm</label>
-                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã đợt, tên đợt, cán bộ..."
-                    value="<?= e($boLoc['tu_khoa']) ?>">
+                <div class="o-tim-kiem">
+                    <?= icon('search', 'bieu-tuong-sm') ?>
+                    <input type="text" name="tu_khoa" class="form-control" placeholder="Mã đợt, tên đợt, cán bộ..."
+                        value="<?= e($boLoc['tu_khoa']) ?>">
+                </div>
             </div>
 
             <div class="col-6 col-md-2">
@@ -111,8 +119,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
 
             <div class="col-12 col-md-1 d-flex gap-1">
-                <button type="submit" class="btn btn-phu w-100">Lọc</button>
-                <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu" title="Đặt lại">✕</a>
+                <button type="submit" class="btn btn-phu w-100">
+                    <?= icon('filter', 'bieu-tuong-sm') ?>
+                    <span>Lọc</span>
+                </button>
+                <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu" aria-label="Đặt lại" title="Đặt lại">✕</a>
             </div>
         </form>
     </div>
@@ -129,14 +140,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <table class="table bang-du-lieu mb-0">
             <thead>
                 <tr>
-                    <th class="ps-3" style="width: 140px;">Mã đợt</th>
+                    <th class="ps-3 cot-140">Mã đợt</th>
                     <th>Tên đợt kiểm kê</th>
-                    <th style="width: 130px;">Loại</th>
-                    <th style="width: 160px;">Phòng trực</th>
-                    <th style="width: 150px;">Thời gian</th>
-                    <th style="width: 180px;">Tiến độ / Số lượng</th>
-                    <th style="width: 120px;" class="text-center">Trạng thái</th>
-                    <th class="text-end pe-3" style="width: 130px;">Hành động</th>
+                    <th class="cot-130">Loại</th>
+                    <th class="cot-160">Phòng trực</th>
+                    <th class="cot-150">Thời gian</th>
+                    <th class="cot-180">Tiến độ / Số lượng</th>
+                    <th class="text-center cot-120">Trạng thái</th>
+                    <th class="text-end pe-3 cot-130">Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -198,13 +209,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <td class="text-end pe-3">
                                 <?php if ($item['trang_thai'] === KIEM_KE_DANG_KIEM_KE): ?>
                                     <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$item['id']) ?>"
-                                        class="btn btn-chinh btn-sm">
-                                        Kiểm tra
+                                        class="btn-bieu-tuong" aria-label="Kiểm tra" title="Kiểm tra">
+                                        <?= icon('clipboard-check', 'bieu-tuong-sm') ?>
                                     </a>
                                 <?php else: ?>
                                     <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$item['id']) ?>"
-                                        class="btn btn-phu btn-sm">
-                                        Báo cáo
+                                        class="btn-bieu-tuong" aria-label="Báo cáo" title="Báo cáo">
+                                        <?= icon('eye', 'bieu-tuong-sm') ?>
                                     </a>
                                 <?php endif; ?>
                             </td>

@@ -22,21 +22,23 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Báo cáo sự cố thiết bị</h1>
         <div class="mo-ta-phu">Ghi nhận thông tin hư hỏng, mất mát hoặc sai vị trí để tiến hành kiểm tra, sửa chữa hoặc bảo trì.</div>
     </div>
     <div>
         <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">
-            Quay lại danh sách
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại danh sách</span>
         </a>
     </div>
 </div>
 
 <?php if ($loi !== ''): ?>
     <div class="alert alert-danger shadow-sm border-0 mb-4" role="alert">
-        <strong>Lỗi thao tác:</strong> <?= e($loi) ?>
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1"><strong>Lỗi thao tác:</strong> <?= e($loi) ?></div>
     </div>
 <?php endif; ?>
 
@@ -154,12 +156,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </div>
 
                     <!-- Nút lưu báo cáo -->
-                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                    <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
                         <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">
-                            Hủy bỏ
+                            <?= icon('x', 'bieu-tuong-sm') ?>
+                            <span>Hủy bỏ</span>
                         </a>
                         <button type="submit" class="btn btn-chinh" id="btnLuuBaoCao">
-                            Lưu báo cáo sự cố
+                            <?= icon('save', 'bieu-tuong-sm') ?>
+                            <span>Lưu báo cáo sự cố</span>
                         </button>
                     </div>
                 </form>

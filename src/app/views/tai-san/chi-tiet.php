@@ -20,22 +20,25 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Chi tiết thiết bị: <?= e($taiSan['ma_tai_san']) ?></h1>
         <div class="mo-ta-phu">Thông số kỹ thuật, tem mã QR và lịch sử sử dụng của thiết bị.</div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="<?= url('tai-san/in-qr.php?id=' . (int)$taiSan['id']) ?>" class="btn btn-phu" target="_blank">
-            In tem QR
+            <?= icon('printer', 'bieu-tuong-sm') ?>
+            <span>In tem QR</span>
         </a>
         <?php if (co_quyen('quan_ly_tai_san')): ?>
         <a href="<?= url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" class="btn btn-phu">
-            Sửa thông tin
+            <?= icon('pencil', 'bieu-tuong-sm') ?>
+            <span>Sửa thông tin</span>
         </a>
         <?php endif; ?>
         <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
-            Quay lại
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại</span>
         </a>
     </div>
 </div>
@@ -44,17 +47,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <!-- Cột trái: Thẻ hiển thị Tem mã QR -->
     <div class="col-12 col-md-4">
         <div class="the-noi-dung text-center p-3 h-100">
-            <div class="tieu-de-khoi mb-3">Mã QR định danh</div>
+            <div class="tieu-de-khoi mb-3">Mã QR tài sản</div>
             
             <div class="d-flex justify-content-center mb-3">
-                <div id="qrcode" data-qr="<?= e($taiSan['ma_qr']) ?>" data-qr-size="160" class="p-2 bg-white border" style="display: inline-block; min-width: 170px; min-height: 170px;"></div>
+                <div id="qrcode" data-qr="<?= e($taiSan['ma_tai_san']) ?>" data-qr-size="160" class="p-2 bg-white border d-inline-block khung-qr-164"></div>
             </div>
 
-            <div class="font-monospace fs-5 fw-bold text-dark mb-1">
+            <div class="font-monospace fs-4 fw-bold text-primary mb-2">
                 <?= e($taiSan['ma_tai_san']) ?>
             </div>
-            <div class="font-monospace text-muted small mb-3">
-                <?= e($taiSan['ma_qr']) ?>
+            <div class="text-muted small mb-3">
+                <?= e($taiSan['ten_tai_san']) ?>
             </div>
 
             <div class="border-top pt-2 small text-secondary">
@@ -223,7 +226,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const maQr = <?= json_encode($taiSan['ma_qr']) ?>;
+    const maQr = <?= json_encode($taiSan['ma_tai_san']) ?>;
     taoMaQr('qrcode', maQr, { size: 160, level: 'M' });
 });
 </script>

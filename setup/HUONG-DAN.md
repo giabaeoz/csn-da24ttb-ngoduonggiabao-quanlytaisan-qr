@@ -155,7 +155,7 @@ Mở trình duyệt truy cập:
 
 ---
 
-### 5.2. Phân hệ Mượn – Trả thiết bị
+### 5.2. Phân hệ Mượn - Trả thiết bị
 - **Lập phiếu mượn (`muon.php`):**
   1. Nhân viên tìm hoặc nhập nhanh người mượn (nếu mới sẽ tự động lưu vào CSDL).
   2. Chọn phòng học sử dụng.
@@ -205,7 +205,7 @@ Mở trình duyệt truy cập:
 
 ### 5.6. Phân hệ Thống kê & Biểu đồ Chart.js
 - Phân tích đa chiều dựa trên dữ liệu thật của hệ thống:
-  - Biểu đồ xu hướng mượn – trả theo thời gian (7 ngày, 30 ngày, 12 tháng).
+  - Biểu đồ xu hướng mượn - trả theo thời gian (7 ngày, 30 ngày, 12 tháng).
   - Biểu đồ phân bổ tài sản theo trạng thái (`SAN_SANG`, `DANG_MUON`, `BAO_TRI`, `NGUNG_SU_DUNG`).
   - Biểu đồ cơ cấu tài sản theo danh mục loại thiết bị.
   - Biểu đồ phân loại người mượn (Giảng viên / Sinh viên).
@@ -235,3 +235,70 @@ Khi bảo vệ trước Hội đồng chấm Đồ án Cơ sở ngành, giảng 
 > 2. *Xử lý POST (PRG Pattern):* Kiểm tra CSRF token, gọi Service tương ứng để xử lý CSDL trong transaction, sau đó chuyển hướng `chuyen_huong(...)` để tránh F5 gửi lại form.
 > 3. *Chuẩn bị dữ liệu hiển thị:* Gọi các hàm đọc dữ liệu từ Service, hoàn toàn không viết câu lệnh SQL trong Controller.
 > 4. *Hiển thị View:* Gọi `hien_thi(...)` nạp View HTML, View chỉ việc lặp và in dữ liệu qua hàm bảo vệ XSS `e()`.
+
+---
+
+## 7. QUY CHUẨN GIAO DIỆN (DESIGN SYSTEM)
+
+Hệ thống giao diện được thiết kế theo định hướng **sinh động nhưng chuyên nghiệp**, tối giản bảng màu, đồng bộ khoảng cách và hoạt động **100% ngoại tuyến (offline)**.
+
+### 7.1. Bảng màu chính thức (`:root` trong `src/assets/css/app.css`)
+
+| Biến CSS | Mã màu | Ý nghĩa & Phạm vi sử dụng |
+| :--- | :--- | :--- |
+| `--mau-chinh` | `#1E4E8C` | Màu chủ đạo (xanh dương đậm hành chính): nút chính `.btn-chinh`, mục menu đang chọn, viền ô nhập đang focus, đường biểu đồ chính. |
+| `--mau-chinh-dam` | `#173D6D` | Trạng thái rê chuột (hover) hoặc nhấn giữ của nút chính. |
+| `--mau-chinh-nhat` | `#E8EFF8` | Nền mục menu đang chọn, nền ô biểu tượng thẻ thống kê `.o-bieu-tuong-thong-ke`, huy hiệu thông tin `.huy-hieu-chinh`. |
+| `--nen-trang` | `#F5F7FA` | Nền tổng thể của trang làm việc. |
+| `--nen-the` | `#FFFFFF` | Nền thẻ nội dung `.card`, `.the-noi-dung`, bảng dữ liệu, thanh bên và thanh đầu trang. |
+| `--nen-tieu-de-bang` | `#F9FAFB` | Nền hàng tiêu đề bảng (`thead th`) và nền xen kẽ nhẹ. |
+| `--vien` | `#E5E7EB` | Đường viền mảnh `1px` của thẻ, bảng, ô nhập liệu và thanh ngăn cách. |
+| `--chu-chinh` | `#1F2937` | Màu chữ nội dung chính, tiêu đề trang, số liệu thống kê. |
+| `--chu-phu` | `#6B7280` | Màu chữ mô tả phụ `.mo-ta-phu`, nhãn cột bảng, biểu tượng mặc định. |
+| `--thanh-cong` / `--thanh-cong-nhat` | `#15803D` / `#DCFCE7` | Trạng thái tích cực (Sẵn sàng, Tốt, Đã trả đủ, Đã hoàn tất). |
+| `--canh-bao` / `--canh-bao-nhat` | `#B45309` / `#FEF3C7` | Trạng thái lưu ý (Đang xử lý, Bảo trì, Chưa trả). |
+| `--nguy-hiem` / `--nguy-hiem-nhat` | `#B91C1C` / `#FEE2E2` | Trạng thái cảnh báo nghiêm trọng (Hư hỏng, Mất, Quá hạn, Nút xóa `.btn-nguy-hiem`). |
+
+### 7.2. Thang khoảng cách và thang cỡ chữ
+
+- **Thang khoảng cách (Spacing Scale):**
+  - `--kc-1`: `4px` | `--kc-2`: `8px` | `--kc-3`: `12px` | `--kc-4`: `16px` | `--kc-5`: `24px` | `--kc-6`: `32px`.
+- **Thang cỡ chữ (Typography Scale):**
+  - Font hệ thống: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`.
+  - Tiêu đề trang (`.tieu-de-trang`): `22px`, đậm `600`.
+  - Tiêu đề khối/thẻ (`.tieu-de-khoi`): `16px`, đậm `600`.
+  - Chữ nội dung & ô nhập: `14px`, đậm `400`.
+  - Nhãn trường (`.form-label`, `.nhan-truong`) & tiêu đề cột bảng: `13px`, đậm `500-600`.
+  - Chữ phụ (`.mo-ta-phu`) & huy hiệu trạng thái (`.huy-hieu`): `12px`.
+  - Số liệu lớn trên thẻ KPI (`.the-so-lieu .so-lieu`): `28px`, đậm `600`, `font-variant-numeric: tabular-nums`.
+
+### 7.3. Danh mục 30 biểu tượng SVG Lucide (`src/assets/icons/sprite.svg`)
+
+Toàn bộ biểu tượng được đóng gói nội bộ tại `src/assets/vendor/lucide/` (kèm giấy phép ISC `LICENSE`) và gộp thành `src/assets/icons/sprite.svg`. Giao diện gọi hàm trợ giúp `icon(string $ten, string $lop = ''): string` trong `src/app/views/partials/icon.php`.
+
+1. **Điều hướng thanh bên (10 biểu tượng):** `layout-dashboard` (Tổng quan), `package` (Tài sản), `repeat` (Mượn - Trả), `arrow-left-right` (Điều chuyển), `clipboard-check` (Kiểm kê), `users` (Người mượn), `folder-tree` (Danh mục), `user-cog` (Tài khoản), `wrench` (Sự cố - Bảo trì), `bar-chart-3` (Thống kê).
+2. **Nghiệp vụ & thao tác (13 biểu tượng):** `qr-code` (Mã QR), `scan-line` (Quét camera QR), `plus` (Thêm mới), `pencil` (Sửa), `trash-2` (Xóa), `eye` (Xem chi tiết), `search` (Tìm kiếm), `printer` (In), `save` (Lưu), `log-out` (Đăng xuất), `menu` (Mở menu di động), `x` (Đóng/Hủy), `filter` (Lọc), `rotate-ccw` (Đặt lại / Nhận trả / Mở khóa), `lock` (Khóa), `arrow-left` (Quay lại).
+3. **Thông báo & trạng thái (4 biểu tượng):** `check-circle-2` (Thành công), `alert-triangle` (Cảnh báo), `alert-circle` (Lỗi), `info` (Thông tin).
+
+**Vị trí được phép đặt biểu tượng:**
+- Mục điều hướng thanh bên, ô biểu tượng thẻ KPI (`.o-bieu-tuong-thong-ke`), các nút hành động chính/phụ, nút thao tác cuối dòng bảng (`.btn-bieu-tuong`), bên trái ô tìm kiếm (`.o-tim-kiem`), và đầu thông báo flash (`.alert`).
+- **Không đặt biểu tượng** trong huy hiệu trạng thái (`.huy-hieu`), tiêu đề cột bảng (`<th>`), nhãn trường biểu mẫu (`<label>`), hoặc tiêu đề thẻ (`<h2>`, `<h3>`).
+
+### 7.4. Quy trình thêm biểu tượng mới vào `sprite.svg`
+
+1. Tải tệp SVG gốc từ bộ **Lucide Icons** (`viewBox="0 0 24 24"`, `stroke-width="1.75"`) và lưu vào `src/assets/vendor/lucide/<ten-icon>.svg`.
+2. Khai báo tên biểu tượng vào danh sách trong `setup/tao_sprite_icon.php`.
+3. Chạy lệnh tạo lại sprite:
+   ```powershell
+   C:\xampp\php\php.exe setup/tao_sprite_icon.php
+   ```
+4. Sử dụng trong View qua hàm `<?= icon('ten-icon', 'bieu-tuong-sm') ?>`.
+
+### 7.5. Quy tắc kỷ luật giao diện & Hộp thoại tương tác bật lên (Popup Modal)
+
+- **Không thêm chữ hiển thị vô nghĩa:** Giữ nguyên nội dung chữ nghiệp vụ tiếng Việt rõ ràng; các nút biểu tượng vuông `.btn-bieu-tuong` luôn có `aria-label` và `title` đầy đủ.
+- **Không dùng CSS nội tuyến (`style=""`):** Toàn bộ quy tắc định kiểu phải đặt trong `src/assets/css/app.css` (hoặc `dang-nhap.css`).
+- **Tương tác Xem / Thêm / Sửa / Xóa bằng hộp thoại bật lên:**
+  - Mọi thao tác **Xem chi tiết**, **Thêm mới**, **Chỉnh sửa** của các đối tượng được mở trực tiếp trong hộp thoại `#modalTuongTac` (tải và gửi biểu mẫu qua AJAX trong `src/assets/js/app.js`), giúp cán bộ thao tác nhanh mà không bị gián đoạn ngữ cảnh danh sách.
+  - Mọi thao tác **Xóa / Khóa / Mở khóa** có thuộc tính `data-xac-nhan` hiển thị hộp thoại xác nhận `#modalXacNhan` đồng bộ thay cho hộp thoại `confirm()` mặc định của trình duyệt.
+

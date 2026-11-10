@@ -21,7 +21,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">
             <?= $laThemMoi ? 'Thêm người mượn mới' : 'Chỉnh sửa hồ sơ người mượn' ?>
@@ -32,17 +32,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
     <div>
         <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">
-            Quay lại danh sách
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại danh sách</span>
         </a>
     </div>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
+<div class="khung-bieu-mau">
 
         <?php if (!empty($thongBaoLoi)): ?>
         <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
-            <strong>Lỗi thao tác:</strong> <?= e($thongBaoLoi) ?>
+            <?= icon('alert-circle', 'bieu-tuong-md') ?>
+            <div class="flex-grow-1"><strong>Lỗi thao tác:</strong> <?= e($thongBaoLoi) ?></div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <?php endif; ?>
@@ -131,18 +132,19 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <div class="d-flex justify-content-end align-items-center gap-2 pt-3 border-top">
                     <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">
-                        Hủy bỏ
+                        <?= icon('x', 'bieu-tuong-sm') ?>
+                        <span>Hủy bỏ</span>
                     </a>
                     <button type="submit" class="btn btn-chinh">
-                        <?= $laThemMoi ? 'Lưu người mượn' : 'Cập nhật thay đổi' ?>
+                        <?= icon('save', 'bieu-tuong-sm') ?>
+                        <span><?= $laThemMoi ? 'Lưu người mượn' : 'Cập nhật thay đổi' ?></span>
                     </button>
                 </div>
             </form>
         </div>
 
-    </div>
 </div>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

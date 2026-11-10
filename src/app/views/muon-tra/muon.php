@@ -18,12 +18,21 @@ if (!defined('APP_KHOI_DONG')) {
  * @var string $thongBaoLoi
  */
 
+$maSoForm = trim((string)($_POST['moi_ma_so_truong'] ?? ($nguoiMuonMacDinh['ma_so_truong'] ?? '')));
+$hoTenForm = trim((string)($_POST['moi_ho_ten'] ?? ($nguoiMuonMacDinh['ho_ten'] ?? '')));
+$loaiNmForm = trim((string)($_POST['moi_loai_nguoi_muon'] ?? ($nguoiMuonMacDinh['loai_nguoi_muon'] ?? 'SINH_VIEN')));
+$lopForm = trim((string)($_POST['moi_lop_don_vi'] ?? ($nguoiMuonMacDinh['lop_don_vi'] ?? '')));
+$sdtForm = trim((string)($_POST['moi_so_dien_thoai'] ?? ($nguoiMuonMacDinh['so_dien_thoai'] ?? '')));
+$phongHocForm = (int)($_POST['phong_hoc_id'] ?? 0);
+$hanTraForm = trim((string)($_POST['han_tra'] ?? date('Y-m-d\TH:i', strtotime('+3 hours'))));
+$nguoiMuonIdForm = (int)($_POST['nguoi_muon_id'] ?? ($nguoiMuonMacDinh['id'] ?? 0));
+
 $tieuDeTrang = 'Mượn - trả';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Tabs chuyển đổi -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Mượn - trả tài sản</h1>
     </div>
@@ -35,21 +44,23 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <?php if ($dangBiKhoaKiemKe): ?>
     <div class="alert alert-danger mb-4" role="alert">
-        Bàn trực hiện đang có đợt kiểm kê tài sản. Hoạt động mượn tạm thời bị khóa.
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1">Bàn trực hiện đang có đợt kiểm kê tài sản. Hoạt động mượn tạm thời bị khóa.</div>
     </div>
 <?php endif; ?>
 
 <?php if (!empty($thongBaoLoi)): ?>
     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-        <?= e($thongBaoLoi) ?>
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1"><?= e($thongBaoLoi) ?></div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
     </div>
 <?php endif; ?>
 
-<form action="<?= url('muon-tra/muon.php') ?>" method="POST" id="formMuonTaiSan" class="<?= $dangBiKhoaKiemKe ? 'opacity-50 pe-none' : '' ?>">
+<form action="<?= url('muon-tra/muon.php') ?>" method="POST" id="formMuonTaiSan" class="luong-quet-qr <?= $dangBiKhoaKiemKe ? 'opacity-50 pe-none' : '' ?>">
     <?= csrf_field() ?>
-    <input type="hidden" name="nguoi_muon_id" id="nguoi_muon_id" value="<?= (int)($nguoiMuonMacDinh['id'] ?? 0) ?>">
-    <input type="hidden" name="tao_nguoi_muon_moi" id="tao_nguoi_muon_moi" value="0">
+    <input type="hidden" name="nguoi_muon_id" id="nguoi_muon_id" value="<?= $nguoiMuonIdForm ?>">
+    <input type="hidden" name="tao_nguoi_muon_moi" id="tao_nguoi_muon_moi" value="<?= $nguoiMuonIdForm > 0 ? '0' : '1' ?>">
     <div id="vungTaiSanIds"></div>
 
     <div class="row g-4">
@@ -62,11 +73,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     <div class="row g-2 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
-                                <video id="videoQuetCamera" playsinline style="display:none;"></video>
-                                <canvas id="canvasQuetCamera" style="display:none;"></canvas>
+                                <video id="videoQuetCamera" playsinline class="d-none"></video>
+                                <canvas id="canvasQuetCamera" class="d-none"></canvas>
                                 <div class="overlay-ngam" id="overlayCamera">
                                     <div class="fw-semibold text-dark mb-1">Khung camera</div>
-                                    <div style="font-size: 11px;">Đưa mã QR thiết bị vào khung</div>
+                                    <div class="chu-nho-11">Đưa mã QR thiết bị vào khung</div>
                                 </div>
                             </div>
                         </div>
@@ -79,16 +90,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 <input type="text" class="form-control" id="ma_quet_nhap"
                                     placeholder="Nhập mã khi không quét được" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
-                                    Thêm
+                                    <?= icon('plus', 'bieu-tuong-sm') ?>
+                                    <span>Thêm</span>
                                 </button>
                             </div>
 
                             <button type="button" class="btn btn-phu btn-sm w-100" id="btnBatTatCamera" onclick="batTatCamera()">
-                                Bật camera
+                                <?= icon('scan-line', 'bieu-tuong-sm') ?>
+                                <span id="nhanNutCamera">Bật camera</span>
                             </button>
                         </div>
                     </div>
-                    <div id="thongBaoQuetLoi" class="loi-truong mt-2 d-none"></div>
+                    <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-2 d-none"></div>
                 </div>
             </div>
 
@@ -107,7 +120,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <thead>
                                 <tr>
                                     <th>Thiết bị</th>
-                                    <th class="text-end" style="width: 80px;">Số lượng</th>
+                                    <th class="text-end cot-80">Số lượng</th>
                                 </tr>
                             </thead>
                             <tbody id="pvDanhSachThietBi">
@@ -127,63 +140,87 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
         <!-- CỘT PHẢI: THÔNG TIN MƯỢN & THIẾT BỊ ĐÃ QUÉT -->
         <div class="col-12 col-lg-7">
-            <!-- Khối: Thông tin mượn -->
+            <!-- Khối: Khai báo thông tin người mượn & phòng học -->
             <div class="card mb-4">
                 <div class="card-body p-4">
-                    <h2 class="tieu-de-khoi mb-3">Thông tin mượn</h2>
-
-                    <!-- Tìm người mượn cũ -->
-                    <div class="mb-3 position-relative">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="tu_khoa_nguoi_muon"
-                                placeholder="Tìm người mượn cũ: mã số / họ tên / SĐT" autocomplete="off">
-                            <button type="button" class="btn btn-phu" id="btnTimNm" onclick="timNguoiMuon()">
-                                Tìm
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <div>
+                            <h2 class="tieu-de-khoi mb-1">Khai báo người mượn & phòng học</h2>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="nhanTrangThaiNm" class="badge-trang-thai badge-thong-tin">Khai báo trực tiếp</span>
+                            <button type="button" class="btn btn-phu btn-sm d-none" id="btnXoaChonNm" onclick="xoaThongTinNguoiMuon()">
+                                <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                                <span>Nhập người mới</span>
                             </button>
                         </div>
-                        <div id="goiYNguoiMuon" class="list-group position-absolute w-100 shadow-sm d-none mt-1" style="z-index: 1050; max-height: 200px; overflow-y: auto;"></div>
                     </div>
 
-                    <!-- Lưới các trường thông tin -->
+                    <!-- Ô tìm nhanh người mượn cũ (tùy chọn) -->
+                    <div class="mb-3 position-relative">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light text-phu">
+                                <?= icon('search', 'bieu-tuong-sm') ?>
+                            </span>
+                            <input type="text" class="form-control" id="tu_khoa_nguoi_muon">
+                            <button type="button" class="btn btn-phu" id="btnTimNm" onclick="timNguoiMuon()">
+                                <span>Tìm nhanh</span>
+                            </button>
+                        </div>
+                        <div id="goiYNguoiMuon" class="list-group position-absolute w-100 shadow-sm d-none mt-1 hop-goi-y-tim-kiem"></div>
+                    </div>
+
+                    <!-- Khai báo trực tiếp thông tin người mượn -->
                     <div class="row g-2 mb-2">
                         <div class="col-12 col-sm-4">
-                            <label class="form-label">Mã số</label>
+                            <label class="form-label" for="inputMaSo">Mã số <span class="text-danger"></span></label>
                             <input type="text" class="form-control" id="inputMaSo" name="moi_ma_so_truong"
-                                value="<?= e($nguoiMuonMacDinh['ma_so_truong'] ?? '') ?>" oninput="capNhatPreview()">
+                                placeholder="VD: B2100001, GV0101"
+                                value="<?= e($maSoForm) ?>" oninput="xuLyNhapMaSo()" onblur="tuDongKiemTraMaSo()">
                         </div>
-                        <div class="col-12 col-sm-4">
-                            <label class="form-label">Họ tên</label>
+                        <div class="col-12 col-sm-5">
+                            <label class="form-label" for="inputHoTen">Họ và tên người mượn <span class="text-danger"></span></label>
                             <input type="text" class="form-control" id="inputHoTen" name="moi_ho_ten"
-                                value="<?= e($nguoiMuonMacDinh['ho_ten'] ?? '') ?>" oninput="capNhatPreview()">
+                                placeholder="Nhập họ và tên..."
+                                value="<?= e($hoTenForm) ?>" oninput="xuLySuaThongTinNm()">
                         </div>
-                        <div class="col-12 col-sm-4">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="inputSdt" name="moi_so_dien_thoai"
-                                value="<?= e($nguoiMuonMacDinh['so_dien_thoai'] ?? '') ?>" oninput="capNhatPreview()">
+                        <div class="col-12 col-sm-3">
+                            <label class="form-label" for="inputLoaiNm">Đối tượng</label>
+                            <select class="form-select" id="inputLoaiNm" name="moi_loai_nguoi_muon" onchange="capNhatPreview()">
+                                <option value="SINH_VIEN" <?= $loaiNmForm === 'SINH_VIEN' ? 'selected' : '' ?>>Sinh viên</option>
+                                <option value="GIANG_VIEN" <?= $loaiNmForm === 'GIANG_VIEN' ? 'selected' : '' ?>>Giảng viên</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="row g-2">
-                        <div class="col-12 col-sm-4">
-                            <label class="form-label">Lớp / đơn vị</label>
+                        <div class="col-12 col-sm-3">
+                            <label class="form-label" for="inputLop">Lớp / Đơn vị</label>
                             <input type="text" class="form-control" id="inputLop" name="moi_lop_don_vi"
-                                value="<?= e($nguoiMuonMacDinh['lop_don_vi'] ?? '') ?>" oninput="capNhatPreview()">
+                                placeholder="VD: DI21V7A1, Khoa CNTT"
+                                value="<?= e($lopForm) ?>" oninput="capNhatPreview()">
                         </div>
-                        <div class="col-12 col-sm-4">
-                            <label class="form-label">Phòng cần mượn</label>
+                        <div class="col-12 col-sm-3">
+                            <label class="form-label" for="inputSdt">Số điện thoại</label>
+                            <input type="text" class="form-control" id="inputSdt" name="moi_so_dien_thoai"
+                                placeholder="SĐT liên hệ"
+                                value="<?= e($sdtForm) ?>" oninput="capNhatPreview()">
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <label class="form-label" for="phong_hoc_id">Phòng cần mượn <span class="text-danger"></span></label>
                             <select class="form-select" id="phong_hoc_id" name="phong_hoc_id" onchange="doiPhongHoc(this)">
                                 <option value="">Chọn phòng học</option>
                                 <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                    <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" data-thiet-bi="<?= e($ph['thiet_bi_phong'] ?? '[]') ?>">
+                                    <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" data-thiet-bi="<?= e($ph['thiet_bi_phong'] ?? '[]') ?>" <?= $phongHocForm === (int)$ph['id'] ? 'selected' : '' ?>>
                                         <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-12 col-sm-4">
-                            <label class="form-label">Hạn trả</label>
+                        <div class="col-12 col-sm-3">
+                            <label class="form-label" for="han_tra">Hạn trả</label>
                             <input type="datetime-local" class="form-control" id="han_tra" name="han_tra"
-                                value="<?= date('Y-m-d\TH:i', strtotime('+3 hours')) ?>" onchange="capNhatPreview()">
+                                value="<?= e($hanTraForm) ?>" onchange="capNhatPreview()">
                         </div>
                     </div>
                 </div>
@@ -217,9 +254,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
             <!-- Nút hành động chân trang -->
             <div class="d-flex justify-content-end gap-2">
-                <a href="<?= url('tong-quan.php') ?>" class="btn btn-phu">Hủy</a>
+                <a href="<?= url('tong-quan.php') ?>" class="btn btn-phu">
+                    <?= icon('x', 'bieu-tuong-sm') ?>
+                    <span>Hủy</span>
+                </a>
                 <button type="submit" class="btn btn-chinh" id="btnXacNhanMuon" disabled>
-                    Xác nhận mượn & lưu phiếu
+                    <?= icon('save', 'bieu-tuong-sm') ?>
+                    <span>Xác nhận mượn & lưu phiếu</span>
                 </button>
             </div>
         </div>
@@ -232,14 +273,112 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     let phongHocHienTai = null;
 
     // ==========================================
-    // 1. TÌM KIẾM NGƯỜI MƯỢN
+    // 1. KHAI BÁO TRỰC TIẾP & TÌM KIẾM NGƯỜI MƯỢN
     // ==========================================
     const inputTuKhoa = document.getElementById('tu_khoa_nguoi_muon');
     const goiYBox = document.getElementById('goiYNguoiMuon');
+    let maSoDaChon = <?= json_encode($nguoiMuonMacDinh['ma_so_truong'] ?? '') ?>;
+    let henGioTimNm = null;
+
+    function capNhatTrangThaiNguoiMuon() {
+        const nmId = parseInt(document.getElementById('nguoi_muon_id').value || '0', 10);
+        const maSo = document.getElementById('inputMaSo').value.trim();
+        const hoTen = document.getElementById('inputHoTen').value.trim();
+        const badge = document.getElementById('nhanTrangThaiNm');
+        const btnXoa = document.getElementById('btnXoaChonNm');
+
+        if (nmId > 0) {
+            badge.className = 'badge-trang-thai badge-thanh-cong';
+            badge.textContent = 'Đã có hồ sơ người mượn';
+            btnXoa.classList.remove('d-none');
+        } else if (maSo !== '' || hoTen !== '') {
+            badge.className = 'badge-trang-thai badge-thong-tin';
+            badge.textContent = 'Người mượn mới (tự động lưu)';
+            btnXoa.classList.remove('d-none');
+        } else {
+            badge.className = 'badge-trang-thai badge-trung-tinh';
+            badge.textContent = 'Khai báo trực tiếp';
+            btnXoa.classList.add('d-none');
+        }
+    }
+
+    function xuLyNhapMaSo() {
+        const maSoMoi = document.getElementById('inputMaSo').value.trim();
+        if (maSoDaChon !== '' && maSoMoi.toUpperCase() !== maSoDaChon.toUpperCase()) {
+            // Người dùng đổi sang mã số khác -> Chuyển sang chế độ người mượn mới
+            document.getElementById('nguoi_muon_id').value = '0';
+            document.getElementById('tao_nguoi_muon_moi').value = '1';
+            maSoDaChon = '';
+        } else if (maSoDaChon === '') {
+            document.getElementById('tao_nguoi_muon_moi').value = '1';
+        }
+        capNhatTrangThaiNguoiMuon();
+        capNhatPreview();
+    }
+
+    function xuLySuaThongTinNm() {
+        if (parseInt(document.getElementById('nguoi_muon_id').value || '0', 10) <= 0) {
+            document.getElementById('tao_nguoi_muon_moi').value = '1';
+        }
+        capNhatTrangThaiNguoiMuon();
+        capNhatPreview();
+    }
+
+    async function tuDongKiemTraMaSo() {
+        const maSo = document.getElementById('inputMaSo').value.trim();
+        if (!maSo) return;
+        try {
+            const res = await fetch('<?= url("api/nguoi-muon.php") ?>?ma_so_truong=' + encodeURIComponent(maSo));
+            const json = await res.json();
+            if (json.thanh_cong && json.du_lieu) {
+                const nm = json.du_lieu;
+                document.getElementById('nguoi_muon_id').value = nm.id;
+                document.getElementById('tao_nguoi_muon_moi').value = '0';
+                maSoDaChon = nm.ma_so_truong || maSo;
+                if (!document.getElementById('inputHoTen').value.trim()) {
+                    document.getElementById('inputHoTen').value = nm.ho_ten || '';
+                }
+                if (nm.loai_nguoi_muon) {
+                    document.getElementById('inputLoaiNm').value = nm.loai_nguoi_muon;
+                }
+                if (!document.getElementById('inputLop').value.trim() && nm.lop_don_vi) {
+                    document.getElementById('inputLop').value = nm.lop_don_vi;
+                }
+                if (!document.getElementById('inputSdt').value.trim() && nm.so_dien_thoai) {
+                    document.getElementById('inputSdt').value = nm.so_dien_thoai;
+                }
+            } else {
+                document.getElementById('nguoi_muon_id').value = '0';
+                document.getElementById('tao_nguoi_muon_moi').value = '1';
+                maSoDaChon = '';
+            }
+        } catch (e) {}
+        capNhatTrangThaiNguoiMuon();
+        capNhatPreview();
+    }
+
+    function xoaThongTinNguoiMuon() {
+        document.getElementById('nguoi_muon_id').value = '0';
+        document.getElementById('tao_nguoi_muon_moi').value = '1';
+        maSoDaChon = '';
+        document.getElementById('inputMaSo').value = '';
+        document.getElementById('inputHoTen').value = '';
+        document.getElementById('inputLoaiNm').value = 'SINH_VIEN';
+        document.getElementById('inputLop').value = '';
+        document.getElementById('inputSdt').value = '';
+        if (inputTuKhoa) inputTuKhoa.value = '';
+        goiYBox.classList.add('d-none');
+        capNhatTrangThaiNguoiMuon();
+        capNhatPreview();
+        document.getElementById('inputMaSo').focus();
+    }
 
     async function timNguoiMuon() {
         const val = inputTuKhoa.value.trim();
-        if (!val) return;
+        if (!val) {
+            goiYBox.classList.add('d-none');
+            return;
+        }
         try {
             const res = await fetch('<?= url("api/nguoi-muon.php") ?>?tu_khoa=' + encodeURIComponent(val));
             const json = await res.json();
@@ -249,7 +388,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     const a = document.createElement('a');
                     a.href = '#';
                     a.className = 'list-group-item list-group-item-action py-2';
-                    a.textContent = `${nm.ho_ten} (${nm.ma_so_truong}) - ${nm.lop_don_vi || 'N/A'} - SĐT: ${nm.so_dien_thoai || 'N/A'}`;
+                    const loaiNhan = nm.loai_nguoi_muon === 'GIANG_VIEN' ? 'Giảng viên' : 'Sinh viên';
+                    a.textContent = `${nm.ho_ten} (${nm.ma_so_truong}) • ${loaiNhan} • ${nm.lop_don_vi || 'N/A'} • SĐT: ${nm.so_dien_thoai || 'N/A'}`;
                     a.onclick = (e) => {
                         e.preventDefault();
                         chonNguoiMuon(nm);
@@ -258,9 +398,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 });
                 goiYBox.classList.remove('d-none');
             } else {
-                goiYBox.innerHTML = '<div class="list-group-item text-muted py-2">Không tìm thấy người mượn cũ. Hãy điền thông tin vào các ô bên dưới để đăng ký mới.</div>';
+                goiYBox.innerHTML = '<div class="list-group-item text-muted py-2">Chưa có trong danh sách cũ - Bạn chỉ cần điền Mã số & Họ tên ở ngay bên dưới, hệ thống sẽ tự tạo người mượn mới khi lưu phiếu.</div>';
                 goiYBox.classList.remove('d-none');
+                document.getElementById('nguoi_muon_id').value = '0';
                 document.getElementById('tao_nguoi_muon_moi').value = '1';
+                if (!document.getElementById('inputMaSo').value.trim() && /^[A-Za-z0-9_-]+$/.test(val)) {
+                    document.getElementById('inputMaSo').value = val;
+                } else if (!document.getElementById('inputHoTen').value.trim() && val.includes(' ')) {
+                    document.getElementById('inputHoTen').value = val;
+                }
+                capNhatTrangThaiNguoiMuon();
+                capNhatPreview();
             }
         } catch (e) {
             console.error(e);
@@ -268,6 +416,15 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     }
 
     if (inputTuKhoa) {
+        inputTuKhoa.addEventListener('input', function() {
+            clearTimeout(henGioTimNm);
+            const v = inputTuKhoa.value.trim();
+            if (!v) {
+                goiYBox.classList.add('d-none');
+                return;
+            }
+            henGioTimNm = setTimeout(timNguoiMuon, 250);
+        });
         inputTuKhoa.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -276,14 +433,25 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         });
     }
 
+    document.addEventListener('click', function(e) {
+        if (goiYBox && !goiYBox.contains(e.target) && e.target !== inputTuKhoa && e.target.id !== 'btnTimNm') {
+            goiYBox.classList.add('d-none');
+        }
+    });
+
     function chonNguoiMuon(nm) {
         document.getElementById('nguoi_muon_id').value = nm.id;
         document.getElementById('tao_nguoi_muon_moi').value = '0';
-        document.getElementById('inputMaSo').value = nm.ma_so_truong;
-        document.getElementById('inputHoTen').value = nm.ho_ten;
+        maSoDaChon = nm.ma_so_truong || '';
+        document.getElementById('inputMaSo').value = nm.ma_so_truong || '';
+        document.getElementById('inputHoTen').value = nm.ho_ten || '';
+        if (nm.loai_nguoi_muon) {
+            document.getElementById('inputLoaiNm').value = nm.loai_nguoi_muon;
+        }
         document.getElementById('inputSdt').value = nm.so_dien_thoai || '';
         document.getElementById('inputLop').value = nm.lop_don_vi || '';
         goiYBox.classList.add('d-none');
+        capNhatTrangThaiNguoiMuon();
         capNhatPreview();
     }
 
@@ -399,8 +567,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <td>${escapeHtml(ts.ten_tai_san)}</td>
             <td>${escapeHtml(maPhong)}</td>
             <td class="text-end">
-                <button type="button" class="btn btn-phu btn-sm py-1 px-2 text-danger" onclick="xoaThietBi(${idx})">
-                    Xóa
+                <button type="button" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa" onclick="xoaThietBi(${idx})">
+                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
                 </button>
             </td>
         `;
@@ -496,11 +664,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         try {
             streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
             videoEl.srcObject = streamCamera;
-            videoEl.style.display = 'block';
-            overlayEl.style.display = 'none';
+            videoEl.classList.remove('d-none');
+            overlayEl.classList.add('d-none');
             await videoEl.play();
             dangQuet = true;
-            btnCamera.textContent = 'Tắt camera';
+            const nhanNut = document.getElementById('nhanNutCamera');
+            if (nhanNut) nhanNut.textContent = 'Tắt camera';
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
@@ -514,9 +683,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             streamCamera = null;
         }
         dangQuet = false;
-        videoEl.style.display = 'none';
-        overlayEl.style.display = 'flex';
-        btnCamera.textContent = 'Bật camera';
+        videoEl.classList.add('d-none');
+        overlayEl.classList.remove('d-none');
+        const nhanNut = document.getElementById('nhanNutCamera');
+        if (nhanNut) nhanNut.textContent = 'Bật camera';
         btnCamera.classList.replace('btn-danger', 'btn-phu');
     }
 
@@ -556,7 +726,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         });
     }
 
-    // Khởi chạy preview ban đầu
+    // Khởi chạy trạng thái ban đầu
+    const selPhongBanDau = document.getElementById('phong_hoc_id');
+    if (selPhongBanDau && selPhongBanDau.value) {
+        doiPhongHoc(selPhongBanDau);
+    }
+    capNhatTrangThaiNguoiMuon();
     capNhatPreview();
 </script>
 

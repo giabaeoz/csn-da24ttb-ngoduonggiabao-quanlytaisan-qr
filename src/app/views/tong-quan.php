@@ -32,7 +32,8 @@ $pctCoTheMuon = round(($coTheMuon / $tongTs) * 100, 1);
 $pctDangMuon = round(($dangMuon / $tongTs) * 100, 1);
 $pctKhac = round(($trangThaiKhac / $tongTs) * 100, 1);
 
-$tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
+$duLieuNhom = $nhomTaiSan['data'] ?? $nhomTaiSan['so_luong'] ?? [0];
+$tongNhomMuon = array_sum($duLieuNhom);
 ?>
 
 <!-- Tiêu đề trang & Lời chào cán bộ -->
@@ -56,26 +57,38 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['tong_so'] ?? 0)) ?></div>
-            <div class="nhan-so-lieu">Tổng tài sản</div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('package', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['tong_so'] ?? 0)) ?></div>
+                <div class="nhan-so-lieu">Tổng tài sản</div>
+            </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['san_sang'] ?? 0)) ?></div>
-            <div class="nhan-so-lieu">Tài sản có thể mượn</div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['san_sang'] ?? 0)) ?></div>
+                <div class="nhan-so-lieu">Tài sản có thể mượn</div>
+            </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['dang_muon'] ?? 0)) ?></div>
-            <div class="nhan-so-lieu">Tài sản đang mượn</div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('repeat', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['dang_muon'] ?? 0)) ?></div>
+                <div class="nhan-so-lieu">Tài sản đang mượn</div>
+            </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-so-lieu">
-            <div class="so-lieu text-danger"><?= sprintf('%02d', (int)($kpi['phieu_qua_han'] ?? 0)) ?></div>
-            <div class="nhan-so-lieu">Lượt mượn quá hạn</div>
+            <div class="o-bieu-tuong-thong-ke"><?= icon('alert-triangle', 'bieu-tuong-lg') ?></div>
+            <div>
+                <div class="so-lieu chu-nguy-hiem"><?= sprintf('%02d', (int)($kpi['phieu_qua_han'] ?? 0)) ?></div>
+                <div class="nhan-so-lieu">Lượt mượn quá hạn</div>
+            </div>
         </div>
     </div>
 </div>
@@ -84,30 +97,30 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
 <div class="card mb-4">
     <div class="card-body py-3 d-flex align-items-center gap-3 flex-wrap">
         <span class="text-phu fw-semibold me-2">Thao tác nhanh</span>
-        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-phu">Lập phiếu mượn</a>
-        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">Nhận trả tài sản</a>
-        <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">Quét mã QR</a>
+        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-phu"><?= icon('plus', 'bieu-tuong-sm') ?><span>Lập phiếu mượn</span></a>
+        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu"><?= icon('rotate-ccw', 'bieu-tuong-sm') ?><span>Nhận trả tài sản</span></a>
+        <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu"><?= icon('scan-line', 'bieu-tuong-sm') ?><span>Quét mã QR</span></a>
     </div>
 </div>
 
 <!-- Biểu đồ: Xu hướng mượn – trả trong tuần -->
 <div class="card mb-4">
     <div class="card-body p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
                 <h2 class="tieu-de-khoi">Xu hướng mượn – trả trong tuần</h2>
                 <div class="mo-ta-phu">Đơn vị: lượt giao dịch • Dữ liệu thời gian thực</div>
             </div>
             <div class="d-flex align-items-center gap-3 small">
                 <span class="d-flex align-items-center gap-1">
-                    <span style="display:inline-block;width:16px;height:2px;background-color:#1E4E8C;"></span> Mượn
+                    <span class="net-chu-thich-chinh"></span> Mượn
                 </span>
                 <span class="d-flex align-items-center gap-1">
-                    <span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #6B7280;"></span> Trả
+                    <span class="net-chu-thich-dut"></span> Trả
                 </span>
             </div>
         </div>
-        <div style="height: 220px; position: relative;">
+        <div class="khung-bieu-do-220">
             <canvas id="chartDashboardXuHuong"></canvas>
         </div>
     </div>
@@ -121,7 +134,7 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
             <div class="card-body p-4 d-flex flex-column">
                 <h2 class="tieu-de-khoi">Lượt mượn theo nhóm tài sản</h2>
                 <div class="mo-ta-phu mb-3">Cùng thời gian • Đơn vị: lượt</div>
-                <div style="height: 200px; position: relative;" class="flex-grow-1">
+                <div class="khung-bieu-do-200 flex-grow-1">
                     <canvas id="chartDashboardNhomTaiSan"></canvas>
                 </div>
                 <div class="mo-ta-phu text-end mt-2">Tổng: <?= (int)$tongNhomMuon ?> lượt mượn</div>
@@ -137,26 +150,26 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
                 <div class="mo-ta-phu mb-3">Cơ cấu <?= (int)($thongKe['tong_so'] ?? 0) ?> tài sản</div>
                 <div class="row align-items-center">
                     <div class="col-sm-6 text-center">
-                        <div style="width: 170px; height: 170px; margin: 0 auto; position: relative;">
+                        <div class="khung-bieu-do-tron">
                             <canvas id="chartDashboardTinhTrang"></canvas>
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                            <div class="tam-bieu-do-tron">
                                 <div class="fw-bold fs-5 text-dark"><?= (int)($thongKe['tong_so'] ?? 0) ?></div>
-                                <div class="mo-ta-phu" style="font-size: 11px;">tài sản</div>
+                                <div class="mo-ta-phu">tài sản</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 mt-3 mt-sm-0">
                         <div class="d-flex flex-column gap-2 small">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span><span style="display:inline-block;width:10px;height:10px;background-color:#1E7A46;border-radius:2px;margin-right:6px;"></span>Có thể mượn</span>
+                                <span><span class="cham-mau-chu-thich cham-thanh-cong"></span>Có thể mượn</span>
                                 <span class="fw-semibold"><?= $coTheMuon ?> • <?= $pctCoTheMuon ?>%</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span><span style="display:inline-block;width:10px;height:10px;background-color:#1E4E8C;border-radius:2px;margin-right:6px;"></span>Đang mượn</span>
+                                <span><span class="cham-mau-chu-thich cham-mau-chinh"></span>Đang mượn</span>
                                 <span class="fw-semibold"><?= $dangMuon ?> • <?= $pctDangMuon ?>%</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span><span style="display:inline-block;width:10px;height:10px;background-color:#6B7280;border-radius:2px;margin-right:6px;"></span>Trạng thái khác</span>
+                                <span><span class="cham-mau-chu-thich cham-xam"></span>Trạng thái khác</span>
                                 <span class="fw-semibold"><?= $trangThaiKhac ?> • <?= $pctKhac ?>%</span>
                             </div>
                         </div>
@@ -174,7 +187,8 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
             <h2 class="tieu-de-khoi mb-0">Lượt mượn cần theo dõi</h2>
         </div>
         <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-phu btn-sm">
-            Xem tất cả
+            <?= icon('eye', 'bieu-tuong-sm') ?>
+            <span>Xem tất cả</span>
         </a>
     </div>
     <div class="table-responsive">
@@ -203,8 +217,8 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
                             <td class="fw-semibold text-primary">
                                 <?= e($p['ma_phieu_muon']) ?>
                             </td>
-                            <td><?= e($p['ho_ten_nguoi_muon']) ?></td>
-                            <td><?= e($p['ten_cac_thiet_bi'] ?? ($p['so_thiet_bi'] . ' thiết bị')) ?></td>
+                            <td><?= e($p['ho_ten_nguoi_muon'] ?? $p['ten_nguoi_muon'] ?? '') ?></td>
+                            <td><?= e($p['ten_cac_thiet_bi'] ?? (($p['so_thiet_bi'] ?? $p['tong_so_thiet_bi'] ?? 0) . ' thiết bị')) ?></td>
                             <td>
                                 <?= ($laHomNay ? 'Hôm nay, ' : '') . date('H:i', strtotime($p['han_tra'])) ?>
                                 <?php if (!$laHomNay): ?>
@@ -222,12 +236,12 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
                             </td>
                             <td class="text-end">
                                 <?php if ($laQuaHan || $laHomNay): ?>
-                                    <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode($p['ma_phieu_muon'])) ?>" class="btn btn-phu btn-sm">
-                                        Nhận trả
+                                    <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode($p['ma_phieu_muon'])) ?>" class="btn-bieu-tuong" aria-label="Nhận trả" title="Nhận trả">
+                                        <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
                                     </a>
                                 <?php else: ?>
-                                    <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$p['id']) ?>" class="btn btn-phu btn-sm">
-                                        Chi tiết
+                                    <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$p['id']) ?>" class="btn-bieu-tuong" aria-label="Chi tiết" title="Chi tiết">
+                                        <?= icon('eye', 'bieu-tuong-sm') ?>
                                     </a>
                                 <?php endif; ?>
                             </td>
@@ -243,6 +257,16 @@ $tongNhomMuon = array_sum($nhomTaiSan['data'] ?? [0]);
 <script src="<?= url('assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const giamChuyenDong = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const thoiGianHoatAnh = giamChuyenDong ? 0 : 350;
+    const cauHinhTooltip = {
+        backgroundColor: '#1F2937',
+        padding: 8,
+        cornerRadius: 6,
+        titleFont: { size: 12 },
+        bodyFont: { size: 12 }
+    };
+
     // 1. Line Chart: Xu hướng mượn - trả trong tuần
     const ctxXh = document.getElementById('chartDashboardXuHuong').getContext('2d');
     new Chart(ctxXh, {
@@ -254,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     label: 'Mượn',
                     data: <?= json_encode($muonTra7Ngay['so_luot_muon']) ?>,
                     borderColor: '#1E4E8C',
-                    backgroundColor: 'rgba(30, 78, 140, 0.05)',
+                    backgroundColor: '#E8EFF8',
                     borderWidth: 2,
                     pointBackgroundColor: '#1E4E8C',
                     pointRadius: 3,
@@ -277,7 +301,8 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            animation: { duration: thoiGianHoatAnh },
+            plugins: { legend: { display: false }, tooltip: cauHinhTooltip },
             scales: {
                 y: { beginAtZero: true, grid: { color: '#E5E7EB' }, ticks: { precision: 0 } },
                 x: { grid: { display: false } }
@@ -290,10 +315,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctxNhom, {
         type: 'bar',
         data: {
-            labels: <?= json_encode($nhomTaiSan['labels'], JSON_UNESCAPED_UNICODE) ?>,
+            labels: <?= json_encode($nhomTaiSan['labels'] ?? [], JSON_UNESCAPED_UNICODE) ?>,
             datasets: [{
-                data: <?= json_encode($nhomTaiSan['data']) ?>,
-                backgroundColor: '#6B7280',
+                data: <?= json_encode($duLieuNhom) ?>,
+                backgroundColor: '#1E4E8C',
                 borderRadius: 4,
                 maxBarThickness: 36
             }]
@@ -301,7 +326,8 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            animation: { duration: thoiGianHoatAnh },
+            plugins: { legend: { display: false }, tooltip: cauHinhTooltip },
             scales: {
                 y: { beginAtZero: true, grid: { color: '#E5E7EB' }, ticks: { precision: 0 } },
                 x: { grid: { display: false } }
@@ -325,7 +351,8 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            animation: { duration: thoiGianHoatAnh },
+            plugins: { legend: { display: false }, tooltip: cauHinhTooltip },
             cutout: '72%'
         }
     });

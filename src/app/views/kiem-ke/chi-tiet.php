@@ -29,45 +29,9 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
 });
 ?>
 
-<style>
-@media print {
-    #sidebarMenu, .navbar, .btn-toolbar, .no-print, nav[aria-label="breadcrumb"], footer, .d-print-none {
-        display: none !important;
-    }
-    main {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .card {
-        border: none !important;
-        box-shadow: none !important;
-    }
-    .print-only {
-        display: block !important;
-    }
-    body {
-        background-color: #fff !important;
-        color: #000 !important;
-        font-size: 13px !important;
-    }
-    .table-bordered th, .table-bordered td {
-        border: 1px solid #000 !important;
-    }
-    .badge {
-        border: 1px solid #333 !important;
-        color: #000 !important;
-        background: transparent !important;
-    }
-}
-.print-only {
-    display: none;
-}
-</style>
-
 <div class="container-fluid py-3">
 <!-- Tiêu đề & Nút thao tác (NO PRINT) -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 no-print">
+<div class="thanh-cong-cu-trang no-print">
     <div>
         <h1 class="tieu-de-trang mb-1">Biên bản kiểm kê: <?= e($dot['ma_dot_kiem_ke']) ?></h1>
         <div class="mo-ta-phu">
@@ -82,15 +46,18 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
     </div>
     <div class="d-flex gap-2 flex-wrap">
         <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu">
-            Quay lại
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại</span>
         </a>
         <?php if (!$laHoanTat && !$laDaHuy): ?>
             <a href="<?= url('kiem-ke/thuc-hien.php?id=' . $dot['id']) ?>" class="btn btn-chinh">
-                Bàn làm việc kiểm kê
+                <?= icon('clipboard-check', 'bieu-tuong-sm') ?>
+                <span>Bàn làm việc kiểm kê</span>
             </a>
         <?php endif; ?>
         <button type="button" class="btn btn-phu" onclick="window.print()">
-            In biên bản
+            <?= icon('printer', 'bieu-tuong-sm') ?>
+            <span>In biên bản</span>
         </button>
     </div>
 </div>
@@ -164,16 +131,16 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             <table class="table table-bordered text-center align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th rowspan="2" class="align-middle" style="width: 140px;">Tổng tài sản sổ sách</th>
+                        <th rowspan="2" class="align-middle cot-140">Tổng tài sản sổ sách</th>
                         <th colspan="2" class="text-success">Thực tế có mặt</th>
-                        <th rowspan="2" class="align-middle text-danger" style="width: 130px;">Chưa tìm thấy (Mất)</th>
-                        <th rowspan="2" class="align-middle text-info" style="width: 130px;">Đang cho mượn</th>
-                        <th rowspan="2" class="align-middle text-warning" style="width: 130px;">Sai vị trí phòng</th>
-                        <th rowspan="2" class="align-middle" style="width: 120px;">Tỷ lệ đối chiếu</th>
+                        <th rowspan="2" class="align-middle text-danger cot-130">Chưa tìm thấy (Mất)</th>
+                        <th rowspan="2" class="align-middle text-info cot-130">Đang cho mượn</th>
+                        <th rowspan="2" class="align-middle text-warning cot-130">Sai vị trí phòng</th>
+                        <th rowspan="2" class="align-middle cot-120">Tỷ lệ đối chiếu</th>
                     </tr>
                     <tr>
-                        <th class="small text-success" style="width: 120px;">Tình trạng Tốt</th>
-                        <th class="small text-danger" style="width: 120px;">Hư hỏng mới</th>
+                        <th class="small text-success cot-120">Tình trạng Tốt</th>
+                        <th class="small text-danger cot-120">Hư hỏng mới</th>
                     </tr>
                 </thead>
                 <tbody class="fw-bold fs-6">
@@ -201,25 +168,26 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex justify-content-between align-items-center">
             <span>II. DANH MỤC THIẾT BỊ PHÁT SINH CHÊNH LỆCH & SỰ CỐ (<?= count($dsChenhLech) ?>)</span>
             <?php if (count($dsChenhLech) === 0): ?>
-                <span class="badge bg-success-subtle text-success fs-6 fw-normal">Không phát hiện chênh lệch</span>
+                <span class="huy-hieu huy-hieu-thanh-cong">Không phát hiện chênh lệch</span>
             <?php endif; ?>
         </h5>
 
         <?php if (empty($dsChenhLech)): ?>
             <div class="alert alert-success border-0 small mb-4 py-2">
-                <i class="bi bi-check-circle me-1"></i> Toàn bộ thiết bị có mặt đầy đủ, đúng vị trí và hoạt động tốt theo sổ sách.
+                <?= icon('check-circle-2', 'bieu-tuong-md') ?>
+                <span>Toàn bộ thiết bị có mặt đầy đủ, đúng vị trí và hoạt động tốt theo sổ sách.</span>
             </div>
         <?php else: ?>
             <div class="table-responsive mb-4">
                 <table class="table table-bordered align-middle small mb-0">
                     <thead class="table-light text-uppercase">
                         <tr>
-                            <th style="width: 40px;" class="text-center">#</th>
-                            <th style="width: 120px;">Mã tài sản</th>
+                            <th class="text-center cot-40">#</th>
+                            <th class="cot-120">Mã tài sản</th>
                             <th>Tên thiết bị</th>
-                            <th style="width: 130px;">Vị trí sổ sách</th>
-                            <th style="width: 130px;">Vị trí thực tế</th>
-                            <th style="width: 140px;">Phân loại chênh lệch</th>
+                            <th class="cot-130">Vị trí sổ sách</th>
+                            <th class="cot-130">Vị trí thực tế</th>
+                            <th class="cot-140">Phân loại chênh lệch</th>
                             <th>Mô tả sự cố / Ghi chú kiểm kê</th>
                         </tr>
                     </thead>
@@ -230,13 +198,13 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
                             $badgeClass = '';
                             if ($item['ket_qua'] === 'CHUA_TIM_THAY') {
                                 $loaiChenhLech = 'MẤT / CHƯA TÌM THẤY';
-                                $badgeClass = 'badge bg-danger';
+                                $badgeClass = 'huy-hieu huy-hieu-nguy-hiem';
                             } elseif ($item['ket_qua'] === 'TIM_THAY' && $item['tinh_trang_thuc_te'] === 'HU_HONG') {
                                 $loaiChenhLech = 'HƯ HỎNG MỚI';
-                                $badgeClass = 'badge bg-warning text-dark';
+                                $badgeClass = 'huy-hieu huy-hieu-canh-bao';
                             } elseif ($item['ket_qua'] === 'TIM_THAY' && $item['phong_hoc_thuc_te_id'] !== null && (int)$item['phong_hoc_thuc_te_id'] !== (int)$item['phong_hoc_so_sach_id']) {
                                 $loaiChenhLech = 'SAI VỊ TRÍ PHÒNG';
-                                $badgeClass = 'badge bg-info text-dark';
+                                $badgeClass = 'huy-hieu huy-hieu-chinh';
                             }
                             ?>
                             <tr>
@@ -268,14 +236,14 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             <table class="table table-bordered align-middle small mb-0">
                 <thead class="table-light text-uppercase">
                     <tr>
-                        <th style="width: 35px;" class="text-center">#</th>
-                        <th style="width: 110px;">Mã TS</th>
+                        <th class="text-center cot-35">#</th>
+                        <th class="cot-110">Mã TS</th>
                         <th>Tên thiết bị</th>
-                        <th style="width: 100px;">Vị trí sổ</th>
-                        <th style="width: 100px;">Vị trí thực</th>
-                        <th style="width: 80px;">TT Sổ</th>
-                        <th style="width: 110px;">Kết quả thực tế</th>
-                        <th style="width: 130px;">Thời gian kiểm</th>
+                        <th class="cot-100">Vị trí sổ</th>
+                        <th class="cot-100">Vị trí thực</th>
+                        <th class="cot-80">TT Sổ</th>
+                        <th class="cot-110">Kết quả thực tế</th>
+                        <th class="cot-130">Thời gian kiểm</th>
                         <th>Ghi chú</th>
                     </tr>
                 </thead>

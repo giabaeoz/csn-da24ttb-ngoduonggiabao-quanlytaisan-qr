@@ -14,14 +14,26 @@ require_once dirname(__DIR__) . '/app/services/danh-muc-service.php';
 
 yeu_cau_quyen('xem_danh_sach_tai_san');
 
-$maQr = trim((string)($_GET['ma_qr'] ?? $_GET['code'] ?? ''));
+$maQr = trim((string)($_GET['ma_qr'] ?? $_GET['ma'] ?? $_GET['code'] ?? $_GET['tu_khoa'] ?? $_GET['q'] ?? ''));
+$hanhDong = strtoupper(trim((string)($_GET['hanh_dong'] ?? '')));
 if ($maQr === '') {
-    phan_hoi_json(['thanh_cong' => false, 'loi' => 'Thiếu tham số ma_qr'], 400);
+    phan_hoi_json(['thanh_cong' => false, 'loi' => 'Vui lòng nhập hoặc quét mã QR thiết bị.', 'thong_diep' => 'Vui lòng nhập hoặc quét mã QR thiết bị.'], 400);
 }
 
 // 1. Kiểm tra xem có phải mã tài sản / tem QR thiết bị không
 $taiSan = tai_san_tim_theo_qr($maQr) ?? tai_san_tim_theo_ma($maQr);
 if ($taiSan !== null) {
+    $coTheMuon = ($taiSan['trang_thai'] === TRANG_THAI_SAN_SANG && $taiSan['tinh_trang'] === TINH_TRANG_TOT);
+    if (($hanhDong === 'MUON' || $hanhDong === 'DIEU_CHUYEN') && !$coTheMuon) {
+        $msg = "Thiết bị [{$taiSan['ma_tai_san']}] hiện không ở trạng thái Sẵn sàng (Đang mượn hoặc Bảo trì).";
+        phan_hoi_json([
+            'thanh_cong' => false,
+            'loi'        => $msg,
+            'thong_diep' => $msg,
+            'du_lieu'    => $taiSan,
+        ], 422);
+    }
+
     $phongHocDichId = doc_so_nguyen('phong_hoc_id', 0, $_GET);
     $tuongThich = null;
     if ($phongHocDichId > 0) {
@@ -35,7 +47,7 @@ if ($taiSan !== null) {
         'thanh_cong'           => true,
         'loai'                 => 'TAI_SAN',
         'du_lieu'              => $taiSan,
-        'co_the_muon'          => ($taiSan['trang_thai'] === TRANG_THAI_SAN_SANG && $taiSan['tinh_trang'] === TINH_TRANG_TOT),
+        'co_the_muon'          => $coTheMuon,
         'kiem_tra_tuong_thich' => $tuongThich,
     ]);
 }
@@ -79,8 +91,10 @@ if ($phongHoc !== null) {
     ]);
 }
 
+$msgKhongThay = "Không tìm thấy thiết bị khớp với mã '$maQr'.";
 phan_hoi_json([
     'thanh_cong' => false,
-    'loi'        => "Không tìm thấy dữ liệu khớp với mã QR '$maQr'.",
+    'loi'        => $msgKhongThay,
+    'thong_diep' => $msgKhongThay,
 ], 404);
 

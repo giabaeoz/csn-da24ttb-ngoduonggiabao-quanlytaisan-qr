@@ -10,6 +10,8 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+require_once __DIR__ . '/icon.php';
+
 $thongBao = lay_thong_bao();
 if ($thongBao !== null):
     $loaiClass = match ($thongBao['loai']) {
@@ -19,14 +21,15 @@ if ($thongBao !== null):
         default      => 'alert-primary',
     };
     $bieuTuong = match ($thongBao['loai']) {
-        'thanh_cong' => 'bi-check-circle-fill',
-        'loi'        => 'bi-exclamation-triangle-fill',
-        'canh_bao'   => 'bi-exclamation-circle-fill',
-        default      => 'bi-info-circle-fill',
+        'thanh_cong' => 'check-circle-2',
+        'loi'        => 'alert-circle',
+        'canh_bao'   => 'alert-triangle',
+        default      => 'info',
     };
 ?>
 <div class="alert <?= $loaiClass ?> alert-dismissible fade show shadow-sm mb-4" role="alert" id="thong-bao-he-thong">
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center gap-2">
+        <?= icon($bieuTuong) ?>
         <div><?= e($thongBao['noi_dung']) ?></div>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>

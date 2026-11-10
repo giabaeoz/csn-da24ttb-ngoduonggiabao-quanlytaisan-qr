@@ -218,6 +218,7 @@ function kiem_ke_tim_theo_id(int $id, ?int $phongTrucId = null): ?array {
         'so_tim_thay_hong'     => (int)($stats['so_tim_thay_hong'] ?? 0),
         'so_chua_tim_thay'     => (int)($stats['so_chua_tim_thay'] ?? 0),
         'so_dang_muon'         => (int)($stats['so_dang_muon'] ?? 0),
+        'so_dang_muon_khi_mo'  => (int)($stats['so_dang_muon'] ?? 0),
         'so_con_lai_can_kiem'  => (int)($stats['so_con_lai_can_kiem'] ?? 0),
         'so_sai_vi_tri'        => (int)($stats['so_sai_vi_tri'] ?? 0),
     ];
@@ -244,11 +245,13 @@ function kiem_ke_lay_chi_tiet_dot(int $dotKiemKeId, array $boLoc = []): array {
 
     $tuKhoa = trim((string)($boLoc['tu_khoa'] ?? ''));
     if ($tuKhoa !== '') {
-        $where[] = "(ts.ma_tai_san LIKE ? OR ts.ma_qr LIKE ? OR ts.ten_tai_san LIKE ? OR ps.ma_phong LIKE ? OR pt.ma_phong LIKE ?)";
+        $maChuan = tai_san_chuan_hoa_ma_tim_kiem($tuKhoa);
+        $where[] = "(ts.ma_tai_san LIKE ? OR ts.ma_qr LIKE ? OR ts.ma_tai_san = ? OR ts.ten_tai_san LIKE ? OR ps.ma_phong LIKE ? OR pt.ma_phong LIKE ?)";
         $like = '%' . $tuKhoa . '%';
-        $types .= 'sssss';
+        $types .= 'ssssss';
         $params[] = $like;
         $params[] = $like;
+        $params[] = $maChuan;
         $params[] = $like;
         $params[] = $like;
         $params[] = $like;
@@ -272,18 +275,21 @@ function kiem_ke_lay_chi_tiet_dot(int $dotKiemKeId, array $boLoc = []): array {
     $whereSql = implode(' AND ', $where);
 
     $sql = "SELECT ct.*,
+                   ct.ket_qua AS ket_qua_kiem_ke,
                    ts.ma_tai_san, ts.ma_qr, ts.ten_tai_san, ts.hang_san_xuat, ts.model,
                    ts.tinh_trang AS tinh_trang_hien_tai, ts.trang_thai AS trang_thai_hien_tai,
                    lts.ten_loai AS ten_loai_tai_san,
                    ps.ma_phong AS ma_phong_so_sach, ps.ten_phong AS ten_phong_so_sach,
-                   pt.ma_phong AS ma_phong_thuc_te, pt.ten_phong AS ten_phong_thuc_te
+                   pt.ma_phong AS ma_phong_thuc_te, pt.ten_phong AS ten_phong_thuc_te,
+                   (SELECT pm.id FROM chi_tiet_muon ctm JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id WHERE ctm.tai_san_id = ct.tai_san_id AND ctm.thoi_gian_tra IS NULL ORDER BY ctm.id DESC LIMIT 1) AS phieu_muon_id,
+                   (SELECT pm.ma_phieu_muon FROM chi_tiet_muon ctm JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id WHERE ctm.tai_san_id = ct.tai_san_id AND ctm.thoi_gian_tra IS NULL ORDER BY ctm.id DESC LIMIT 1) AS ma_phieu_muon_hien_tai
             FROM chi_tiet_kiem_ke ct
             JOIN tai_san ts ON ct.tai_san_id = ts.id
             LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.id
             LEFT JOIN phong_hoc ps ON ct.phong_hoc_so_sach_id = ps.id
             LEFT JOIN phong_hoc pt ON ct.phong_hoc_thuc_te_id = pt.id
             WHERE $whereSql
-            ORDER BY (ct.ket_qua = 'CHUA_KIEM_TRA') DESC, ts.ma_tai_san ASC";
+            ORDER BY (ct.ket_qua = 'CHUA_KIEM_TRA') DESC, ts.id ASC";
 
     $stmt = $db->prepare($sql);
     $stmt->bind_param($types, ...$params);

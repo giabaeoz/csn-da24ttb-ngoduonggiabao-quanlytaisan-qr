@@ -21,17 +21,19 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Hồ sơ người mượn: <?= e($nguoiMuon['ho_ten']) ?></h1>
         <div class="mo-ta-phu">Thông tin cá nhân và lịch sử tất cả các giao dịch mượn - trả tài sản.</div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="<?= url('nguoi-muon/sua.php?id=' . (int)$nguoiMuon['id']) ?>" class="btn btn-phu">
-            Chỉnh sửa hồ sơ
+            <?= icon('pencil', 'bieu-tuong-sm') ?>
+            <span>Chỉnh sửa hồ sơ</span>
         </a>
         <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">
-            Quay lại danh sách
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại danh sách</span>
         </a>
     </div>
 </div>
@@ -80,7 +82,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
                 <div>
                     <a href="<?= url('muon-tra/muon.php?ma_so=' . urlencode($nguoiMuon['ma_so_truong'])) ?>" class="btn btn-sm btn-chinh">
-                        Lập phiếu mượn mới
+                        <?= icon('plus', 'bieu-tuong-sm') ?>
+                        <span>Lập phiếu mượn mới</span>
                     </a>
                 </div>
             <?php endif; ?>
@@ -111,13 +114,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 <div class="d-flex flex-wrap align-items-center justify-content-between w-100 pe-3 gap-2">
                                     <div>
                                         <span class="badge bg-light text-primary border font-monospace me-2">
-                                            <?= e($pm['ma_phieu']) ?>
+                                            <?= e($pm['ma_phieu_muon'] ?? $pm['ma_phieu'] ?? '') ?>
                                         </span>
                                         <span class="fw-semibold text-dark">
-                                            Phòng <?= e($pm['ten_phong']) ?> (<?= e($pm['ma_phong']) ?>)
+                                            <?= e($pm['ten_phong'] ?? '') ?> (<?= e($pm['ma_phong'] ?? '') ?>)
                                         </span>
                                         <span class="text-muted small ms-2">
-                                            &bull; Bàn trực: <?= e($pm['ten_phong_truc']) ?>
+                                            &bull; Bàn trực: <?= e($pm['ten_phong_truc'] ?? '') ?>
                                         </span>
                                     </div>
                                     <div class="small">
@@ -140,10 +143,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                         Hạn trả dự kiến: <strong class="text-danger"><?= dinh_dang_ngay_gio($pm['han_tra']) ?></strong>
                                     </div>
                                     <div class="col-sm-4">
-                                        Cán bộ lập phiếu: <strong><?= e($pm['ten_nhan_vien_lap']) ?></strong>
+                                        Cán bộ lập phiếu: <strong><?= e($pm['ten_nhan_vien_lap'] ?? '') ?></strong>
                                     </div>
                                     <div class="col-sm-4">
-                                        Mục đích: <?= e($pm['muc_dich_su_dung'] ?: 'Giảng dạy / học tập') ?>
+                                        Mục đích: <?= e(($pm['muc_dich_su_dung'] ?? $pm['ghi_chu'] ?? '') ?: 'Giảng dạy / học tập') ?>
                                     </div>
                                 </div>
 
@@ -152,9 +155,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <table class="bang-du-lieu mb-0">
                                         <thead>
                                             <tr>
-                                                <th>Mã thiết bị</th>
+                                                <th>Mã tài sản (QR)</th>
                                                 <th>Tên tài sản</th>
-                                                <th>Mã QR</th>
                                                 <th>Tình trạng khi mượn</th>
                                                 <th>Thời gian trả</th>
                                                 <th>Tình trạng khi trả</th>
@@ -169,9 +171,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                                     </td>
                                                     <td class="fw-medium">
                                                         <?= e($ct['ten_tai_san']) ?>
-                                                    </td>
-                                                    <td class="font-monospace small text-muted">
-                                                        <?= e($ct['ma_qr']) ?>
                                                     </td>
                                                     <td>
                                                         <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">
@@ -189,8 +188,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                                         <?php if ($ct['tinh_trang_khi_tra'] !== null): ?>
                                                             <?php if ($ct['tinh_trang_khi_tra'] === 'HU_HONG'): ?>
                                                                 <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Hư hỏng</span>
-                                                                <?php if (!empty($ct['ghi_chu_tra'])): ?>
-                                                                    <div class="text-danger small fst-italic"><?= e($ct['ghi_chu_tra']) ?></div>
+                                                                <?php if (!empty($ct['ghi_chu_tra']) || !empty($ct['ghi_chu'])): ?>
+                                                                    <div class="text-danger small fst-italic"><?= e($ct['ghi_chu_tra'] ?? $ct['ghi_chu'] ?? '') ?></div>
                                                                 <?php endif; ?>
                                                             <?php else: ?>
                                                                 <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Tốt</span>

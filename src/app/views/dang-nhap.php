@@ -10,6 +10,8 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+require_once __DIR__ . '/partials/icon.php';
+
 /**
  * @var string $thongBaoLoi
  * @var string $tenDangNhapCu
@@ -48,7 +50,8 @@ $tieuDe = 'Đăng nhập';
 
             <?php if (!empty($thongBaoLoi)): ?>
             <div class="alert alert-danger small mb-3" role="alert">
-                <?= e($thongBaoLoi) ?>
+                <?= icon('alert-circle') ?>
+                <span><?= e($thongBaoLoi) ?></span>
             </div>
             <?php endif; ?>
 
@@ -90,5 +93,6 @@ $tieuDe = 'Đăng nhập';
 </div>
 
 <script src="<?= url('assets/vendor/bootstrap/bootstrap.bundle.min.js') ?>"></script>
+<script src="<?= url('assets/js/app.js') ?>"></script>
 </body>
 </html>

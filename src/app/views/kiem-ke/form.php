@@ -23,21 +23,23 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút quay lại -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Mở đợt kiểm kê tài sản</h1>
         <div class="mo-ta-phu">Chụp dữ liệu sổ sách tài sản của bàn trực và thiết lập bàn làm việc đối chiếu thực tế.</div>
     </div>
     <div>
         <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu">
-            Quay lại danh sách
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại danh sách</span>
         </a>
     </div>
 </div>
 
 <?php if ($loi !== ''): ?>
     <div class="alert alert-danger mb-4" role="alert">
-        <?= e($loi) ?>
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1"><?= e($loi) ?></div>
     </div>
 <?php endif; ?>
 
@@ -87,7 +89,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <label class="form-label">Hình thức kiểm kê <span class="text-danger">*</span></label>
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <label class="card h-100 p-3 border cursor-pointer <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_CUOI_BUOI) ? 'border-primary' : '' ?>" style="cursor: pointer;">
+                                <label class="card h-100 p-3 border con-tro-tay <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_CUOI_BUOI) ? 'border-primary' : '' ?>">
                                     <div class="form-check m-0">
                                         <input class="form-check-input" type="radio" name="loai_kiem_ke" id="loaiCuoiBuoi" 
                                                value="<?= LOAI_KIEM_KE_CUOI_BUOI ?>" <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_CUOI_BUOI) ? 'checked' : '' ?>>
@@ -99,7 +101,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </label>
                             </div>
                             <div class="col-md-4">
-                                <label class="card h-100 p-3 border cursor-pointer <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_DINH_KY) ? 'border-primary' : '' ?>" style="cursor: pointer;">
+                                <label class="card h-100 p-3 border con-tro-tay <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_DINH_KY) ? 'border-primary' : '' ?>">
                                     <div class="form-check m-0">
                                         <input class="form-check-input" type="radio" name="loai_kiem_ke" id="loaiDinhKy" 
                                                value="<?= LOAI_KIEM_KE_DINH_KY ?>" <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_DINH_KY) ? 'checked' : '' ?>>
@@ -111,7 +113,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </label>
                             </div>
                             <div class="col-md-4">
-                                <label class="card h-100 p-3 border cursor-pointer <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_DOT_XUAT) ? 'border-primary' : '' ?>" style="cursor: pointer;">
+                                <label class="card h-100 p-3 border con-tro-tay <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_DOT_XUAT) ? 'border-primary' : '' ?>">
                                     <div class="form-check m-0">
                                         <input class="form-check-input" type="radio" name="loai_kiem_ke" id="loaiDotXuat" 
                                                value="<?= LOAI_KIEM_KE_DOT_XUAT ?>" <?= ($duLieu['loai_kiem_ke'] === LOAI_KIEM_KE_DOT_XUAT) ? 'checked' : '' ?>>
@@ -134,12 +136,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </div>
 
                     <!-- Nút hành động -->
-                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                    <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
                         <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu">
-                            Hủy bỏ
+                            <?= icon('x', 'bieu-tuong-sm') ?>
+                            <span>Hủy bỏ</span>
                         </a>
                         <button type="submit" class="btn btn-chinh">
-                            Bắt đầu mở đợt kiểm kê
+                            <?= icon('save', 'bieu-tuong-sm') ?>
+                            <span>Bắt đầu mở đợt kiểm kê</span>
                         </button>
                     </div>
                 </form>
@@ -157,7 +161,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
             <div class="card-body">
                 <div class="d-flex gap-3 mb-3">
-                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;">
+                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center vong-so-buoc">
                         1
                     </div>
                     <div>
@@ -167,7 +171,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
 
                 <div class="d-flex gap-3 mb-3">
-                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;">
+                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center vong-so-buoc">
                         2
                     </div>
                     <div>
@@ -177,7 +181,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
 
                 <div class="d-flex gap-3 mb-3">
-                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;">
+                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center vong-so-buoc">
                         3
                     </div>
                     <div>
@@ -187,7 +191,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
 
                 <div class="d-flex gap-3">
-                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;">
+                    <div class="badge bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center vong-so-buoc">
                         4
                     </div>
                     <div>

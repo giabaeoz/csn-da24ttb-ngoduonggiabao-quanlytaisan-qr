@@ -267,16 +267,18 @@ function nguoi_muon_luu(array $duLieu, ?int $id = null): array {
         $checkSdt->close();
     }
 
+    $sdtDb = $sdt !== '' ? $sdt : null;
+
     if ($id === null) {
         $stmt = $db->prepare("INSERT INTO nguoi_muon (ma_nguoi_muon, ma_so_truong, ho_ten, loai_nguoi_muon, lop_don_vi, so_dien_thoai) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param('ssssss', $maNguoiMuon, $maSoTruong, $hoTen, $loai, $lopDonVi, $sdt);
+        $stmt->bind_param('ssssss', $maNguoiMuon, $maSoTruong, $hoTen, $loai, $lopDonVi, $sdtDb);
         $stmt->execute();
         $moiId = (int)$db->insert_id;
         $stmt->close();
         return ['thanh_cong' => true, 'loi' => '', 'id' => $moiId];
     } else {
         $stmt = $db->prepare("UPDATE nguoi_muon SET ma_nguoi_muon = ?, ma_so_truong = ?, ho_ten = ?, loai_nguoi_muon = ?, lop_don_vi = ?, so_dien_thoai = ? WHERE id = ?");
-        $stmt->bind_param('ssssssi', $maNguoiMuon, $maSoTruong, $hoTen, $loai, $lopDonVi, $sdt, $id);
+        $stmt->bind_param('ssssssi', $maNguoiMuon, $maSoTruong, $hoTen, $loai, $lopDonVi, $sdtDb, $id);
         $stmt->execute();
         $stmt->close();
         return ['thanh_cong' => true, 'loi' => '', 'id' => $id];

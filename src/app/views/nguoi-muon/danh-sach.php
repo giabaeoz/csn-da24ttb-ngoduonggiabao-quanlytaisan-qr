@@ -31,9 +31,15 @@ foreach ($danhSachNguoiMuon as $nm) {
 ?>
 
 <!-- Tiêu đề trang -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Người mượn</h1>
+    </div>
+    <div>
+        <a href="<?= url('nguoi-muon/them.php') ?>" class="btn btn-chinh">
+            <?= icon('plus', 'bieu-tuong-sm') ?>
+            <span>Thêm người mượn</span>
+        </a>
     </div>
 </div>
 
@@ -58,9 +64,12 @@ foreach ($danhSachNguoiMuon as $nm) {
             
             <div class="col-12 col-md-5">
                 <label class="form-label">Tìm người mượn</label>
-                <input type="text" name="q" class="form-control" 
-                       placeholder="Mã số / họ tên / số điện thoại" 
-                       value="<?= e($tuKhoa) ?>">
+                <div class="o-tim-kiem">
+                    <?= icon('search', 'bieu-tuong-sm') ?>
+                    <input type="text" name="q" class="form-control" 
+                           placeholder="Mã số / họ tên / số điện thoại" 
+                           value="<?= e($tuKhoa) ?>">
+                </div>
             </div>
 
             <div class="col-12 col-md-4">
@@ -71,8 +80,14 @@ foreach ($danhSachNguoiMuon as $nm) {
             </div>
 
             <div class="col-12 col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-phu flex-grow-1">Tìm</button>
-                <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">Xóa lọc</a>
+                <button type="submit" class="btn btn-phu flex-grow-1">
+                    <?= icon('search', 'bieu-tuong-sm') ?>
+                    <span>Tìm</span>
+                </button>
+                <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">
+                    <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                    <span>Xóa lọc</span>
+                </a>
             </div>
         </form>
     </div>
@@ -124,9 +139,22 @@ foreach ($danhSachNguoiMuon as $nm) {
                         <span class="huy-hieu huy-hieu-thanh-cong">Trong hạn</span>
                     </td>
                     <td class="text-end">
-                        <a href="<?= url('nguoi-muon/index.php?chon_id=' . (int)$nm['id'] . '&' . http_build_query($_GET)) ?>" class="btn btn-phu btn-sm">
-                            Xem
-                        </a>
+                        <div class="d-inline-flex gap-1">
+                            <a href="<?= url('nguoi-muon/chi-tiet.php?id=' . (int)$nm['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
+                                <?= icon('eye', 'bieu-tuong-sm') ?>
+                            </a>
+                            <a href="<?= url('nguoi-muon/sua.php?id=' . (int)$nm['id']) ?>" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa">
+                                <?= icon('pencil', 'bieu-tuong-sm') ?>
+                            </a>
+                            <form action="<?= url('nguoi-muon/index.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc chắn muốn xóa hồ sơ người mượn này?">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="hanh_dong" value="xoa">
+                                <input type="hidden" name="id" value="<?= (int)$nm['id'] ?>">
+                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
+                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -171,8 +199,14 @@ foreach ($danhSachNguoiMuon as $nm) {
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">Hủy</a>
-                        <button type="submit" class="btn btn-chinh">Lưu thay đổi</button>
+                        <a href="<?= url('nguoi-muon/index.php') ?>" class="btn btn-phu">
+                            <?= icon('x', 'bieu-tuong-sm') ?>
+                            <span>Hủy</span>
+                        </a>
+                        <button type="submit" class="btn btn-chinh">
+                            <?= icon('save', 'bieu-tuong-sm') ?>
+                            <span>Lưu thay đổi</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -186,7 +220,8 @@ foreach ($danhSachNguoiMuon as $nm) {
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="tieu-de-khoi mb-0">Lịch sử mượn của người đang chọn</h2>
                     <a href="<?= url('muon-tra/index.php?q=' . urlencode($nguoiMuonChon['ma_so_truong'])) ?>" class="btn btn-phu btn-sm">
-                        Xem tất cả
+                        <?= icon('eye', 'bieu-tuong-sm') ?>
+                        <span>Xem tất cả</span>
                     </a>
                 </div>
 
@@ -201,14 +236,14 @@ foreach ($danhSachNguoiMuon as $nm) {
                     ?>
                     <div class="border rounded-2 p-3 bg-white">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="font-monospace fw-semibold text-primary"><?= e($ls['ma_phieu_muon']) ?> • <?= date('d/m/Y', strtotime($ls['thoi_gian_muon'])) ?></span>
+                            <span class="font-monospace fw-semibold text-primary"><?= e($ls['ma_phieu_muon'] ?? $ls['ma_phieu'] ?? '') ?> • <?= date('d/m/Y', strtotime($ls['thoi_gian_muon'])) ?></span>
                             <?php if ($laDangMuon): ?>
                                 <span class="huy-hieu huy-hieu-chinh">Đang mượn</span>
                             <?php else: ?>
                                 <span class="huy-hieu huy-hieu-thanh-cong">Đã trả đủ</span>
                             <?php endif; ?>
                         </div>
-                        <div class="mo-ta-phu"><?= e($ls['ma_phong']) ?> • <?= (int)$ls['so_thiet_bi'] ?> thiết bị<?= $laDangMuon ? ' chưa trả' : '' ?></div>
+                        <div class="mo-ta-phu"><?= e($ls['ma_phong'] ?? '') ?> • <?= (int)($ls['so_thiet_bi'] ?? count($ls['chi_tiet'] ?? [])) ?> thiết bị<?= $laDangMuon ? ' chưa trả' : '' ?></div>
                         <div class="mo-ta-phu">Hạn trả: <?= date('d/m/Y H:i', strtotime($ls['han_tra'])) ?></div>
                     </div>
                     <?php endforeach; ?>

@@ -85,20 +85,29 @@ function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTr
         ];
     }
 
-    // 2. Xác thực hoặc đăng ký nhanh người mượn
+    // 2. Xác thực hoặc đăng ký nhanh người mượn ngay trên trang lập phiếu mượn
     $nguoiMuonId = (int)($duLieu['nguoi_muon_id'] ?? 0);
     if ($nguoiMuonId <= 0 && !empty($duLieu['dang_ky_nhanh']) && is_array($duLieu['dang_ky_nhanh'])) {
-        // Đăng ký nhanh người mượn mới
-        $resDk = nguoi_muon_luu($duLieu['dang_ky_nhanh']);
-        if (!$resDk['thanh_cong']) {
-            return [
-                'thanh_cong' => false,
-                'loi'        => 'Không thể đăng ký người mượn mới: ' . $resDk['loi'],
-                'ma_phieu'   => '',
-                'id'         => 0,
-            ];
+        $maSoDk = trim((string)($duLieu['dang_ky_nhanh']['ma_so_truong'] ?? ''));
+        if ($maSoDk !== '') {
+            $nmCoSan = nguoi_muon_tim_theo_ma_so_truong($maSoDk);
+            if ($nmCoSan !== null) {
+                $nguoiMuonId = (int)$nmCoSan['id'];
+            }
         }
-        $nguoiMuonId = $resDk['id'];
+        if ($nguoiMuonId <= 0) {
+            // Nếu SĐT bị trùng với người mượn khác hoặc rỗng, vẫn cho phép tạo hồ sơ người mượn mới thuận tiện
+            $resDk = nguoi_muon_luu($duLieu['dang_ky_nhanh']);
+            if (!$resDk['thanh_cong']) {
+                return [
+                    'thanh_cong' => false,
+                    'loi'        => 'Không thể lưu thông tin người mượn: ' . $resDk['loi'],
+                    'ma_phieu'   => '',
+                    'id'         => 0,
+                ];
+            }
+            $nguoiMuonId = $resDk['id'];
+        }
     }
 
     if ($nguoiMuonId <= 0) {
@@ -613,15 +622,16 @@ function tra_tim_phieu_theo_tu_khoa(string $tuKhoa, ?int $phongTrucId = null): ?
         }
     }
 
-    // 3. Tìm theo mã tài sản (Mã thiết bị) đang được mượn
+    // 3. Tìm theo mã tài sản (Mã thiết bị) đang được mượn (hỗ trợ cả mã chuẩn hóa từ tem cũ)
     if ($phieuId === 0) {
+        $maChuan = function_exists('tai_san_chuan_hoa_ma_tim_kiem') ? tai_san_chuan_hoa_ma_tim_kiem($tuKhoa) : strtoupper($tuKhoa);
         $sql3 = "SELECT pm.id 
                  FROM phieu_muon pm
                  JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
                  JOIN tai_san ts ON ctm.tai_san_id = ts.id
-                 WHERE ts.ma_tai_san = ? AND ctm.thoi_gian_tra IS NULL AND pm.trang_thai = ?";
-        $params3 = [$tuKhoa, PHIEU_MUON_DANG_MUON];
-        $types3 = 'ss';
+                 WHERE (ts.ma_tai_san = ? OR ts.ma_tai_san = ? OR ts.ma_qr = ?) AND ctm.thoi_gian_tra IS NULL AND pm.trang_thai = ?";
+        $params3 = [$tuKhoa, $maChuan, $maChuan, PHIEU_MUON_DANG_MUON];
+        $types3 = 'ssss';
         if ($phongTrucId !== null && $phongTrucId > 0) {
             $sql3 .= " AND pm.phong_truc_id = ?";
             $params3[] = $phongTrucId;

@@ -96,7 +96,7 @@ function tai_san_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTrang = 
             LEFT JOIN phong_hoc ph_hientai ON ts.phong_hoc_hien_tai_id = ph_hientai.id
             LEFT JOIN phong_hoc ph_phuhop ON ts.phong_hoc_phu_hop_id = ph_phuhop.id
             $where
-            ORDER BY ts.id DESC
+            ORDER BY ts.id ASC
             LIMIT ?, ?";
 
     $paramsLay = $params;
@@ -147,11 +147,42 @@ function tai_san_tim_theo_id(int $id): ?array {
 }
 
 /**
+ * Chuẩn hóa chuỗi mã quét/nhập tay để nhận diện cả mã mới (MC-01, MC01) lẫn tem QR cũ (QR-D6-MC0001, MC-0001).
+ */
+function tai_san_chuan_hoa_ma_tim_kiem(string $ma): string {
+    $s = strtoupper(trim($ma));
+    if ($s === '') {
+        return '';
+    }
+    // Bỏ tiền tố QR-[PHONG_TRUC]- nếu quét từ tem cũ (VD: QR-D6-MC0001, QR-VIC-LOA0002, QR-MC01)
+    if (preg_match('/^QR-(?:D6-|B2-|VIC-|VICTORY-)?([A-Z]+)-?0*(\d+)$/i', $s, $m)) {
+        $tienTo = strtoupper($m[1]);
+        $so = (int)$m[2];
+        if ($tienTo === 'RM') $tienTo = 'RMC';
+        if ($tienTo === 'OD') $tienTo = 'OCD';
+        return sprintf('%s-%02d', $tienTo, $so);
+    }
+    // Chuẩn hóa dạng MC01, MC-0001, OD-0001, RM-0001 -> MC-01, OCD-01, RMC-01
+    if (preg_match('/^([A-Z]{2,4})[\s_-]*0*(\d{1,4})$/i', $s, $m)) {
+        $tienTo = strtoupper($m[1]);
+        $so = (int)$m[2];
+        if ($tienTo === 'RM') $tienTo = 'RMC';
+        if ($tienTo === 'OD') $tienTo = 'OCD';
+        return sprintf('%s-%02d', $tienTo, $so);
+    }
+    return $s;
+}
+
+/**
  * Tìm tài sản theo mã tài sản (ma_tai_san).
  */
 function tai_san_tim_theo_ma(string $maTaiSan): ?array {
     $db = db();
     $maTaiSan = trim($maTaiSan);
+    if ($maTaiSan === '') {
+        return null;
+    }
+    $maChuan = tai_san_chuan_hoa_ma_tim_kiem($maTaiSan);
     $sql = "SELECT ts.*,
                    lts.ten_loai, lts.ma_loai,
                    pt.ten_phong_truc, pt.ma_phong_truc,
@@ -162,11 +193,11 @@ function tai_san_tim_theo_ma(string $maTaiSan): ?array {
             JOIN phong_truc pt ON ts.phong_truc_id = pt.id
             LEFT JOIN phong_hoc ph_hientai ON ts.phong_hoc_hien_tai_id = ph_hientai.id
             LEFT JOIN phong_hoc ph_phuhop ON ts.phong_hoc_phu_hop_id = ph_phuhop.id
-            WHERE ts.ma_tai_san = ?
+            WHERE ts.ma_tai_san = ? OR ts.ma_tai_san = ? OR ts.ma_qr = ?
             LIMIT 1";
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param('s', $maTaiSan);
+    $stmt->bind_param('sss', $maTaiSan, $maChuan, $maTaiSan);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
     $stmt->close();
@@ -175,11 +206,15 @@ function tai_san_tim_theo_ma(string $maTaiSan): ?array {
 }
 
 /**
- * Tìm tài sản theo mã QR (chuỗi mã vạch quét từ camera).
+ * Tìm tài sản theo mã QR (chuỗi mã vạch quét từ camera - trùng với mã tài sản).
  */
 function tai_san_tim_theo_qr(string $maQr): ?array {
     $db = db();
     $maQr = trim($maQr);
+    if ($maQr === '') {
+        return null;
+    }
+    $maChuan = tai_san_chuan_hoa_ma_tim_kiem($maQr);
     $sql = "SELECT ts.*,
                    lts.ten_loai, lts.ma_loai,
                    pt.ten_phong_truc, pt.ma_phong_truc,
@@ -190,11 +225,11 @@ function tai_san_tim_theo_qr(string $maQr): ?array {
             JOIN phong_truc pt ON ts.phong_truc_id = pt.id
             LEFT JOIN phong_hoc ph_hientai ON ts.phong_hoc_hien_tai_id = ph_hientai.id
             LEFT JOIN phong_hoc ph_phuhop ON ts.phong_hoc_phu_hop_id = ph_phuhop.id
-            WHERE ts.ma_qr = ?
+            WHERE ts.ma_qr = ? OR ts.ma_tai_san = ? OR ts.ma_tai_san = ? OR ts.ma_qr = ?
             LIMIT 1";
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param('s', $maQr);
+    $stmt->bind_param('ssss', $maQr, $maQr, $maChuan, $maChuan);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
     $stmt->close();
@@ -203,20 +238,79 @@ function tai_san_tim_theo_qr(string $maQr): ?array {
 }
 
 /**
- * Sinh mã QR chuẩn duy nhất cho tài sản: QR-[PHONG_TRUC]-[MA_TAI_SAN]
- * Ví dụ: QR-D6-MC0001, QR-B2-RM0002
+ * Tạo chữ viết tắt từ tên tài sản tiếng Việt (ví dụ: "Máy chiếu Epson" -> "MC", "Remote máy chiếu" -> "RMC").
+ */
+function tai_san_viet_tat_ten(string $tenTaiSan): string {
+    $ten = mb_strtolower(trim($tenTaiSan), 'UTF-8');
+    $bangThayThe = [
+        'à'=>'a','á'=>'a','ạ'=>'a','ả'=>'a','ã'=>'a','â'=>'a','ầ'=>'a','ấ'=>'a','ậ'=>'a','ẩ'=>'a','ẫ'=>'a','ă'=>'a','ằ'=>'a','ắ'=>'a','ặ'=>'a','ẳ'=>'a','ẵ'=>'a',
+        'è'=>'e','é'=>'e','ẹ'=>'e','ẻ'=>'e','ẽ'=>'e','ê'=>'e','ề'=>'e','ế'=>'e','ệ'=>'e','ể'=>'e','ễ'=>'e',
+        'ì'=>'i','í'=>'i','ị'=>'i','ỉ'=>'i','ĩ'=>'i',
+        'ò'=>'o','ó'=>'o','ọ'=>'o','ỏ'=>'o','õ'=>'o','ô'=>'o','ồ'=>'o','ố'=>'o','ộ'=>'o','ổ'=>'o','ỗ'=>'o','ơ'=>'o','ờ'=>'o','ớ'=>'o','ợ'=>'o','ở'=>'o','ỡ'=>'o',
+        'ù'=>'u','ú'=>'u','ụ'=>'u','ủ'=>'u','ũ'=>'u','ư'=>'u','ừ'=>'u','ứ'=>'u','ự'=>'u','ử'=>'u','ữ'=>'u',
+        'ỳ'=>'y','ý'=>'y','ỵ'=>'y','ỷ'=>'y','ỹ'=>'y',
+        'đ'=>'d',
+    ];
+    $khongDau = strtr($ten, $bangThayThe);
+
+    // Các cụm từ thiết bị phổ biến để mã thật dễ nhớ
+    if (str_starts_with($khongDau, 'remote may chieu')) return 'RMC';
+    if (str_starts_with($khongDau, 'remote may lanh') || str_starts_with($khongDau, 'remote dieu hoa')) return 'RML';
+    if (str_starts_with($khongDau, 'remote')) return 'RM';
+    if (str_starts_with($khongDau, 'may chieu')) return 'MC';
+    if (str_starts_with($khongDau, 'micro')) return 'MIC';
+    if (str_starts_with($khongDau, 'loa')) return 'LOA';
+    if (str_starts_with($khongDau, 'cap ') || str_starts_with($khongDau, 'day cap')) return 'CAP';
+    if (str_starts_with($khongDau, 'o cam') || str_starts_with($khongDau, 'o dien')) return 'OCD';
+    if (str_starts_with($khongDau, 'but trinh chieu') || str_starts_with($khongDau, 'but chi')) return 'BTC';
+
+    // Mặc định lấy chữ cái đầu của tối đa 3 từ đầu tiên
+    $cacTu = preg_split('/[^a-z0-9]+/', $khongDau, -1, PREG_SPLIT_NO_EMPTY);
+    $vietTat = '';
+    foreach (array_slice($cacTu ?: [], 0, 3) as $tu) {
+        $vietTat .= strtoupper($tu[0]);
+    }
+    return $vietTat !== '' ? $vietTat : 'TS';
+}
+
+/**
+ * Tự động sinh mã tài sản ngắn gọn, dễ nhớ theo tên tài sản: [VIET_TAT]-[SO_THU_TU]
+ * Ví dụ: MC-01, RMC-01, MIC-02
+ */
+function tai_san_tao_ma_tu_ten(string $tenTaiSan): string {
+    $db = db();
+    $tienTo = tai_san_viet_tat_ten($tenTaiSan);
+    $mauTim = $tienTo . '-%';
+
+    $stmt = $db->prepare("SELECT ma_tai_san FROM tai_san WHERE ma_tai_san LIKE ?");
+    $stmt->bind_param('s', $mauTim);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    $soLonNhat = 0;
+    while ($row = $res->fetch_assoc()) {
+        if (preg_match('/^' . preg_quote($tienTo, '/') . '-(\d+)$/i', (string)$row['ma_tai_san'], $m)) {
+            $so = (int)$m[1];
+            if ($so > $soLonNhat) {
+                $soLonNhat = $so;
+            }
+        }
+    }
+    $stmt->close();
+
+    return sprintf('%s-%02d', $tienTo, $soLonNhat + 1);
+}
+
+/**
+ * Sinh mã QR dựa trực tiếp trên mã tài sản (không tạo chuỗi code QR riêng biệt).
+ * Ví dụ: MC-01 -> MC-01, RMC-01 -> RMC-01
  *
  * @param string $maTaiSan Mã tài sản
- * @param string|null $maPhongTruc Mã phòng trực quản lý
- * @return string Mã QR
+ * @param string|null $maPhongTruc Tham số giữ tương thích ngược (không còn ghép vào QR)
+ * @return string Mã QR chính là Mã tài sản chuẩn hóa
  */
 function tai_san_sinh_ma_qr(string $maTaiSan, ?string $maPhongTruc = null): string {
-    $maTsRong = preg_replace('/[^A-Z0-9]/i', '', $maTaiSan);
-    if (!empty($maPhongTruc)) {
-        $maPtRong = preg_replace('/[^A-Z0-9]/i', '', $maPhongTruc);
-        return strtoupper("QR-{$maPtRong}-{$maTsRong}");
-    }
-    return strtoupper("QR-{$maTsRong}");
+    return strtoupper(trim($maTaiSan));
 }
 
 /**
@@ -374,11 +468,11 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
     }
 
     // Kiểm tra dữ liệu bắt buộc
-    if ($maTaiSan === '') {
-        return ['thanh_cong' => false, 'loi' => 'Mã tài sản không được để trống.', 'id' => 0];
-    }
     if ($tenTaiSan === '') {
         return ['thanh_cong' => false, 'loi' => 'Tên tài sản không được để trống.', 'id' => 0];
+    }
+    if ($maTaiSan === '') {
+        $maTaiSan = tai_san_tao_ma_tu_ten($tenTaiSan);
     }
     if ($loaiId <= 0) {
         return ['thanh_cong' => false, 'loi' => 'Vui lòng chọn loại tài sản.', 'id' => 0];
@@ -402,18 +496,10 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
     }
     $checkMa->close();
 
-    // Lấy mã phòng trực để sinh mã QR
-    $stmtPt = $db->prepare("SELECT ma_phong_truc FROM phong_truc WHERE id = ? LIMIT 1");
-    $stmtPt->bind_param('i', $phongTrucId);
-    $stmtPt->execute();
-    $ptRow = $stmtPt->get_result()->fetch_assoc();
-    $stmtPt->close();
-    $maPt = $ptRow['ma_phong_truc'] ?? '';
-
-    // Xử lý mã QR
-    $maQr = trim((string)($duLieu['ma_qr'] ?? ''));
+    // Xử lý mã QR: lấy trực tiếp từ mã tài sản (hoặc mã QR truyền vào nếu có)
+    $maQr = strtoupper(trim((string)($duLieu['ma_qr'] ?? '')));
     if ($maQr === '') {
-        $maQr = tai_san_sinh_ma_qr($maTaiSan, $maPt);
+        $maQr = tai_san_sinh_ma_qr($maTaiSan);
     }
 
     // Kiểm tra trùng mã QR

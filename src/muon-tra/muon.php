@@ -45,16 +45,43 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $mucDich = (string)($_POST['muc_dich_su_dung'] ?? '');
         $dsTsRaw = $_POST['tai_san_ids'] ?? [];
 
-        // Hỗ trợ đăng ký nhanh người mượn nếu được yêu cầu
+        // Tự động nhận diện hoặc tạo mới người mượn trực tiếp từ thông tin khai báo trên trang mượn
+        $maSoNhap = trim((string)($_POST['moi_ma_so_truong'] ?? ''));
+        $hoTenNhap = trim((string)($_POST['moi_ho_ten'] ?? ''));
+        $loaiNhap = trim((string)($_POST['moi_loai_nguoi_muon'] ?? 'SINH_VIEN'));
+        $lopNhap = trim((string)($_POST['moi_lop_don_vi'] ?? ''));
+        $sdtNhap = trim((string)($_POST['moi_so_dien_thoai'] ?? ''));
+
         $dangKyNhanh = null;
-        if (!empty($_POST['tao_nguoi_muon_moi']) && $_POST['tao_nguoi_muon_moi'] === '1') {
-            $dangKyNhanh = [
-                'ma_so_truong'    => (string)($_POST['moi_ma_so_truong'] ?? ''),
-                'ho_ten'          => (string)($_POST['moi_ho_ten'] ?? ''),
-                'loai_nguoi_muon' => (string)($_POST['moi_loai_nguoi_muon'] ?? 'SINH_VIEN'),
-                'lop_don_vi'      => (string)($_POST['moi_lop_don_vi'] ?? ''),
-                'so_dien_thoai'   => (string)($_POST['moi_so_dien_thoai'] ?? ''),
-            ];
+        if ($maSoNhap !== '' || $hoTenNhap !== '') {
+            // Kiểm tra nếu mã số trường đã có trong CSDL thì dùng luôn hồ sơ đó (cập nhật thông tin mới nếu có thay đổi)
+            if ($maSoNhap !== '') {
+                $nmTonTai = nguoi_muon_tim_theo_ma_so_truong($maSoNhap);
+                if ($nmTonTai !== null) {
+                    $nguoiMuonId = (int)$nmTonTai['id'];
+                    // Cập nhật bổ sung thông tin nếu người dùng có nhập trên form
+                    nguoi_muon_luu([
+                        'ma_nguoi_muon'   => $nmTonTai['ma_nguoi_muon'],
+                        'ma_so_truong'    => $maSoNhap,
+                        'ho_ten'          => $hoTenNhap !== '' ? $hoTenNhap : $nmTonTai['ho_ten'],
+                        'loai_nguoi_muon' => in_array($loaiNhap, ['SINH_VIEN', 'GIANG_VIEN'], true) ? $loaiNhap : $nmTonTai['loai_nguoi_muon'],
+                        'lop_don_vi'      => $lopNhap !== '' ? $lopNhap : (string)($nmTonTai['lop_don_vi'] ?? ''),
+                        'so_dien_thoai'   => $sdtNhap !== '' ? $sdtNhap : (string)($nmTonTai['so_dien_thoai'] ?? ''),
+                    ], $nguoiMuonId);
+                } else {
+                    // Mã số mới hoàn toàn -> Đặt lại nguoiMuonId = 0 để tạo hồ sơ người mượn mới
+                    $nguoiMuonId = 0;
+                }
+            }
+            if ($nguoiMuonId <= 0) {
+                $dangKyNhanh = [
+                    'ma_so_truong'    => $maSoNhap,
+                    'ho_ten'          => $hoTenNhap,
+                    'loai_nguoi_muon' => in_array($loaiNhap, ['SINH_VIEN', 'GIANG_VIEN'], true) ? $loaiNhap : 'SINH_VIEN',
+                    'lop_don_vi'      => $lopNhap,
+                    'so_dien_thoai'   => $sdtNhap,
+                ];
+            }
         }
 
         $ketQua = muon_tao_phieu([

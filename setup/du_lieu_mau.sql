@@ -63,7 +63,7 @@ INSERT INTO `loai_tai_san` (`id`, `ma_loai`, `ten_loai`, `mo_ta`, `dang_hoat_don
 (3, 'MIC', 'Micro trợ giảng không dây',  'Bộ micro không dây cầm tay Shure, Soundking', 1),
 (4, 'LOA', 'Loa kéo di động',           'Loa trợ giảng công suất 40W - 100W',          1),
 (5, 'CAP', 'Cáp chuyển đổi / Cáp nối',   'Cáp HDMI 5m, Type-C sang HDMI, VGA',          1),
-(6, 'OD',  'Ổ cắm điện di động',         'Ổ cắm cuộn dài 5m - 10m kèm chống giật',      1);
+(6, 'OCD', 'Ổ cắm điện di động',         'Ổ cắm cuộn dài 5m - 10m kèm chống giật',      1);
 
 -- ---------------------------------------------------------------------
 -- 4. DỮ LIỆU HỒ SƠ NGƯỜI MƯỢN (Sinh viên & Giảng viên)
@@ -76,7 +76,7 @@ INSERT INTO `nguoi_muon` (`id`, `ma_nguoi_muon`, `ma_so_truong`, `ho_ten`, `loai
 (5, 'NM-GV002',     'GV002',     'ThS. Lê Hoàng Nam',       'GIANG_VIEN', 'Khoa Kỹ thuật', '0988445566');
 
 -- ---------------------------------------------------------------------
--- 5. DỮ LIỆU TÀI SẢN MẪU (Kèm hãng sản xuất, model và phạm vi tương thích)
+-- 5. DỮ LIỆU TÀI SẢN MẪU (Mã viết tắt ngắn gọn dễ nhớ, Mã QR = Mã tài sản)
 -- ---------------------------------------------------------------------
 INSERT INTO `tai_san` (
     `id`, `ma_tai_san`, `ma_qr`, `ten_tai_san`, `loai_tai_san_id`, `phong_truc_id`,
@@ -85,49 +85,55 @@ INSERT INTO `tai_san` (
     `pham_vi_tuong_thich`, `phong_tuong_thich`
 ) VALUES
 -- Tài sản thuộc phòng trực D6 (id: 1)
-(1,  'MC-0001',  'QR-D6-MC0001',  'Máy chiếu Epson EB-X06',           1, 1, 
+(1,  'MC-01',  'MC-01',  'Máy chiếu Epson EB-X06',            1, 1, 
      'Epson', 'EB-X06', NULL, NULL, 'TOT', 'SAN_SANG', '2025-01-15', 'Máy chiếu sáng 3600 Ansi Lumens', 'LINH_HOAT', NULL),
 
-(2,  'MC-0002',  'QR-D6-MC0002',  'Máy chiếu Panasonic PT-LB386',     1, 1, 
+(2,  'MC-02',  'MC-02',  'Máy chiếu Panasonic PT-LB386',      1, 1, 
      'Panasonic', 'PT-LB386', NULL, NULL, 'TOT', 'SAN_SANG', '2025-01-20', 'Độ phân giải XGA, cổng HDMI', 'LINH_HOAT', NULL),
 
-(3,  'RM-0001',  'QR-D6-RM0001',  'Remote máy chiếu Panasonic',       2, 1, 
+(3,  'RMC-01', 'RMC-01', 'Remote máy chiếu Panasonic',        2, 1, 
      'Panasonic', 'PT-LB386', 1, NULL, 'TOT', 'SAN_SANG', '2025-02-01', 'Tem dán B31.101, dùng chung phòng có máy chiếu Panasonic', 'THEO_THIET_BI', NULL),
 
-(4,  'MIC-0001', 'QR-D6-MIC0001', 'Micro không dây Shure SVX',        3, 1, 
+(4,  'RML-01', 'RML-01', 'Remote máy lạnh Daikin Inverter',   2, 1, 
+     'Daikin', 'FTKB25W', 1, NULL, 'TOT', 'SAN_SANG', '2025-02-05', 'Dùng cho các phòng học lắp máy lạnh Daikin', 'THEO_THIET_BI', NULL),
+
+(5,  'MIC-01', 'MIC-01', 'Micro không dây Shure SVX',         3, 1, 
      'Shure', 'SVX24', 5, NULL, 'TOT', 'SAN_SANG', '2025-02-10', 'Bộ thu phát sóng tương thích dàn âm thanh Shure', 'THEO_THIET_BI', NULL),
 
-(5,  'LOA-0001', 'QR-D6-LOA0001', 'Loa trợ giảng di động Aker MR2500', 4, 1, 
+(6,  'LOA-01', 'LOA-01', 'Loa trợ giảng di động Aker MR2500', 4, 1, 
      'Aker', 'MR2500', NULL, NULL, 'TOT', 'SAN_SANG', '2025-02-15', 'Loa công suất 40W kèm micro cài tai', 'LINH_HOAT', NULL),
 
-(6,  'OD-0001',  'QR-D6-OD0001',  'Ổ cắm điện Lioa cuộn 5m',          6, 1, 
+(7,  'OCD-01', 'OCD-01', 'Ổ cắm điện Lioa cuộn 5m',           6, 1, 
      'Lioa', '6OF5M', NULL, NULL, 'TOT', 'SAN_SANG', '2025-02-20', 'Ổ cắm 6 lỗ, có aptomat ngắt', 'LINH_HOAT', NULL),
 
 -- Tài sản thuộc phòng trực B2 (id: 2)
-(7,  'MC-0003',  'QR-B2-MC0003',  'Máy chiếu Sony VPL-EX435',         1, 2, 
+(8,  'MC-03',  'MC-03',  'Máy chiếu Sony VPL-EX435',          1, 2, 
      'Sony', 'VPL-EX435', NULL, NULL, 'TOT', 'SAN_SANG', '2025-03-01', 'Máy chiếu độ sáng 3200 Lumens', 'LINH_HOAT', NULL),
 
-(8,  'RM-0002',  'QR-B2-RM0002',  'Remote máy chiếu Sony',            2, 2, 
+(9,  'RMC-02', 'RMC-02', 'Remote máy chiếu Sony',             2, 2, 
      'Sony', 'VPL-EX435', 6, NULL, 'TOT', 'SAN_SANG', '2025-03-05', 'Tem dán D6.201, dùng cho phòng có máy chiếu Sony', 'THEO_THIET_BI', NULL),
 
-(9,  'MIC-0002', 'QR-B2-MIC0002', 'Micro không dây Soundking SK-12',  3, 2, 
+(10, 'MIC-02', 'MIC-02', 'Micro không dây Soundking SK-12',   3, 2, 
      'Soundking', 'SK-12', 3, NULL, 'TOT', 'SAN_SANG', '2025-03-10', 'Bộ thu 2 kênh, tương thích âm thanh Soundking (B31.103/B71.101)', 'THEO_THIET_BI', NULL),
 
-(10, 'CAP-0001', 'QR-B2-CAP0001', 'Cáp HDMI Ugreen 5m dẹt',           5, 2, 
+(11, 'CAP-01', 'CAP-01', 'Cáp HDMI Ugreen 5m dẹt',            5, 2, 
      'Ugreen', 'HDMI-5M', NULL, NULL, 'TOT', 'SAN_SANG', '2025-03-12', 'Chuẩn HDMI 2.0 4K@60Hz', 'LINH_HOAT', NULL),
 
-(11, 'OD-0002',  'QR-B2-OD0002',  'Ổ cắm điện đa năng Comet 5m',      6, 2, 
+(12, 'OCD-02', 'OCD-02', 'Ổ cắm điện đa năng Comet 5m',       6, 2, 
      'Comet', '4L5M', NULL, NULL, 'TOT', 'SAN_SANG', '2025-03-15', 'Ổ cắm 4 lỗ 3 chấu', 'LINH_HOAT', NULL),
 
 -- Tài sản thuộc phòng trực Victory (id: 3)
-(12, 'MC-0004',  'QR-VIC-MC0004', 'Máy chiếu hội thảo Epson EB-2250U', 1, 3, 
+(13, 'MC-04',  'MC-04',  'Máy chiếu hội thảo Epson EB-2250U', 1, 3, 
      'Epson', 'EB-2250U', NULL, NULL, 'TOT', 'SAN_SANG', '2025-04-01', 'Máy chiếu độ phân giải cao hội thảo', 'LINH_HOAT', NULL),
 
-(13, 'RM-0003',  'QR-VIC-RM0003', 'Remote máy chiếu Epson',           2, 3, 
+(14, 'RMC-03', 'RMC-03', 'Remote máy chiếu Epson',            2, 3, 
      'Epson', 'EB-2250U', 4, NULL, 'TOT', 'SAN_SANG', '2025-04-05', 'Tem dán B71.101, dùng cho phòng có máy chiếu Epson', 'THEO_THIET_BI', NULL),
 
-(14, 'LOA-0002', 'QR-VIC-LOA0002', 'Loa kéo Soundmax M-22 300W',       4, 3, 
+(15, 'RML-02', 'RML-02', 'Remote máy lạnh Panasonic',         2, 3, 
+     'Panasonic', 'CS-PU9', 3, NULL, 'TOT', 'SAN_SANG', '2025-04-08', 'Dùng cho các phòng học lắp máy lạnh Panasonic', 'THEO_THIET_BI', NULL),
+
+(16, 'LOA-02', 'LOA-02', 'Loa kéo Soundmax M-22 300W',        4, 3, 
      'Soundmax', 'M-22', NULL, NULL, 'TOT', 'SAN_SANG', '2025-04-10', 'Loa công suất lớn có bánh xe kéo', 'LINH_HOAT', NULL),
 
-(15, 'CAP-0002', 'QR-VIC-CAP0002', 'Cáp chuyển Type-C sang HDMI Ugreen', 5, 3, 
+(17, 'CAP-02', 'CAP-02', 'Cáp chuyển Type-C sang HDMI Ugreen', 5, 3, 
      'Ugreen', 'TYPEC-HDMI', NULL, NULL, 'TOT', 'SAN_SANG', '2025-04-15', 'Hỗ trợ laptop đời mới, Macbook', 'LINH_HOAT', NULL);

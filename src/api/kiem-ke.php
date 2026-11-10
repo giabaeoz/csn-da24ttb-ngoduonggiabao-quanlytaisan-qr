@@ -18,30 +18,33 @@ $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 $hanhDong = trim((string)($_REQUEST['hanh_dong'] ?? 'tra_cuu'));
 
 if ($hanhDong === 'tra_cuu') {
-    $maQr = trim((string)($_GET['ma_qr'] ?? ''));
+    $maQr = trim((string)($_GET['ma_qr'] ?? $_GET['ma'] ?? $_GET['code'] ?? $_GET['tu_khoa'] ?? ''));
     $maTaiSan = trim((string)($_GET['ma_tai_san'] ?? ''));
     $dotId = doc_so_nguyen('dot_kiem_ke_id', 0, $_GET);
 
     if ($dotId <= 0) {
-        phan_hoi_json(['thanh_cong' => false, 'loi' => 'Thiếu ID đợt kiểm kê.'], 400);
+        phan_hoi_json(['thanh_cong' => false, 'loi' => 'Thiếu ID đợt kiểm kê.', 'thong_diep' => 'Thiếu ID đợt kiểm kê.'], 400);
     }
 
     $taiSan = null;
     if ($maQr !== '') {
-        $taiSan = tai_san_tim_theo_qr($maQr);
+        $taiSan = tai_san_tim_theo_qr($maQr) ?? tai_san_tim_theo_ma($maQr);
     } elseif ($maTaiSan !== '') {
         $taiSan = tai_san_tim_theo_ma($maTaiSan);
     }
 
     if ($taiSan === null) {
-        phan_hoi_json(['thanh_cong' => false, 'loi' => 'Không tìm thấy thiết bị trong hệ thống.'], 404);
+        phan_hoi_json(['thanh_cong' => false, 'loi' => 'Không tìm thấy thiết bị trong hệ thống.', 'thong_diep' => 'Không tìm thấy thiết bị trong hệ thống.'], 404);
     }
 
     // Tìm bản ghi chi tiết kiểm kê của tài sản này trong đợt
     $db = db();
-    $stmt = $db->prepare("SELECT ct.*, ps.ma_phong AS ma_phong_so_sach, ps.ten_phong AS ten_phong_so_sach,
+    $stmt = $db->prepare("SELECT ct.*, ct.ket_qua AS ket_qua_kiem_ke,
+                                 ts.ma_tai_san, ts.ma_qr, ts.ten_tai_san,
+                                 ps.ma_phong AS ma_phong_so_sach, ps.ten_phong AS ten_phong_so_sach,
                                  pt.ma_phong AS ma_phong_thuc_te, pt.ten_phong AS ten_phong_thuc_te
                           FROM chi_tiet_kiem_ke ct
+                          JOIN tai_san ts ON ct.tai_san_id = ts.id
                           LEFT JOIN phong_hoc ps ON ct.phong_hoc_so_sach_id = ps.id
                           LEFT JOIN phong_hoc pt ON ct.phong_hoc_thuc_te_id = pt.id
                           WHERE ct.dot_kiem_ke_id = ? AND ct.tai_san_id = ? LIMIT 1");
@@ -51,10 +54,27 @@ if ($hanhDong === 'tra_cuu') {
     $stmt->close();
 
     if (!$chiTiet) {
-        phan_hoi_json([
-            'thanh_cong' => false,
-            'loi'        => "Thiết bị [{$taiSan['ma_tai_san']}] không thuộc phạm vi đợt kiểm kê của phòng trực này.",
-        ], 404);
+        // Tự động bổ sung thiết bị hợp lệ vào đợt kiểm kê hiện tại để đối chiếu ngay khi quét QR
+        $ttSoSach = ($taiSan['trang_thai'] === 'DANG_MUON') ? 'DANG_MUON' : ($taiSan['trang_thai'] ?? 'SAN_SANG');
+        $phSoSach = !empty($taiSan['phong_hoc_hien_tai_id']) ? (int)$taiSan['phong_hoc_hien_tai_id'] : null;
+        $stmtIns = $db->prepare("INSERT INTO chi_tiet_kiem_ke (dot_kiem_ke_id, tai_san_id, tinh_trang_so_sach, trang_thai_so_sach, phong_hoc_so_sach_id) VALUES (?, ?, ?, ?, ?)");
+        $stmtIns->bind_param('iissi', $dotId, $taiSan['id'], $taiSan['tinh_trang'], $ttSoSach, $phSoSach);
+        $stmtIns->execute();
+        $stmtIns->close();
+
+        $stmt2 = $db->prepare("SELECT ct.*, ct.ket_qua AS ket_qua_kiem_ke,
+                                     ts.ma_tai_san, ts.ma_qr, ts.ten_tai_san,
+                                     ps.ma_phong AS ma_phong_so_sach, ps.ten_phong AS ten_phong_so_sach,
+                                     pt.ma_phong AS ma_phong_thuc_te, pt.ten_phong AS ten_phong_thuc_te
+                              FROM chi_tiet_kiem_ke ct
+                              JOIN tai_san ts ON ct.tai_san_id = ts.id
+                              LEFT JOIN phong_hoc ps ON ct.phong_hoc_so_sach_id = ps.id
+                              LEFT JOIN phong_hoc pt ON ct.phong_hoc_thuc_te_id = pt.id
+                              WHERE ct.dot_kiem_ke_id = ? AND ct.tai_san_id = ? LIMIT 1");
+        $stmt2->bind_param('ii', $dotId, $taiSan['id']);
+        $stmt2->execute();
+        $chiTiet = $stmt2->get_result()->fetch_assoc();
+        $stmt2->close();
     }
 
     phan_hoi_json([

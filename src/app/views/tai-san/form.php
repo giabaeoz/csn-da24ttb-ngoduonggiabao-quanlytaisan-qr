@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Giao diện Biểu mẫu Thêm mới / Chỉnh sửa Tài sản - Chuẩn Design System
+ * Giao diện Biểu mẫu Thêm mới / Chỉnh sửa Tài sản - Mã QR sinh trực tiếp từ Mã tài sản
  */
 
 declare(strict_types=1);
@@ -21,205 +22,216 @@ if (!defined('APP_KHOI_DONG')) {
 
 $tieuDeTrang = $laThemMoi ? 'Thêm thiết bị mới' : 'Chỉnh sửa thông tin thiết bị';
 require dirname(__DIR__) . '/layout/dau-trang.php';
+
+// Lấy danh sách mã tài sản hiện có để gợi ý số thứ tự tiếp theo chính xác
+$dsMaHienCo = [];
+try {
+    $resMa = db()->query("SELECT ma_tai_san FROM tai_san");
+    if ($resMa) {
+        while ($r = $resMa->fetch_assoc()) {
+            $dsMaHienCo[] = strtoupper((string)$r['ma_tai_san']);
+        }
+    }
+} catch (Throwable $e) {
+    $dsMaHienCo = [];
+}
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">
             <?= $laThemMoi ? 'Thêm thiết bị mới' : 'Chỉnh sửa thông tin thiết bị' ?>
         </h1>
-        <div class="mo-ta-phu">
-            <?= $laThemMoi ? 'Đăng ký tài sản vào hệ thống, thiết lập độ tương thích và sinh mã QR tự động.' : 'Cập nhật thông tin kỹ thuật, nhãn vị trí kệ và phạm vi tương thích.' ?>
-        </div>
+        <div class="mo-ta-phu">Mã tài sản được tạo ngắn gọn từ tên thiết bị và dùng trực tiếp để sinh mã QR.</div>
     </div>
     <div>
         <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
-            Quay lại danh sách
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại danh sách</span>
         </a>
     </div>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-xl-10">
+<div class="khung-bieu-mau">
 
-        <?php if (!empty($thongBaoLoi)): ?>
+    <?php if (!empty($thongBaoLoi)): ?>
         <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
-            <strong>Lỗi thao tác:</strong> <?= e($thongBaoLoi) ?>
+            <?= icon('alert-circle', 'bieu-tuong-md') ?>
+            <div class="flex-grow-1"><strong>Lỗi thao tác:</strong> <?= e($thongBaoLoi) ?></div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <?php endif; ?>
+    <?php endif; ?>
 
-        <form action="<?= $laThemMoi ? url('tai-san/them.php') : url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" method="POST" class="the-noi-dung p-0">
-            <?= csrf_field() ?>
+    <form action="<?= $laThemMoi ? url('tai-san/them.php') : url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" method="POST" class="the-noi-dung p-0">
+        <?= csrf_field() ?>
 
-            <div class="the-noi-dung-dau">
-                <h3 class="tieu-de-khoi mb-0">Thông tin cơ bản & định danh thiết bị</h3>
-            </div>
+        <div class="the-noi-dung-dau">
+            <h3 class="tieu-de-khoi mb-0">Thông tin cơ bản & mã QR thiết bị</h3>
+        </div>
 
-            <div class="the-noi-dung-than p-4">
-                <div class="row g-3 mb-3">
-                    <div class="col-12 col-md-4">
-                        <label for="ma_tai_san" class="nhan-truong">
-                            Mã tài sản <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="o-nhap text-uppercase font-monospace fw-bold" id="ma_tai_san" name="ma_tai_san" 
-                               value="<?= e($taiSan['ma_tai_san'] ?? '') ?>" 
-                               placeholder="Ví dụ: MC-0001, RM-0001" required autofocus>
-                        <div class="mo-ta-phu mt-1">Mã định danh viết tắt theo chủng loại.</div>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label for="ma_qr" class="nhan-truong">
-                            Mã QR định danh
-                        </label>
-                        <input type="text" class="o-nhap font-monospace" id="ma_qr" name="ma_qr" 
-                               value="<?= e($taiSan['ma_qr'] ?? '') ?>" 
-                               placeholder="Tự động sinh (Ví dụ: QR-D6-MC0001)">
-                        <div class="mo-ta-phu mt-1 mb-2">Để trống để hệ thống tự động sinh theo mẫu chuẩn.</div>
-
-                        <!-- Khung xem trước mã QR tự động -->
-                        <div class="p-2 border rounded bg-light d-flex align-items-center gap-3">
-                            <div id="preview_qr_box" class="bg-white p-1 border flex-shrink-0" style="width: 84px; height: 84px; display: flex; align-items: center; justify-content: center;">
-                                <span class="text-muted small" style="font-size: 10px; text-align: center;">Chưa có QR</span>
-                            </div>
-                            <div class="small overflow-hidden">
-                                <div class="fw-semibold text-secondary" style="font-size: 11px;">Xem trước tem mã QR:</div>
-                                <div id="preview_qr_val" class="font-monospace text-primary fw-bold" style="word-break: break-all; font-size: 12px;">---</div>
-                            </div>
+        <div class="the-noi-dung-than p-4">
+            <div class="row g-3 mb-3 align-items-start">
+                <div class="col-12 col-md-8">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="ten_tai_san" class="nhan-truong">
+                                Tên thiết bị <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="o-nhap" id="ten_tai_san" name="ten_tai_san"
+                                value="<?= e($taiSan['ten_tai_san'] ?? '') ?>"
+                                placeholder="Ví dụ: Máy chiếu Epson EB-X06, Remote máy chiếu Sony, Micro Shure..." required <?= $laThemMoi ? 'autofocus' : '' ?>>
                         </div>
-                    </div>
 
-                    <div class="col-12 col-md-4">
-                        <label for="loai_tai_san_id" class="nhan-truong">
-                            Chủng loại thiết bị <span class="text-danger">*</span>
-                        </label>
-                        <select class="o-nhap" id="loai_tai_san_id" name="loai_tai_san_id" required>
-                            <option value="">-- Chọn chủng loại --</option>
-                            <?php foreach ($danhSachLoai as $loai): ?>
-                            <option value="<?= (int)$loai['id'] ?>" <?= ((int)($taiSan['loai_tai_san_id'] ?? 0) === (int)$loai['id']) ? 'selected' : '' ?>>
-                                <?= e($loai['ten_loai']) ?> (<?= e($loai['ma_loai']) ?>)
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <div class="col-12 col-sm-6">
+                            <label for="ma_tai_san" class="nhan-truong">
+                                Mã tài sản (Dùng tạo QR) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control text-uppercase font-monospace fw-bold" id="ma_tai_san" name="ma_tai_san"
+                                    value="<?= e($taiSan['ma_tai_san'] ?? '') ?>"
+                                    placeholder="Ví dụ: MC-01, RMC-01" required>
+                                <button type="button" class="btn btn-phu" onclick="goiYMaTuTen(true)" title="Tự động đặt mã viết tắt từ tên thiết bị">
+                                    <span>Gợi ý mã</span>
+                                </button>
+                            </div>
+                            <div class="mo-ta-phu mt-1">Viết tắt tên thiết bị + số thứ tự (VD: MC-01, RMC-01, MIC-01).</div>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                            <label for="loai_tai_san_id" class="nhan-truong">
+                                Nhóm tài sản <span class="text-danger">*</span>
+                            </label>
+                            <select class="o-nhap" id="loai_tai_san_id" name="loai_tai_san_id" required>
+                                <option value="">-- Chọn nhóm tài sản --</option>
+                                <?php foreach ($danhSachLoai as $loai): ?>
+                                    <option value="<?= (int)$loai['id'] ?>" <?= ((int)($taiSan['loai_tai_san_id'] ?? 0) === (int)$loai['id']) ? 'selected' : '' ?>>
+                                        <?= e($loai['ten_loai']) ?> (<?= e($loai['ma_loai']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row g-3 mb-3">
-                    <div class="col-12 col-md-8">
-                        <label for="ten_tai_san" class="nhan-truong">
-                            Tên thiết bị <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="o-nhap" id="ten_tai_san" name="ten_tai_san" 
-                               value="<?= e($taiSan['ten_tai_san'] ?? '') ?>" 
-                               placeholder="Ví dụ: Máy chiếu Epson EB-X06, Remote máy lạnh Daikin" required>
+                <!-- Khung xem trước mã QR trực tiếp từ Mã tài sản -->
+                <div class="col-12 col-md-4">
+                    <label class="nhan-truong">Mã QR sinh từ Mã tài sản</label>
+                    <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
+                        <div id="preview_qr_box" class="bg-white p-1 border flex-shrink-0 khung-qr-84 d-flex align-items-center justify-content-center">
+                            <span class="text-muted small chu-nho-10">Chưa có mã</span>
+                        </div>
+                        <div class="small overflow-hidden">
+                            <div class="text-secondary chu-nho-11">Mã nhúng trong QR:</div>
+                            <div id="preview_qr_val" class="font-monospace text-primary fw-bold fs-6 mt-1">---</div>
+                            <div class="text-muted chu-nho-11 mt-1">Quét QR sẽ nhận diện trực tiếp theo mã tài sản này.</div>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-12 col-md-4">
-                        <label for="phong_truc_id" class="nhan-truong">
-                            Phòng trực quản lý <span class="text-danger">*</span>
-                        </label>
-                        <select class="o-nhap" id="phong_truc_id" name="phong_truc_id" required>
-                            <option value="">-- Chọn bàn trực --</option>
-                            <?php foreach ($danhSachPhongTruc as $pt): ?>
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label for="phong_truc_id" class="nhan-truong">
+                        Phòng trực quản lý <span class="text-danger">*</span>
+                    </label>
+                    <select class="o-nhap" id="phong_truc_id" name="phong_truc_id" required>
+                        <option value="">-- Chọn bàn trực --</option>
+                        <?php foreach ($danhSachPhongTruc as $pt): ?>
                             <option value="<?= (int)$pt['id'] ?>" <?= ((int)($taiSan['phong_truc_id'] ?? 0) === (int)$pt['id']) ? 'selected' : '' ?>>
                                 <?= e($pt['ten_phong_truc']) ?> (<?= e($pt['ma_phong_truc']) ?>)
                             </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label for="ngay_dua_vao_su_dung" class="nhan-truong">
+                        Ngày đưa vào sử dụng
+                    </label>
+                    <input type="date" class="o-nhap" id="ngay_dua_vao_su_dung" name="ngay_dua_vao_su_dung"
+                        value="<?= e($taiSan['ngay_dua_vao_su_dung'] ?? date('Y-m-d')) ?>">
+                </div>
+            </div>
+
+            <!-- Khu vực thông số hãng, model & độ tương thích -->
+            <div class="the-noi-dung p-3 mb-3 bg-light">
+                <h4 class="tieu-de-khoi mb-2">Thông số kỹ thuật & phạm vi sử dụng</h4>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label for="hang_san_xuat" class="nhan-truong">
+                            Hãng sản xuất
+                        </label>
+                        <input type="text" class="o-nhap bg-white" id="hang_san_xuat" name="hang_san_xuat"
+                            value="<?= e($taiSan['hang_san_xuat'] ?? '') ?>"
+                            placeholder="Ví dụ: Epson, Panasonic, Sony, Daikin, Shure">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="model" class="nhan-truong">
+                            Model kỹ thuật
+                        </label>
+                        <input type="text" class="o-nhap bg-white" id="model" name="model"
+                            value="<?= e($taiSan['model'] ?? '') ?>"
+                            placeholder="Ví dụ: EB-X06, PT-LB386, VPL-EX435, FTKB25W">
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label for="pham_vi_tuong_thich" class="nhan-truong">
+                            Phạm vi tương thích phòng học
+                        </label>
+                        <select class="o-nhap bg-white" id="pham_vi_tuong_thich" name="pham_vi_tuong_thich" onchange="doiPhamViTuongThich(this.value)">
+                            <option value="LINH_HOAT" <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'LINH_HOAT' ? 'selected' : '' ?>>
+                                Linh hoạt (Dùng chung cho mọi phòng học)
+                            </option>
+                            <option value="THEO_THIET_BI" <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_THIET_BI' ? 'selected' : '' ?>>
+                                Theo Hãng/Model thiết bị phòng (Khớp Daikin, Sony...)
+                            </option>
+                            <option value="THEO_PHONG" <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? 'selected' : '' ?>>
+                                Theo danh sách phòng chỉ định
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="phong_hoc_phu_hop_id" class="nhan-truong">
+                            Nhãn phòng học gợi ý trên kệ
+                        </label>
+                        <select class="o-nhap bg-white" id="phong_hoc_phu_hop_id" name="phong_hoc_phu_hop_id">
+                            <option value="">-- Không gán nhãn cụ thể (Linh hoạt) --</option>
+                            <?php foreach ($danhSachPhongHoc as $ph): ?>
+                                <option value="<?= (int)$ph['id'] ?>" <?= ((int)($taiSan['phong_hoc_phu_hop_id'] ?? 0) === (int)$ph['id']) ? 'selected' : '' ?>>
+                                    <?= e($ph['ma_phong']) ?> - <?= e($ph['ten_phong']) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
 
-                <!-- Khu vực thông số hãng, model & độ tương thích -->
-                <div class="the-noi-dung p-3 mb-3 bg-light">
-                    <h4 class="tieu-de-khoi mb-1">Thông số kỹ thuật & độ tương thích</h4>
-                    <p class="mo-ta-phu mb-3">
-                        Hệ thống đối chiếu Hãng/Model thiết bị với cấu hình cố định trong phòng học khi nhân viên quét mã.
-                    </p>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-md-6">
-                            <label for="hang_san_xuat" class="nhan-truong">
-                                Hãng sản xuất
-                            </label>
-                            <input type="text" class="o-nhap bg-white" id="hang_san_xuat" name="hang_san_xuat" 
-                                   value="<?= e($taiSan['hang_san_xuat'] ?? '') ?>" 
-                                   placeholder="Ví dụ: Daikin, Panasonic, Sony, Epson, Soundking, Shure">
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="model" class="nhan-truong">
-                                Model kỹ thuật
-                            </label>
-                            <input type="text" class="o-nhap bg-white" id="model" name="model" 
-                                   value="<?= e($taiSan['model'] ?? '') ?>" 
-                                   placeholder="Ví dụ: FTKB25W, PT-LB386, EB-X06, SK-12">
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mb-2">
-                        <div class="col-12 col-md-6">
-                            <label for="pham_vi_tuong_thich" class="nhan-truong">
-                                Phạm vi tương thích phòng học <span class="text-danger">*</span>
-                            </label>
-                            <select class="o-nhap bg-white" id="pham_vi_tuong_thich" name="pham_vi_tuong_thich" onchange="doiPhamViTuongThich(this.value)">
-                                <option value="LINH_HOAT" <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'LINH_HOAT' ? 'selected' : '' ?>>
-                                    Linh hoạt (Dùng chung cho mọi phòng học)
-                                </option>
-                                <option value="THEO_THIET_BI" <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_THIET_BI' ? 'selected' : '' ?>>
-                                    Theo Hãng/Model thiết bị phòng (Khớp Daikin, Sony...)
-                                </option>
-                                <option value="THEO_PHONG" <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? 'selected' : '' ?>>
-                                    Theo danh sách phòng chỉ định
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="phong_hoc_phu_hop_id" class="nhan-truong">
-                                Nhãn phòng học gợi ý dán trên tem
-                            </label>
-                            <select class="o-nhap bg-white" id="phong_hoc_phu_hop_id" name="phong_hoc_phu_hop_id">
-                                <option value="">-- Không gán nhãn cụ thể (Linh hoạt) --</option>
-                                <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                <option value="<?= (int)$ph['id'] ?>" <?= ((int)($taiSan['phong_hoc_phu_hop_id'] ?? 0) === (int)$ph['id']) ? 'selected' : '' ?>>
-                                    <?= e($ph['ma_phong']) ?> - <?= e($ph['ten_phong']) ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="mo-ta-phu mt-1">Chỉ nhằm mục đích sắp xếp vị trí ngăn kệ trên giá tủ để lấy nhanh, không khóa cứng phòng.</div>
-                        </div>
-                    </div>
-
-                    <!-- Danh sách phòng tương thích nếu chọn THEO_PHONG -->
-                    <div id="khuVucTheoPhong" class="mt-2 <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? '' : 'd-none' ?>">
-                        <label class="nhan-truong">
-                            Danh sách mã phòng học được phép mượn (phân cách bằng dấu phẩy)
-                        </label>
-                        <?php
-                            $cacPhongStr = '';
-                            if (!empty($taiSan['phong_tuong_thich'])) {
-                                $arr = is_string($taiSan['phong_tuong_thich']) ? json_decode($taiSan['phong_tuong_thich'], true) : $taiSan['phong_tuong_thich'];
-                                if (is_array($arr)) {
-                                    $cacPhongStr = implode(', ', $arr);
-                                }
-                            }
-                        ?>
-                        <input type="text" class="o-nhap bg-white" name="phong_tuong_thich" value="<?= e($cacPhongStr) ?>" placeholder="Ví dụ: B31.101, B31.102, B71.101">
-                    </div>
+                <!-- Danh sách phòng tương thích nếu chọn THEO_PHONG -->
+                <div id="khuVucTheoPhong" class="mt-3 <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? '' : 'd-none' ?>">
+                    <label class="nhan-truong">
+                        Danh sách mã phòng học được phép mượn (phân cách bằng dấu phẩy)
+                    </label>
+                    <?php
+                    $cacPhongStr = '';
+                    if (!empty($taiSan['phong_tuong_thich'])) {
+                        $arr = is_string($taiSan['phong_tuong_thich']) ? json_decode($taiSan['phong_tuong_thich'], true) : $taiSan['phong_tuong_thich'];
+                        if (is_array($arr)) {
+                            $cacPhongStr = implode(', ', $arr);
+                        }
+                    }
+                    ?>
+                    <input type="text" class="o-nhap bg-white" name="phong_tuong_thich" value="<?= e($cacPhongStr) ?>" placeholder="Ví dụ: B31.101, B31.102, B71.101">
                 </div>
+            </div>
 
+            <?php if (!$laThemMoi): ?>
                 <div class="row g-3 mb-3">
-                    <div class="col-12 col-md-4">
-                        <label for="ngay_dua_vao_su_dung" class="nhan-truong">
-                            Ngày đưa vào sử dụng
-                        </label>
-                        <input type="date" class="o-nhap" id="ngay_dua_vao_su_dung" name="ngay_dua_vao_su_dung" 
-                               value="<?= e($taiSan['ngay_dua_vao_su_dung'] ?? date('Y-m-d')) ?>">
-                    </div>
-
-                    <?php if (!$laThemMoi): ?>
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-6">
                         <label for="tinh_trang" class="nhan-truong">Tình trạng vật lý</label>
                         <select class="o-nhap" id="tinh_trang" name="tinh_trang">
                             <option value="TOT" <?= ($taiSan['tinh_trang'] ?? '') === 'TOT' ? 'selected' : '' ?>>Tốt</option>
@@ -228,7 +240,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </select>
                     </div>
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-6">
                         <label for="trang_thai" class="nhan-truong">Trạng thái vận hành</label>
                         <select class="o-nhap" id="trang_thai" name="trang_thai">
                             <option value="SAN_SANG" <?= ($taiSan['trang_thai'] ?? '') === 'SAN_SANG' ? 'selected' : '' ?>>Sẵn sàng</option>
@@ -237,26 +249,27 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <option value="NGUNG_SU_DUNG" <?= ($taiSan['trang_thai'] ?? '') === 'NGUNG_SU_DUNG' ? 'selected' : '' ?>>Ngừng sử dụng</option>
                         </select>
                     </div>
-                    <?php endif; ?>
                 </div>
+            <?php endif; ?>
 
-                <div class="mb-4">
-                    <label for="mo_ta" class="nhan-truong">Mô tả đặc điểm / ghi chú</label>
-                    <textarea class="o-nhap" id="mo_ta" name="mo_ta" rows="2" placeholder="Ví dụ: Đi kèm cáp nguồn 1.5m, đựng trong túi chống sốc đen"><?= e($taiSan['mo_ta'] ?? '') ?></textarea>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                    <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
-                        Hủy bỏ
-                    </a>
-                    <button type="submit" class="btn btn-chinh">
-                        <?= $laThemMoi ? 'Lưu thiết bị' : 'Cập nhật thay đổi' ?>
-                    </button>
-                </div>
+            <div class="mb-4">
+                <label for="mo_ta" class="nhan-truong">Mô tả đặc điểm / ghi chú</label>
+                <textarea class="o-nhap" id="mo_ta" name="mo_ta" rows="2" placeholder="Ví dụ: Đi kèm cáp nguồn 1.5m, đựng trong túi chống sốc đen"><?= e($taiSan['mo_ta'] ?? '') ?></textarea>
             </div>
-        </form>
 
-    </div>
+            <div class="d-flex justify-content-end align-items-center gap-2 pt-3 border-top">
+                <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
+                    <?= icon('x', 'bieu-tuong-sm') ?>
+                    <span>Hủy bỏ</span>
+                </a>
+                <button type="submit" class="btn btn-chinh">
+                    <?= icon('save', 'bieu-tuong-sm') ?>
+                    <span><?= $laThemMoi ? 'Lưu thiết bị' : 'Cập nhật thay đổi' ?></span>
+                </button>
+            </div>
+        </div>
+    </form>
+
 </div>
 
 <!-- Nạp thư viện tạo mã QR offline -->
@@ -265,58 +278,107 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <script src="<?= url('assets/js/qr-tao.js') ?>"></script>
 
 <script>
-function doiPhamViTuongThich(val) {
-    const box = document.getElementById('khuVucTheoPhong');
-    if (val === 'THEO_PHONG') {
-        box.classList.remove('d-none');
-    } else {
-        box.classList.add('d-none');
-    }
-}
+    const DS_MA_HIEN_CO = <?= json_encode($dsMaHienCo) ?>;
+    const LA_THEM_MOI = <?= $laThemMoi ? 'true' : 'false' ?>;
+    let daSuaMaThuCong = !LA_THEM_MOI;
 
-// Xử lý xem trước mã QR tự động thời gian thực
-function capNhatXemTruocQr() {
-    const inputMaQr = document.getElementById('ma_qr');
-    const inputMaTs = document.getElementById('ma_tai_san');
-    const selectPhongTruc = document.getElementById('phong_truc_id');
-    const boxQr = document.getElementById('preview_qr_box');
-    const textQr = document.getElementById('preview_qr_val');
-
-    let maQrDuKien = inputMaQr ? inputMaQr.value.trim() : '';
-
-    if (!maQrDuKien && inputMaTs && inputMaTs.value.trim()) {
-        const maTs = inputMaTs.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
-        let maPt = 'D6';
-        if (selectPhongTruc && selectPhongTruc.selectedIndex > 0) {
-            const txt = selectPhongTruc.options[selectPhongTruc.selectedIndex].text;
-            const match = txt.match(/\(([^)]+)\)/);
-            if (match) {
-                maPt = match[1];
-            }
+    function doiPhamViTuongThich(val) {
+        const box = document.getElementById('khuVucTheoPhong');
+        if (val === 'THEO_PHONG') {
+            box.classList.remove('d-none');
+        } else {
+            box.classList.add('d-none');
         }
-        maQrDuKien = 'QR-' + maPt + '-' + maTs.replace(/[^A-Z0-9]/g, '');
     }
 
-    if (maQrDuKien) {
-        textQr.textContent = maQrDuKien;
-        taoMaQr(boxQr, maQrDuKien, { size: 76, margin: 1 });
-    } else {
-        textQr.textContent = '---';
-        boxQr.innerHTML = '<span class="text-muted small" style="font-size: 10px; text-align: center;">Chưa có QR</span>';
+    function boDauTiengViet(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
     }
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    const inputMaQr = document.getElementById('ma_qr');
-    const inputMaTs = document.getElementById('ma_tai_san');
-    const selectPhongTruc = document.getElementById('phong_truc_id');
+    function vietTatTuTen(ten) {
+        const kd = boDauTiengViet(ten);
+        if (!kd) return '';
+        if (kd.startsWith('remote may chieu')) return 'RMC';
+        if (kd.startsWith('remote may lanh') || kd.startsWith('remote dieu hoa')) return 'RML';
+        if (kd.startsWith('remote')) return 'RM';
+        if (kd.startsWith('may chieu')) return 'MC';
+        if (kd.startsWith('micro')) return 'MIC';
+        if (kd.startsWith('loa')) return 'LOA';
+        if (kd.startsWith('cap ') || kd.startsWith('day cap')) return 'CAP';
+        if (kd.startsWith('o cam') || kd.startsWith('o dien')) return 'OCD';
+        if (kd.startsWith('but trinh chieu') || kd.startsWith('but chi')) return 'BTC';
 
-    if (inputMaQr) inputMaQr.addEventListener('input', capNhatXemTruocQr);
-    if (inputMaTs) inputMaTs.addEventListener('input', capNhatXemTruocQr);
-    if (selectPhongTruc) selectPhongTruc.addEventListener('change', capNhatXemTruocQr);
+        const words = kd.split(/[^a-z0-9]+/).filter(Boolean).slice(0, 3);
+        return words.map(w => w[0].toUpperCase()).join('') || 'TS';
+    }
 
-    capNhatXemTruocQr();
-});
+    function goiYMaTuTen(batBuoc = false) {
+        const inputTen = document.getElementById('ten_tai_san');
+        const inputMa = document.getElementById('ma_tai_san');
+        if (!inputTen || !inputMa) return;
+        if (!batBuoc && daSuaMaThuCong) return;
+
+        const tienTo = vietTatTuTen(inputTen.value);
+        if (!tienTo) {
+            if (!batBuoc) inputMa.value = '';
+            capNhatXemTruocQr();
+            return;
+        }
+
+        let maxSo = 0;
+        const regex = new RegExp('^' + tienTo + '-(\\d+)$', 'i');
+        DS_MA_HIEN_CO.forEach(ma => {
+            const m = ma.match(regex);
+            if (m) {
+                const so = parseInt(m[1], 10);
+                if (so > maxSo) maxSo = so;
+            }
+        });
+
+        const soTiep = String(maxSo + 1).padStart(2, '0');
+        inputMa.value = tienTo + '-' + soTiep;
+        if (batBuoc) daSuaMaThuCong = false;
+        capNhatXemTruocQr();
+    }
+
+    // Xem trước mã QR trực tiếp từ Mã tài sản
+    function capNhatXemTruocQr() {
+        const inputMaTs = document.getElementById('ma_tai_san');
+        const boxQr = document.getElementById('preview_qr_box');
+        const textQr = document.getElementById('preview_qr_val');
+
+        const maTs = inputMaTs ? inputMaTs.value.trim().toUpperCase() : '';
+
+        if (maTs) {
+            textQr.textContent = maTs;
+            taoMaQr(boxQr, maTs, {
+                size: 76,
+                margin: 1
+            });
+        } else {
+            textQr.textContent = '---';
+            boxQr.innerHTML = '<span class="text-muted small chu-nho-10">Chưa có mã</span>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputTen = document.getElementById('ten_tai_san');
+        const inputMaTs = document.getElementById('ma_tai_san');
+
+        if (inputTen) {
+            inputTen.addEventListener('input', function() {
+                goiYMaTuTen(false);
+            });
+        }
+        if (inputMaTs) {
+            inputMaTs.addEventListener('input', function() {
+                daSuaMaThuCong = this.value.trim() !== '';
+                capNhatXemTruocQr();
+            });
+        }
+
+        capNhatXemTruocQr();
+    });
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

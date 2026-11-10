@@ -29,7 +29,7 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
 ?>
 
 <!-- Tiêu đề trang & Nút hành động -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Điều chuyển tài sản</h1>
         <div class="mo-ta-phu">Lịch sử điều chuyển thiết bị giữa các phòng học.</div>
@@ -37,7 +37,8 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
     <div>
         <?php if (co_quyen('tao_dieu_chuyen')): ?>
             <a href="<?= url('dieu-chuyen/them.php') ?>" class="btn btn-chinh">
-                Lập phiếu điều chuyển
+                <?= icon('plus', 'bieu-tuong-sm') ?>
+                <span>Lập phiếu điều chuyển</span>
             </a>
         <?php endif; ?>
     </div>
@@ -49,8 +50,11 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
         <form action="<?= url('dieu-chuyen/index.php') ?>" method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Từ khóa</label>
-                <input type="text" name="tu_khoa" class="form-control" placeholder="Mã phiếu, cán bộ..."
-                    value="<?= e($boLoc['tu_khoa']) ?>">
+                <div class="o-tim-kiem">
+                    <?= icon('search', 'bieu-tuong-sm') ?>
+                    <input type="text" name="tu_khoa" class="form-control" placeholder="Mã phiếu, cán bộ..."
+                        value="<?= e($boLoc['tu_khoa']) ?>">
+                </div>
             </div>
 
             <div class="col-6 col-md-2">
@@ -88,8 +92,14 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
             </div>
 
             <div class="col-12 col-md-auto d-flex gap-2">
-                <button type="submit" class="btn btn-phu">Tra cứu</button>
-                <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">Đặt lại</a>
+                <button type="submit" class="btn btn-phu">
+                    <?= icon('search', 'bieu-tuong-sm') ?>
+                    <span>Tra cứu</span>
+                </button>
+                <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">
+                    <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                    <span>Đặt lại</span>
+                </a>
             </div>
         </form>
     </div>
@@ -131,8 +141,8 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                             <td><?= (int)$dc['tong_so_thiet_bi'] ?> thiết bị</td>
                             <td><?= e($dc['ho_ten_can_bo']) ?></td>
                             <td class="text-end">
-                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
-                                    Xem phiếu
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem phiếu" title="Xem phiếu">
+                                    <?= icon('eye', 'bieu-tuong-sm') ?>
                                 </a>
                             </td>
                         </tr>

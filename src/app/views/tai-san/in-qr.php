@@ -16,6 +16,9 @@ if (!defined('APP_KHOI_DONG')) {
  * @var string $tieuDeTrang
  */
 ?>
+<?php
+require_once dirname(__DIR__) . '/partials/icon.php';
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -23,6 +26,7 @@ if (!defined('APP_KHOI_DONG')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($tieuDeTrang) ?> - QLTS QR</title>
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
+    <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
     <style>
         body {
             background-color: #F3F4F6;
@@ -38,6 +42,11 @@ if (!defined('APP_KHOI_DONG')) {
             box-sizing: border-box;
             page-break-inside: avoid;
             margin-bottom: 20px;
+        }
+
+        .khung-qr-tem {
+            min-width: 95px;
+            min-height: 95px;
         }
 
         .tieu-de-truong {
@@ -96,6 +105,12 @@ if (!defined('APP_KHOI_DONG')) {
     </style>
 </head>
 <body class="py-4">
+<?php
+$duongDanSprite = dirname(__DIR__, 3) . '/assets/icons/sprite.svg';
+if (is_file($duongDanSprite)) {
+    readfile($duongDanSprite);
+}
+?>
 
 <!-- Thanh điều khiển in (ẩn khi in thực tế) -->
 <div class="container mb-4 no-print">
@@ -107,11 +122,13 @@ if (!defined('APP_KHOI_DONG')) {
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-primary fw-semibold px-4" onclick="window.print()">
-                In ngay
+            <button type="button" class="btn btn-chinh px-4" onclick="window.print()">
+                <?= icon('printer', 'bieu-tuong-sm') ?>
+                <span>In ngay</span>
             </button>
-            <button type="button" class="btn btn-outline-secondary fw-semibold" onclick="window.close()">
-                Đóng
+            <button type="button" class="btn btn-phu" onclick="window.close()">
+                <?= icon('x', 'bieu-tuong-sm') ?>
+                <span>Đóng</span>
             </button>
         </div>
     </div>
@@ -125,7 +142,7 @@ if (!defined('APP_KHOI_DONG')) {
 
             <div class="d-flex align-items-center gap-3">
                 <!-- Mã QR Render -->
-                <div id="qr_box_<?= $idx ?>" data-qr="<?= e($ts['ma_qr']) ?>" data-qr-size="95" class="flex-shrink-0" style="min-width: 95px; min-height: 95px;"></div>
+                <div id="qr_box_<?= $idx ?>" data-qr="<?= e($ts['ma_tai_san']) ?>" data-qr-size="95" class="flex-shrink-0 khung-qr-tem"></div>
 
                 <!-- Thông tin thiết bị -->
                 <div class="flex-grow-1 overflow-hidden">
@@ -160,7 +177,7 @@ if (!defined('APP_KHOI_DONG')) {
 document.addEventListener('DOMContentLoaded', function () {
     const danhSach = <?= json_encode($danhSachIn, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     danhSach.forEach((ts, idx) => {
-        taoMaQr('qr_box_' + idx, ts.ma_qr, { size: 95, margin: 1 });
+        taoMaQr('qr_box_' + idx, ts.ma_tai_san, { size: 95, margin: 1 });
     });
 });
 </script>

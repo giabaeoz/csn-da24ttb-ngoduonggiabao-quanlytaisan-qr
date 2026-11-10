@@ -20,13 +20,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý danh mục</h1>
         <div class="mo-ta-phu">Cấu hình phòng học, phòng trực và loại tài sản trong hệ thống.</div>
     </div>
     <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalPhongTruc" onclick="moModalThem()">
-        + Thêm phòng trực
+        <?= icon('plus', 'bieu-tuong-sm') ?>
+        <span>Thêm phòng trực</span>
     </button>
 </div>
 
@@ -59,13 +60,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <table class="bang-du-lieu mb-0">
                 <thead>
                     <tr>
-                        <th style="width: 100px;">Mã</th>
+                        <th class="cot-100">Mã</th>
                         <th>Tên phòng trực</th>
                         <th>Vị trí vật lý</th>
-                        <th class="text-center" style="width: 140px;">Cán bộ trực</th>
-                        <th class="text-center" style="width: 140px;">Tài sản quản lý</th>
-                        <th class="text-center" style="width: 140px;">Trạng thái</th>
-                        <th class="text-end" style="width: 160px;">Thao tác</th>
+                        <th class="text-center cot-140">Cán bộ trực</th>
+                        <th class="text-center cot-140">Tài sản quản lý</th>
+                        <th class="text-center cot-140">Trạng thái</th>
+                        <th class="text-end cot-160">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,27 +109,43 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-1">
-                                        <button type="button" class="btn btn-sm btn-phu"
+                                        <?php
+                                        $chiTietPt = [
+                                            ['nhan' => 'Mã phòng trực', 'gia_tri' => $pt['ma_phong_truc'] ?? ''],
+                                            ['nhan' => 'Tên phòng trực', 'gia_tri' => $pt['ten_phong_truc'] ?? ''],
+                                            ['nhan' => 'Vị trí đặt bàn trực', 'gia_tri' => ($pt['vi_tri'] ?? '') ?: '---'],
+                                            ['nhan' => 'Nhân sự phân công', 'gia_tri' => (int)($pt['so_nhan_vien'] ?? 0) . ' nhân viên'],
+                                            ['nhan' => 'Tài sản quản lý', 'gia_tri' => (int)($pt['so_tai_san'] ?? 0) . ' thiết bị'],
+                                            ['nhan' => 'Trạng thái', 'gia_tri' => (int)($pt['dang_hoat_dong'] ?? 0) === 1 ? 'Đang hoạt động' : 'Tạm tắt'],
+                                            ['nhan' => 'Ghi chú', 'gia_tri' => ($pt['ghi_chu'] ?? '') ?: '---'],
+                                        ];
+                                        ?>
+                                        <button type="button" class="btn-bieu-tuong" aria-label="Xem" title="Xem"
+                                            onclick='xemChiTietNhanh(<?= json_encode("Phòng trực: " . ($pt["ten_phong_truc"] ?? "")) ?>, <?= json_encode($chiTietPt, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                                            <?= icon('eye', 'bieu-tuong-sm') ?>
+                                        </button>
+                                        <button type="button" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa"
                                             onclick='moModalSua(<?= json_encode($pt, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            Sửa
+                                            <?= icon('pencil', 'bieu-tuong-sm') ?>
                                         </button>
 
-                                        <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng trực này?');">
+                                        <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc muốn đổi trạng thái phòng trực này?">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-phu">
-                                                <?= (int)$pt['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
+                                            <?php $nhanKhoaMoPt = (int)$pt['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở'; ?>
+                                            <button type="submit" class="btn-bieu-tuong" aria-label="<?= $nhanKhoaMoPt ?>" title="<?= $nhanKhoaMoPt ?>">
+                                                <?= icon((int)$pt['dang_hoat_dong'] === 1 ? 'lock' : 'rotate-ccw', 'bieu-tuong-sm') ?>
                                             </button>
                                         </form>
 
                                         <?php if ((int)$pt['so_nhan_vien'] === 0 && (int)$pt['so_tai_san'] === 0): ?>
-                                            <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA phòng trực này? Thao tác không thể hoàn tác.');">
+                                            <form action="<?= url('danh-muc/phong-truc.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc chắn muốn XÓA phòng trực này? Thao tác không thể hoàn tác.">
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$pt['id'] ?>">
-                                                <button type="submit" class="btn btn-sm btn-phu text-danger">
-                                                    Xóa
+                                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
+                                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -184,8 +201,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
 
             <div class="modal-footer border-top bg-light">
-                <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn btn-chinh">Lưu thông tin</button>
+                <button type="button" class="btn btn-phu" data-bs-dismiss="modal">
+                    <?= icon('x', 'bieu-tuong-sm') ?>
+                    <span>Hủy</span>
+                </button>
+                <button type="submit" class="btn btn-chinh">
+                    <?= icon('save', 'bieu-tuong-sm') ?>
+                    <span>Lưu thông tin</span>
+                </button>
             </div>
         </form>
     </div>

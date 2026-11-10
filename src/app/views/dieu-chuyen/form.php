@@ -32,18 +32,20 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <?php if ($dangKiemKe): ?>
     <div class="alert alert-danger mb-4" role="alert">
-        Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1">Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.</div>
     </div>
 <?php endif; ?>
 
 <?php if (!empty($loi)): ?>
     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-        <?= e($loi) ?>
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1"><?= e($loi) ?></div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
     </div>
 <?php endif; ?>
 
-<form action="<?= url('dieu-chuyen/them.php') ?>" method="POST" id="formDieuChuyen" class="<?= $dangKiemKe ? 'opacity-50 pe-none' : '' ?>">
+<form action="<?= url('dieu-chuyen/them.php') ?>" method="POST" id="formDieuChuyen" class="luong-quet-qr <?= $dangKiemKe ? 'opacity-50 pe-none' : '' ?>">
     <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
     <div id="vungTaiSanIds"></div>
 
@@ -57,11 +59,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     <div class="row g-2 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
-                                <video id="videoQuetCamera" playsinline style="display:none;"></video>
-                                <canvas id="canvasQuetCamera" style="display:none;"></canvas>
+                                <video id="videoQuetCamera" playsinline class="d-none"></video>
+                                <canvas id="canvasQuetCamera" class="d-none"></canvas>
                                 <div class="overlay-ngam" id="overlayCamera">
                                     <div class="fw-semibold text-dark mb-1">Khung camera</div>
-                                    <div style="font-size: 11px;">Đưa mã QR thiết bị vào khung</div>
+                                    <div class="chu-nho-11">Đưa mã QR thiết bị vào khung</div>
                                 </div>
                             </div>
                         </div>
@@ -74,16 +76,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 <input type="text" class="form-control" id="ma_quet_nhap"
                                     placeholder="Nhập mã khi không quét được" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
-                                    Thêm
+                                    <?= icon('plus', 'bieu-tuong-sm') ?>
+                                    <span>Thêm</span>
                                 </button>
                             </div>
 
                             <button type="button" class="btn btn-phu btn-sm w-100" id="btnBatTatCamera" onclick="batTatCamera()">
-                                Bật camera
+                                <?= icon('scan-line', 'bieu-tuong-sm') ?>
+                                <span id="nhanNutCamera">Bật camera</span>
                             </button>
                         </div>
                     </div>
-                    <div id="thongBaoQuetLoi" class="loi-truong mt-2 d-none"></div>
+                    <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-2 d-none"></div>
                 </div>
             </div>
 
@@ -102,7 +106,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <thead>
                                 <tr>
                                     <th>Thiết bị</th>
-                                    <th class="text-end" style="width: 80px;">Số lượng</th>
+                                    <th class="text-end cot-80">Số lượng</th>
                                 </tr>
                             </thead>
                             <tbody id="pvDanhSachThietBi">
@@ -170,8 +174,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <thead>
                             <tr>
                                 <th>Mã / tên thiết bị</th>
-                                <th style="width: 140px;">Tình trạng</th>
-                                <th class="text-end" style="width: 80px;">Thao tác</th>
+                                <th class="cot-140">Tình trạng</th>
+                                <th class="text-end cot-80">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="bangThietBiDieuChuyen">
@@ -195,9 +199,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
             <!-- Nút hành động chân trang -->
             <div class="d-flex justify-content-end gap-2">
-                <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">Hủy</a>
+                <a href="<?= url('dieu-chuyen/index.php') ?>" class="btn btn-phu">
+                    <?= icon('x', 'bieu-tuong-sm') ?>
+                    <span>Hủy</span>
+                </a>
                 <button type="submit" class="btn btn-chinh" id="btnXacNhanDieuChuyen" disabled>
-                    Xác nhận điều chuyển
+                    <?= icon('save', 'bieu-tuong-sm') ?>
+                    <span>Xác nhận điều chuyển</span>
                 </button>
             </div>
         </div>
@@ -240,8 +248,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <td><?= e($dc['ma_phong_den']) ?></td>
                             <td><?= (int)$dc['tong_so_thiet_bi'] ?></td>
                             <td class="text-end">
-                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn btn-phu btn-sm">
-                                    Xem phiếu
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem phiếu" title="Xem phiếu">
+                                    <?= icon('eye', 'bieu-tuong-sm') ?>
                                 </a>
                             </td>
                         </tr>
@@ -350,8 +358,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </td>
             <td>Bình thường</td>
             <td class="text-end">
-                <button type="button" class="btn btn-phu btn-sm py-1 px-2" onclick="boThietBi(${idx})">
-                    Bỏ
+                <button type="button" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Bỏ" title="Bỏ" onclick="boThietBi(${idx})">
+                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
                 </button>
             </td>
         `;
@@ -435,11 +443,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         try {
             streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
             videoEl.srcObject = streamCamera;
-            videoEl.style.display = 'block';
-            overlayEl.style.display = 'none';
+            videoEl.classList.remove('d-none');
+            overlayEl.classList.add('d-none');
             await videoEl.play();
             dangQuet = true;
-            btnCamera.textContent = 'Tắt camera';
+            const nhanNut = document.getElementById('nhanNutCamera');
+            if (nhanNut) nhanNut.textContent = 'Tắt camera';
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
@@ -453,9 +462,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             streamCamera = null;
         }
         dangQuet = false;
-        videoEl.style.display = 'none';
-        overlayEl.style.display = 'flex';
-        btnCamera.textContent = 'Bật camera';
+        videoEl.classList.add('d-none');
+        overlayEl.classList.remove('d-none');
+        const nhanNut = document.getElementById('nhanNutCamera');
+        if (nhanNut) nhanNut.textContent = 'Bật camera';
         btnCamera.classList.replace('btn-danger', 'btn-phu');
     }
 

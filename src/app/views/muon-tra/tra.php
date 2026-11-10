@@ -37,7 +37,7 @@ foreach ($dsChiTiet as $it) {
 ?>
 
 <!-- Tiêu đề trang & Tabs chuyển đổi -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Mượn - trả tài sản</h1>
     </div>
@@ -49,18 +49,20 @@ foreach ($dsChiTiet as $it) {
 
 <?php if ($dangBiKhoaKiemKe): ?>
     <div class="alert alert-danger mb-4" role="alert">
-        Bàn trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1">Bàn trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.</div>
     </div>
 <?php endif; ?>
 
 <?php if ($thongBaoLoi !== ''): ?>
     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-        <?= e($thongBaoLoi) ?>
+        <?= icon('alert-circle', 'bieu-tuong-md') ?>
+        <div class="flex-grow-1"><?= e($thongBaoLoi) ?></div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
     </div>
 <?php endif; ?>
 
-<form action="<?= url('muon-tra/tra.php') ?>" method="POST" id="formNhanTra" class="<?= $dangBiKhoaKiemKe ? 'opacity-50 pe-none' : '' ?>">
+<form action="<?= url('muon-tra/tra.php') ?>" method="POST" id="formNhanTra" class="luong-quet-qr <?= $dangBiKhoaKiemKe ? 'opacity-50 pe-none' : '' ?>">
     <?= csrf_field() ?>
     <input type="hidden" name="phieu_muon_id" value="<?= (int)($phieuHienTai['id'] ?? 0) ?>">
 
@@ -74,11 +76,11 @@ foreach ($dsChiTiet as $it) {
                     <div class="row g-2 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
-                                <video id="videoQuetCamera" playsinline style="display:none;"></video>
-                                <canvas id="canvasQuetCamera" style="display:none;"></canvas>
+                                <video id="videoQuetCamera" playsinline class="d-none"></video>
+                                <canvas id="canvasQuetCamera" class="d-none"></canvas>
                                 <div class="overlay-ngam" id="overlayCamera">
                                     <div class="fw-semibold text-dark mb-1">Khung camera</div>
-                                    <div style="font-size: 11px;">Đưa mã QR thiết bị vào khung</div>
+                                    <div class="chu-nho-11">Đưa mã QR thiết bị vào khung</div>
                                 </div>
                             </div>
                         </div>
@@ -92,17 +94,22 @@ foreach ($dsChiTiet as $it) {
                                     placeholder="Mã thiết bị / mã phiếu / mã số"
                                     value="<?= e($_GET['tu_khoa'] ?? $_GET['ma_phieu'] ?? '') ?>" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="thucHienTraCuu()">
-                                    Tìm
+                                    <?= icon('search', 'bieu-tuong-sm') ?>
+                                    <span>Tìm</span>
                                 </button>
                             </div>
 
                             <button type="button" class="btn btn-phu btn-sm w-100" id="btnBatTatCamera" onclick="batTatCamera()">
-                                Bật camera
+                                <?= icon('scan-line', 'bieu-tuong-sm') ?>
+                                <span id="nhanNutCamera">Bật camera</span>
                             </button>
                         </div>
                     </div>
                     <?php if ($thongBaoLoiTimKiem !== ''): ?>
-                        <div class="loi-truong mt-2"><?= e($thongBaoLoiTimKiem) ?></div>
+                        <div class="ket-qua-quet ket-qua-quet-loi mt-2">
+                            <?= icon('alert-circle', 'bieu-tuong-sm') ?>
+                            <span><?= e($thongBaoLoiTimKiem) ?></span>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -132,7 +139,7 @@ foreach ($dsChiTiet as $it) {
                                 <thead>
                                     <tr>
                                         <th>Thiết bị nhận trả</th>
-                                        <th class="text-end" style="width: 110px;">Tình trạng</th>
+                                        <th class="text-end cot-110">Tình trạng</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pvDanhSachNhanTra">
@@ -213,9 +220,9 @@ foreach ($dsChiTiet as $it) {
                     <table class="table">
                         <thead>
                             <tr>
-                                <th style="width: 50px;">Nhận</th>
+                                <th class="cot-50">Nhận</th>
                                 <th>Mã / tên thiết bị</th>
-                                <th style="width: 170px;">Tình trạng khi nhận</th>
+                                <th class="cot-170">Tình trạng khi nhận</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -271,9 +278,13 @@ foreach ($dsChiTiet as $it) {
 
             <!-- Nút hành động chân trang -->
             <div class="d-flex justify-content-end gap-2">
-                <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">Hủy</a>
+                <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">
+                    <?= icon('x', 'bieu-tuong-sm') ?>
+                    <span>Hủy</span>
+                </a>
                 <button type="submit" class="btn btn-chinh" id="btnXacNhanTra" <?= (!$phieuHienTai || $soChuaTra === 0) ? 'disabled' : '' ?>>
-                    Xác nhận trả & lưu phiếu
+                    <?= icon('save', 'bieu-tuong-sm') ?>
+                    <span>Xác nhận trả & lưu phiếu</span>
                 </button>
             </div>
         </div>
@@ -376,11 +387,12 @@ foreach ($dsChiTiet as $it) {
         try {
             streamCamera = await navigator.mediaDevices.getUserMedia(constraints);
             videoEl.srcObject = streamCamera;
-            videoEl.style.display = 'block';
-            overlayEl.style.display = 'none';
+            videoEl.classList.remove('d-none');
+            overlayEl.classList.add('d-none');
             await videoEl.play();
             dangQuet = true;
-            btnCamera.textContent = 'Tắt camera';
+            const nhanNut = document.getElementById('nhanNutCamera');
+            if (nhanNut) nhanNut.textContent = 'Tắt camera';
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
@@ -394,9 +406,10 @@ foreach ($dsChiTiet as $it) {
             streamCamera = null;
         }
         dangQuet = false;
-        videoEl.style.display = 'none';
-        overlayEl.style.display = 'flex';
-        btnCamera.textContent = 'Bật camera';
+        videoEl.classList.add('d-none');
+        overlayEl.classList.remove('d-none');
+        const nhanNut = document.getElementById('nhanNutCamera');
+        if (nhanNut) nhanNut.textContent = 'Bật camera';
         btnCamera.classList.replace('btn-danger', 'btn-phu');
     }
 

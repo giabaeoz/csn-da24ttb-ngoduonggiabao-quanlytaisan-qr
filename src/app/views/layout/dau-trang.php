@@ -11,6 +11,8 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+require_once dirname(__DIR__) . '/partials/icon.php';
+
 /**
  * @var string|null $tieuDeTrang
  */

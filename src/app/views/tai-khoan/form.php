@@ -25,7 +25,7 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">
             <?= $laThemMoi ? 'Thêm tài khoản cán bộ' : 'Chỉnh sửa tài khoản cán bộ' ?>
@@ -36,17 +36,18 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
     </div>
     <div>
         <a href="<?= url('tai-khoan/index.php') ?>" class="btn btn-phu">
-            Quay lại danh sách
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại danh sách</span>
         </a>
     </div>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
+<div class="khung-bieu-mau">
 
         <?php if (!empty($thongBaoLoi)): ?>
             <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                <strong>Lỗi thao tác:</strong> <?= e($thongBaoLoi) ?>
+                <?= icon('alert-circle', 'bieu-tuong-md') ?>
+                <div class="flex-grow-1"><strong>Lỗi thao tác:</strong> <?= e($thongBaoLoi) ?></div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         <?php endif; ?>
@@ -177,18 +178,19 @@ $laChinhMinh = (!$laThemMoi && (int)($taiKhoan['id'] ?? 0) === $nguoiThucHienId)
                     <?php endif; ?>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <div class="d-flex justify-content-end align-items-center gap-2 pt-3 border-top">
                     <a href="<?= url('tai-khoan/index.php') ?>" class="btn btn-phu">
-                        Hủy bỏ
+                        <?= icon('x', 'bieu-tuong-sm') ?>
+                        <span>Hủy bỏ</span>
                     </a>
                     <button type="submit" class="btn btn-chinh">
-                        <?= $laThemMoi ? 'Lưu tài khoản' : 'Cập nhật thay đổi' ?>
+                        <?= icon('save', 'bieu-tuong-sm') ?>
+                        <span><?= $laThemMoi ? 'Lưu tài khoản' : 'Cập nhật thay đổi' ?></span>
                     </button>
                 </div>
             </form>
         </div>
 
-    </div>
 </div>
 
 <script>

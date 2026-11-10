@@ -9,8 +9,8 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/app/core/khoi-dong.php';
 require_once dirname(__DIR__) . '/app/services/nguoi-muon-service.php';
 
-// Yêu cầu quyền xem/quản lý người mượn
-yeu_cau_quyen('quan_ly_nguoi_muon');
+// Yêu cầu quyền xem/quản lý người mượn hoặc thực hiện nghiệp vụ mượn trả
+yeu_cau_mot_trong_cac_quyen(['quan_ly_nguoi_muon', 'nghiep_vu_muon_tra']);
 
 $maSoTruong = trim((string)($_GET['ma_so_truong'] ?? ''));
 $tuKhoa = trim((string)($_GET['tu_khoa'] ?? ''));

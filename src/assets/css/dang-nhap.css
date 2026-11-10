@@ -7,7 +7,7 @@
   display: flex;
   margin: 0;
   padding: 0;
-  background-color: var(--nen-the);
+  background-color: var(--nen-trang);
 }
 
 .cot-thuong-hieu {
@@ -32,24 +32,25 @@
 .logo-lon {
   width: 140px;
   height: 140px;
-  background-color: #FFFFFF;
+  background-color: var(--mau-chinh-nhat);
   border: 1px solid var(--vien);
   border-radius: 8px;
+  box-shadow: var(--bong-the);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
   font-weight: 600;
-  color: var(--chu-phu);
+  color: var(--mau-chinh);
   letter-spacing: 0.05em;
-  margin-bottom: 32px;
+  margin-bottom: var(--kc-6);
 }
 
 .tieu-de-thuong-hieu {
   font-size: 20px;
   font-weight: 600;
   color: var(--chu-chinh);
-  margin-bottom: 8px;
+  margin-bottom: var(--kc-2);
 }
 
 .mo-ta-thuong-hieu {
@@ -69,16 +70,17 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  background-color: #FFFFFF;
+  background-color: var(--nen-trang);
 }
 
 .hop-dang-nhap {
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   border: 1px solid var(--vien);
   border-radius: 8px;
   padding: 36px 32px;
-  background-color: #FFFFFF;
+  background-color: var(--nen-the);
+  box-shadow: var(--bong-the);
 }
 
 .tieu-de-dang-nhap {
@@ -86,17 +88,18 @@
   font-weight: 600;
   color: var(--chu-chinh);
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: var(--kc-5);
 }
 
 .lien-ket-quen-mat-khau {
   display: block;
   text-align: center;
-  margin-top: 16px;
+  margin-top: var(--kc-4);
   font-size: 13px;
   color: var(--chu-phu);
   text-decoration: none;
   cursor: pointer;
+  transition: color 150ms ease;
 }
 
 .lien-ket-quen-mat-khau:hover {
@@ -110,14 +113,22 @@
   }
   .cot-thuong-hieu {
     width: 100%;
-    padding: 32px 20px;
+    padding: var(--kc-6) var(--kc-4);
+    border-right: none;
+    border-bottom: 1px solid var(--vien);
+  }
+  .logo-lon {
+    width: 96px;
+    height: 96px;
+    font-size: 20px;
+    margin-bottom: var(--kc-4);
   }
   .cot-bieu-mau {
     width: 100%;
-    padding: 24px 16px;
+    padding: var(--kc-5) var(--kc-4);
+    flex-grow: 1;
   }
   .hop-dang-nhap {
-    border: none;
-    padding: 0;
+    padding: var(--kc-5);
   }
 }

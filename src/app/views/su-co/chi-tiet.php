@@ -25,14 +25,15 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang mb-0">Sự cố: <?= e($suCo['ma_su_co']) ?></h1>
         <div class="mo-ta-phu">Theo dõi hiện trạng, tiếp nhận và ghi nhận biên bản xử lý khắc phục sự cố thiết bị.</div>
     </div>
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?= url('su-co/index.php') ?>" class="btn btn-phu">
-            Quay lại
+            <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+            <span>Quay lại</span>
         </a>
         <?php if (!$daXuLy && $coQuyenXuLy): ?>
             <?php if ($chuaXuLy): ?>
@@ -40,12 +41,14 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                     <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
                     <input type="hidden" name="hanh_dong" value="tiep_nhan">
                     <button type="submit" class="btn btn-chinh">
-                        Tiếp nhận xử lý
+                        <?= icon('wrench', 'bieu-tuong-sm') ?>
+                        <span>Tiếp nhận xử lý</span>
                     </button>
                 </form>
             <?php endif; ?>
             <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalHoanTatXuLy">
-                Hoàn tất khắc phục
+                <?= icon('check-circle-2', 'bieu-tuong-sm') ?>
+                <span>Hoàn tất khắc phục</span>
             </button>
         <?php endif; ?>
     </div>
@@ -119,7 +122,7 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
 
                 <div class="border-top pt-3">
                     <label class="nhan-truong">Mô tả hiện trạng sự cố:</label>
-                    <div class="p-3 bg-light rounded border text-dark" style="white-space: pre-wrap; font-size: 0.95rem;"><?= e($suCo['mo_ta']) ?></div>
+                    <div class="p-3 bg-light rounded border text-dark van-ban-giu-dong"><?= e($suCo['mo_ta']) ?></div>
                 </div>
             </div>
         </div>
@@ -150,7 +153,7 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
 
                     <div class="border-top pt-3">
                         <label class="nhan-truong">Biện pháp khắc phục / Kết quả giải quyết:</label>
-                        <div class="p-3 bg-light rounded border text-dark" style="white-space: pre-wrap; font-size: 0.95rem;"><?= e($suCo['ket_qua_xu_ly']) ?></div>
+                        <div class="p-3 bg-light rounded border text-dark van-ban-giu-dong"><?= e($suCo['ket_qua_xu_ly']) ?></div>
                     </div>
                 </div>
             </div>
@@ -178,7 +181,6 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                 <div class="mb-3">
                     <div class="fw-bold font-monospace text-primary fs-5"><?= e($suCo['ma_tai_san']) ?></div>
                     <div class="fw-semibold text-dark fs-6 mt-1"><?= e($suCo['ten_tai_san']) ?></div>
-                    <div class="small text-muted font-monospace mt-1"><?= e($suCo['ma_qr']) ?></div>
                 </div>
 
                 <div class="row g-2 border-top pt-2 small">
@@ -278,9 +280,13 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                 </div>
 
                 <div class="modal-footer border-top bg-light">
-                    <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-phu" data-bs-dismiss="modal">
+                        <?= icon('x', 'bieu-tuong-sm') ?>
+                        <span>Đóng</span>
+                    </button>
                     <button type="submit" class="btn btn-chinh">
-                        Lưu kết quả xử lý
+                        <?= icon('save', 'bieu-tuong-sm') ?>
+                        <span>Lưu kết quả xử lý</span>
                     </button>
                 </div>
             </form>

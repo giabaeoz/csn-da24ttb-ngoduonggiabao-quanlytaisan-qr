@@ -21,17 +21,17 @@ kiem_thu('Lấy danh sách tài sản mẫu thành công', is_array($resDs['danh
 
 // 2. Tra cứu theo ID, Mã tài sản và Mã QR
 $ts1 = tai_san_tim_theo_id(1);
-kiem_thu('Tìm tài sản theo ID = 1', $ts1 !== null && $ts1['ma_tai_san'] === 'MC-0001');
+kiem_thu('Tìm tài sản theo ID = 1', $ts1 !== null && $ts1['ma_tai_san'] === 'MC-01');
 
-$tsMa = tai_san_tim_theo_ma('MC-0001');
-kiem_thu('Tìm tài sản theo Mã TS = MC-0001', $tsMa !== null && $tsMa['id'] == 1);
+$tsMa = tai_san_tim_theo_ma('MC-01');
+kiem_thu('Tìm tài sản theo Mã TS = MC-01', $tsMa !== null && $tsMa['id'] == 1);
 
-$tsQr = tai_san_tim_theo_qr('QR-D6-MC0001');
-kiem_thu('Tìm tài sản theo Mã QR = QR-D6-MC0001', $tsQr !== null && $tsQr['id'] == 1);
+$tsQr = tai_san_tim_theo_qr('MC-01');
+kiem_thu('Tìm tài sản theo Mã QR = MC-01', $tsQr !== null && $tsQr['id'] == 1);
 
-// 3. Kiểm thử sinh mã QR chuẩn
-$qrSinhRa = tai_san_sinh_ma_qr('MIC-9999', 'D6');
-kiem_thu('Sinh mã QR chuẩn theo mẫu QR-[PHONG_TRUC]-[MA_TS]', $qrSinhRa === 'QR-D6-MIC9999', "Mã: $qrSinhRa");
+// 3. Kiểm thử sinh mã QR chuẩn (dựa trực tiếp trên Mã tài sản)
+$qrSinhRa = tai_san_sinh_ma_qr('MIC-99', 'D6');
+kiem_thu('Sinh mã QR trực tiếp từ Mã tài sản', $qrSinhRa === 'MIC-99', "Mã: $qrSinhRa");
 
 // 4. Thêm tài sản mới có Hãng & Model kỹ thuật
 $maTsTest = 'TEST_TS_' . rand(1000, 9999);

@@ -46,33 +46,37 @@ foreach ($dsChiTiet as $item) {
                     <li class="breadcrumb-item active" aria-current="page"><?= e($phieu['ma_phieu'] ?? '') ?></li>
                 </ol>
             </nav>
-            <h1 class="h3 mb-0 text-gray-800 d-flex align-items-center gap-2">
+            <h1 class="h3 mb-0 text-gray-800 d-flex align-items-center gap-2 flex-wrap">
                 <span>Phiếu mượn: <strong><?= e($phieu['ma_phieu'] ?? '') ?></strong></span>
                 <?php if ($laDangMuon): ?>
-                    <span class="badge bg-warning text-dark fs-6"><i class="bi bi-clock-history"></i> Đang mượn</span>
+                    <span class="huy-hieu huy-hieu-canh-bao">Đang mượn</span>
                     <?php if ($quaHan): ?>
-                        <span class="badge bg-danger fs-6"><i class="bi bi-exclamation-octagon-fill"></i> Quá hạn</span>
+                        <span class="huy-hieu huy-hieu-nguy-hiem">Quá hạn</span>
                     <?php endif; ?>
                 <?php else: ?>
-                    <span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill"></i> Đã trả đủ</span>
+                    <span class="huy-hieu huy-hieu-thanh-cong">Đã trả đủ</span>
                 <?php endif; ?>
             </h1>
         </div>
         <div class="col-md-5 text-md-end mt-2 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
-            <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Quay lại
+            <a href="<?= url('muon-tra/index.php') ?>" class="btn btn-phu">
+                <?= icon('arrow-left', 'bieu-tuong-sm') ?>
+                <span>Quay lại</span>
             </a>
             <?php if (!empty($dsChiTiet)): ?>
-                <a href="<?= url('tai-san/in-qr.php?ids=' . implode(',', array_column($dsChiTiet, 'tai_san_id'))) ?>" class="btn btn-outline-dark" target="_blank">
-                    <i class="bi bi-qr-code"></i> In tem QR thiết bị
+                <a href="<?= url('tai-san/in-qr.php?ids=' . implode(',', array_column($dsChiTiet, 'tai_san_id'))) ?>" class="btn btn-phu" target="_blank">
+                    <?= icon('qr-code', 'bieu-tuong-sm') ?>
+                    <span>In tem QR thiết bị</span>
                 </a>
             <?php endif; ?>
-            <button type="button" class="btn btn-dark" onclick="window.print();">
-                <i class="bi bi-printer"></i> In phiếu mượn
+            <button type="button" class="btn btn-phu" onclick="window.print();">
+                <?= icon('printer', 'bieu-tuong-sm') ?>
+                <span>In phiếu mượn</span>
             </button>
             <?php if ($chuaTraCount > 0 && co_quyen('nghiep_vu_muon_tra')): ?>
-                <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode((string)$phieu['ma_phieu'])) ?>" class="btn btn-primary">
-                    <i class="bi bi-arrow-return-left"></i> Nhận trả thiết bị (<?= $chuaTraCount ?>)
+                <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode((string)$phieu['ma_phieu'])) ?>" class="btn btn-chinh">
+                    <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                    <span>Nhận trả thiết bị (<?= $chuaTraCount ?>)</span>
                 </a>
             <?php endif; ?>
         </div>
@@ -81,7 +85,7 @@ foreach ($dsChiTiet as $item) {
     <!-- Thông báo nếu quá hạn -->
     <?php if ($quaHan): ?>
         <div class="alert alert-danger d-flex align-items-center" role="alert">
-            <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+            <?= icon('alert-triangle', 'bieu-tuong-md') ?>
             <div>
                 <strong>Cảnh báo quá hạn:</strong> Phiếu mượn này có hạn trả là <strong><?= dinh_dang_ngay_gio($phieu['han_tra']) ?></strong> nhưng hiện tại vẫn còn <strong><?= $chuaTraCount ?></strong> thiết bị chưa được hoàn trả về bàn trực. Vui lòng liên hệ người mượn để thu hồi thiết bị.
             </div>
@@ -92,17 +96,17 @@ foreach ($dsChiTiet as $item) {
     <div class="row g-3 mb-4">
         <!-- Thông tin người mượn -->
         <div class="col-lg-5">
-            <div class="card shadow-sm h-100 border-0 border-top border-primary border-3">
+            <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="card-title mb-0 text-primary">
-                        <i class="bi bi-person-badge me-2"></i>Thông tin Người mượn
+                    <h5 class="tieu-de-khoi mb-0">
+                        Thông tin Người mượn
                     </h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-sm table-borderless mb-0">
                         <tbody>
                             <tr>
-                                <th class="text-muted" style="width: 35%;">Họ và tên:</th>
+                                <th class="text-muted cot-35p">Họ và tên:</th>
                                 <td class="fw-bold fs-6 text-dark"><?= e($phieu['ten_nguoi_muon'] ?? '') ?></td>
                             </tr>
                             <tr>
@@ -119,13 +123,13 @@ foreach ($dsChiTiet as $item) {
                                     <?php
                                     $loaiNm = $phieu['loai_nguoi_muon'] ?? '';
                                     if ($loaiNm === 'SINH_VIEN') {
-                                        echo '<span class="badge bg-info text-dark">Sinh viên</span>';
+                                        echo '<span class="huy-hieu huy-hieu-chinh">Sinh viên</span>';
                                     } elseif ($loaiNm === 'GIANG_VIEN') {
-                                        echo '<span class="badge bg-primary">Giảng viên</span>';
+                                        echo '<span class="huy-hieu huy-hieu-chinh">Giảng viên</span>';
                                     } elseif ($loaiNm === 'CAN_BO') {
-                                        echo '<span class="badge bg-secondary">Cán bộ / NV</span>';
+                                        echo '<span class="huy-hieu huy-hieu-xam">Cán bộ / NV</span>';
                                     } else {
-                                        echo '<span class="badge bg-light text-dark">Khác</span>';
+                                        echo '<span class="huy-hieu huy-hieu-xam">Khác</span>';
                                     }
                                     ?>
                                 </td>
@@ -139,7 +143,7 @@ foreach ($dsChiTiet as $item) {
                                 <td>
                                     <?php if (!empty($phieu['so_dien_thoai'])): ?>
                                         <a href="tel:<?= e($phieu['so_dien_thoai']) ?>" class="text-decoration-none">
-                                            <i class="bi bi-telephone me-1"></i><?= e($phieu['so_dien_thoai']) ?>
+                                            <?= e($phieu['so_dien_thoai']) ?>
                                         </a>
                                     <?php else: ?>
                                         <span class="text-muted">Chưa cập nhật</span>
@@ -154,17 +158,17 @@ foreach ($dsChiTiet as $item) {
 
         <!-- Thông tin phiên mượn -->
         <div class="col-lg-4">
-            <div class="card shadow-sm h-100 border-0 border-top border-info border-3">
+            <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="card-title mb-0 text-info">
-                        <i class="bi bi-info-circle me-2"></i>Thông tin Phiên mượn
+                    <h5 class="tieu-de-khoi mb-0">
+                        Thông tin Phiên mượn
                     </h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-sm table-borderless mb-0">
                         <tbody>
                             <tr>
-                                <th class="text-muted" style="width: 38%;">Phòng học đích:</th>
+                                <th class="text-muted cot-38p">Phòng học đích:</th>
                                 <td>
                                     <span class="badge bg-dark fs-6 font-monospace me-1">
                                         <?= e($phieu['ma_phong'] ?? '') ?>
@@ -178,19 +182,17 @@ foreach ($dsChiTiet as $item) {
                             <tr>
                                 <th class="text-muted">Bàn trực cấp:</th>
                                 <td>
-                                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>
                                     <strong><?= e($phieu['ten_phong_truc'] ?? '') ?></strong>
                                     <small class="text-muted font-monospace">(<?= e($phieu['ma_phong_truc'] ?? '') ?>)</small>
                                 </td>
                             </tr>
                             <tr>
                                 <th class="text-muted">Thời gian mượn:</th>
-                                <td><i class="bi bi-calendar3 me-1 text-primary"></i> <?= dinh_dang_ngay_gio($phieu['thoi_gian_muon'] ?? '') ?></td>
+                                <td><?= dinh_dang_ngay_gio($phieu['thoi_gian_muon'] ?? '') ?></td>
                             </tr>
                             <tr>
                                 <th class="text-muted">Hạn trả dự kiến:</th>
                                 <td>
-                                    <i class="bi bi-alarm me-1 text-warning"></i>
                                     <span class="<?= $quaHan ? 'text-danger fw-bold' : '' ?>">
                                         <?= dinh_dang_ngay_gio($phieu['han_tra'] ?? '') ?>
                                     </span>
@@ -198,7 +200,7 @@ foreach ($dsChiTiet as $item) {
                             </tr>
                             <tr>
                                 <th class="text-muted">Cán bộ lập:</th>
-                                <td><i class="bi bi-person-check me-1"></i> <?= e($phieu['ten_nhan_vien_lap'] ?? '') ?></td>
+                                <td><?= e($phieu['ten_nhan_vien_lap'] ?? '') ?></td>
                             </tr>
                             <?php if (!empty($phieu['ghi_chu'])): ?>
                                 <tr>
@@ -214,16 +216,16 @@ foreach ($dsChiTiet as $item) {
 
         <!-- Thẻ Mã QR Phiếu mượn -->
         <div class="col-lg-3">
-            <div class="card shadow-sm h-100 border-0 border-top border-dark border-3 text-center p-3 bg-white">
+            <div class="card shadow-sm h-100 text-center p-3 bg-white">
                 <div class="card-header bg-white py-2 border-0">
-                    <h6 class="card-title mb-0 fw-bold text-dark">
+                    <h6 class="tieu-de-khoi mb-0">
                         MÃ QR PHIẾU MƯỢN
                     </h6>
                 </div>
                 <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                    <div id="ticket_qr" data-qr="<?= e($phieu['ma_phieu']) ?>" data-qr-size="130" class="p-2 bg-white border rounded shadow-sm mb-2" style="min-width: 134px; min-height: 134px;"></div>
+                    <div id="ticket_qr" data-qr="<?= e($phieu['ma_phieu']) ?>" data-qr-size="130" class="p-2 bg-white border rounded shadow-sm mb-2 khung-qr-134"></div>
                     <div class="font-monospace fw-bold text-primary small"><?= e($phieu['ma_phieu']) ?></div>
-                    <small class="text-muted d-block mt-1" style="font-size: 11px;">
+                    <small class="text-muted d-block mt-1 chu-nho-11">
                         Quét mã này tại bàn trực để nhận trả nhanh thiết bị
                     </small>
                 </div>
@@ -234,8 +236,8 @@ foreach ($dsChiTiet as $item) {
     <!-- Danh sách thiết bị trong phiếu mượn -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">
-                <i class="bi bi-cpu me-2"></i>Danh sách thiết bị mượn (<?= $tongThietBi ?>)
+            <h5 class="tieu-de-khoi mb-0">
+                Danh sách thiết bị mượn (<?= $tongThietBi ?>)
             </h5>
             <div>
                 <span class="badge bg-light text-dark border">
@@ -247,11 +249,11 @@ foreach ($dsChiTiet as $item) {
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 50px;" class="text-center">STT</th>
-                        <th>Mã & Tên tài sản</th>
+                        <th class="text-center cot-50">STT</th>
+                        <th>Mã tài sản (QR)</th>
+                        <th>Tên tài sản</th>
                         <th>Loại tài sản</th>
                         <th>Hãng / Model</th>
-                        <th>Mã QR</th>
                         <th>Tình trạng lúc mượn</th>
                         <th>Trạng thái trả</th>
                         <th>Cán bộ nhận trả</th>
@@ -261,7 +263,6 @@ foreach ($dsChiTiet as $item) {
                     <?php if (empty($dsChiTiet)): ?>
                         <tr>
                             <td colspan="8" class="text-center py-4 text-muted">
-                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                                 Không có thiết bị nào trong phiếu mượn này.
                             </td>
                         </tr>
@@ -271,12 +272,14 @@ foreach ($dsChiTiet as $item) {
                             <tr class="<?= $daTra ? 'table-light text-muted' : '' ?>">
                                 <td class="text-center font-monospace"><?= $idx + 1 ?></td>
                                 <td>
+                                    <span class="badge bg-secondary font-monospace"><?= e($item['ma_tai_san'] ?? '') ?></span>
+                                </td>
+                                <td>
                                     <div class="fw-bold">
                                         <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$item['tai_san_id']) ?>" class="text-decoration-none <?= $daTra ? 'text-secondary' : 'text-primary' ?>">
                                             <?= e($item['ten_tai_san'] ?? '') ?>
                                         </a>
                                     </div>
-                                    <span class="badge bg-secondary font-monospace"><?= e($item['ma_tai_san'] ?? '') ?></span>
                                 </td>
                                 <td><?= e($item['ten_loai'] ?? '') ?></td>
                                 <td>
@@ -289,27 +292,24 @@ foreach ($dsChiTiet as $item) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <code class="text-dark bg-light px-2 py-1 rounded small"><?= e($item['ma_qr'] ?? '') ?></code>
-                                </td>
-                                <td>
                                     <?php
                                     $ttMuon = $item['tinh_trang_muon'] ?? 'BINH_THUONG';
                                     if ($ttMuon === 'BINH_THUONG') {
-                                        echo '<span class="badge bg-success-subtle text-success border border-success-subtle">Bình thường</span>';
+                                        echo '<span class="huy-hieu huy-hieu-thanh-cong">Bình thường</span>';
                                     } elseif ($ttMuon === 'XUOC_VO') {
-                                        echo '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Trầy xước nhẹ</span>';
+                                        echo '<span class="huy-hieu huy-hieu-canh-bao">Trầy xước nhẹ</span>';
                                     } elseif ($ttMuon === 'THIEU_PHU_KIEN') {
-                                        echo '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Thiếu phụ kiện</span>';
+                                        echo '<span class="huy-hieu huy-hieu-canh-bao">Thiếu phụ kiện</span>';
                                     } else {
-                                        echo '<span class="badge bg-secondary">' . e($ttMuon) . '</span>';
+                                        echo '<span class="huy-hieu huy-hieu-xam">' . e($ttMuon) . '</span>';
                                     }
                                     ?>
                                 </td>
                                 <td>
                                     <?php if ($daTra): ?>
-                                        <span class="badge bg-success"><i class="bi bi-check2-circle"></i> Đã trả</span>
+                                        <span class="huy-hieu huy-hieu-thanh-cong">Đã trả</span>
                                         <div class="small text-muted mt-1">
-                                            <i class="bi bi-clock"></i> <?= dinh_dang_ngay_gio($item['thoi_gian_tra']) ?>
+                                            <?= dinh_dang_ngay_gio($item['thoi_gian_tra']) ?>
                                         </div>
                                         <?php if (!empty($item['tinh_trang_tra'])): ?>
                                             <div class="small mt-1">
@@ -322,7 +322,7 @@ foreach ($dsChiTiet as $item) {
                                             </div>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Chưa trả</span>
+                                        <span class="huy-hieu huy-hieu-canh-bao">Chưa trả</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -354,40 +354,7 @@ foreach ($dsChiTiet as $item) {
         </div>
     </div>
 </div>
-
-<style>
-@media print {
-    header, nav, #sidebarMenu, .breadcrumb, .btn, .alert, footer {
-        display: none !important;
-    }
-    body {
-        background-color: #ffffff !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        color: #000000 !important;
-    }
-    .container-fluid {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 10px !important;
-    }
-    .card {
-        border: 1px solid #333333 !important;
-        box-shadow: none !important;
-        margin-bottom: 15px !important;
-    }
-    .card-header {
-        background-color: #f8f9fa !important;
-        border-bottom: 1px solid #333333 !important;
-    }
-    .table {
-        border-color: #333333 !important;
-    }
-    .d-print-block {
-        display: block !important;
-    }
-}
-</style>
+</div>
 
 <!-- Nạp thư viện tạo mã QR offline -->
 <script src="<?= url('assets/vendor/qrcode/qrcode.js') ?>"></script>

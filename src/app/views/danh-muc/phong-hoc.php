@@ -21,13 +21,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <!-- Tiêu đề trang & Nút tác vụ -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<div class="thanh-cong-cu-trang mb-3">
     <div>
         <h1 class="tieu-de-trang mb-0">Quản lý danh mục</h1>
         <div class="mo-ta-phu">Cấu hình phòng học, phòng trực và loại tài sản trong hệ thống.</div>
     </div>
     <button type="button" class="btn btn-chinh" data-bs-toggle="modal" data-bs-target="#modalPhongHoc" onclick="moModalThem()">
-        + Thêm phòng học mới
+        <?= icon('plus', 'bieu-tuong-sm') ?>
+        <span>Thêm phòng học mới</span>
     </button>
 </div>
 
@@ -54,12 +55,21 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <div class="the-noi-dung p-3 mb-4">
     <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="GET" class="row g-2 align-items-center">
         <div class="col-12 col-md-5">
-            <input type="text" name="q" class="o-nhap" placeholder="Tìm theo mã phòng (B31.101), tên phòng, tòa nhà..." value="<?= e($tuKhoa ?? '') ?>">
+            <div class="o-tim-kiem">
+                <?= icon('search', 'bieu-tuong-sm') ?>
+                <input type="text" name="q" class="o-nhap" placeholder="Tìm theo mã phòng (B31.101), tên phòng, tòa nhà..." value="<?= e($tuKhoa ?? '') ?>">
+            </div>
         </div>
         <div class="col-auto d-flex gap-2">
-            <button type="submit" class="btn btn-chinh">Tìm kiếm</button>
+            <button type="submit" class="btn btn-chinh">
+                <?= icon('search', 'bieu-tuong-sm') ?>
+                <span>Tìm kiếm</span>
+            </button>
             <?php if (!empty($tuKhoa)): ?>
-                <a href="<?= url('danh-muc/phong-hoc.php') ?>" class="btn btn-phu">Xóa lọc</a>
+                <a href="<?= url('danh-muc/phong-hoc.php') ?>" class="btn btn-phu">
+                    <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                    <span>Xóa lọc</span>
+                </a>
             <?php endif; ?>
         </div>
         <div class="col text-end mo-ta-phu mb-0">
@@ -78,12 +88,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <table class="bang-du-lieu mb-0">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">Mã phòng</th>
-                        <th style="min-width: 180px;">Tên phòng</th>
-                        <th style="width: 140px;">Tòa / Tầng</th>
+                        <th class="cot-120">Mã phòng</th>
+                        <th class="cot-min-180">Tên phòng</th>
+                        <th class="cot-140">Tòa / Tầng</th>
                         <th>Thiết bị cố định (Hãng / Model tương thích)</th>
-                        <th class="text-center" style="width: 130px;">Trạng thái</th>
-                        <th class="text-end" style="width: 160px;">Thao tác</th>
+                        <th class="text-center cot-130">Trạng thái</th>
+                        <th class="text-end cot-160">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,27 +154,42 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-1">
-                                        <button type="button" class="btn btn-sm btn-phu"
+                                        <?php
+                                        $chiTietPh = [
+                                            ['nhan' => 'Mã phòng học', 'gia_tri' => $ph['ma_phong'] ?? ''],
+                                            ['nhan' => 'Tên phòng học', 'gia_tri' => $ph['ten_phong'] ?? ''],
+                                            ['nhan' => 'Tòa nhà / Tầng', 'gia_tri' => (($ph['toa_nha'] ?? '') ?: 'Tòa -') . ' / Tầng ' . (($ph['tang'] ?? '') ?: '-')],
+                                            ['nhan' => 'Thiết bị đang dùng', 'gia_tri' => (int)($ph['so_tai_san_hien_tai'] ?? 0) . ' thiết bị'],
+                                            ['nhan' => 'Trạng thái', 'gia_tri' => (int)($ph['dang_hoat_dong'] ?? 0) === 1 ? 'Đang mở' : 'Tạm đóng'],
+                                            ['nhan' => 'Ghi chú', 'gia_tri' => ($ph['ghi_chu'] ?? '') ?: '---'],
+                                        ];
+                                        ?>
+                                        <button type="button" class="btn-bieu-tuong" aria-label="Xem" title="Xem"
+                                            onclick='xemChiTietNhanh(<?= json_encode("Phòng học: " . ($ph["ma_phong"] ?? "")) ?>, <?= json_encode($chiTietPh, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                                            <?= icon('eye', 'bieu-tuong-sm') ?>
+                                        </button>
+                                        <button type="button" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa"
                                             onclick='moModalSua(<?= json_encode($ph, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            Sửa
+                                            <?= icon('pencil', 'bieu-tuong-sm') ?>
                                         </button>
 
-                                        <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng học này?');">
+                                        <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc muốn đổi trạng thái phòng học này?">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-phu">
-                                                <?= (int)$ph['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
+                                            <?php $nhanKhoaMoPh = (int)$ph['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở'; ?>
+                                            <button type="submit" class="btn-bieu-tuong" aria-label="<?= $nhanKhoaMoPh ?>" title="<?= $nhanKhoaMoPh ?>">
+                                                <?= icon((int)$ph['dang_hoat_dong'] === 1 ? 'lock' : 'rotate-ccw', 'bieu-tuong-sm') ?>
                                             </button>
                                         </form>
 
                                         <?php if ((int)$ph['so_tai_san_hien_tai'] === 0 && (int)$ph['so_tai_san_gan_nhan'] === 0): ?>
-                                            <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn XÓA phòng học này?');">
+                                            <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc muốn XÓA phòng học này?">
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
-                                                <button type="submit" class="btn btn-sm btn-phu text-danger">
-                                                    Xóa
+                                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
+                                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -189,7 +214,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
             <div class="modal-header border-bottom">
                 <h5 class="modal-title fw-bold" id="modalPhTieuDe">Thêm phòng học mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
 
             <div class="modal-body p-4">
@@ -233,7 +258,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <p class="mo-ta-phu mb-0">Dùng để so khớp độ tương thích khi mượn hoặc điều chuyển remote, micro...</p>
                         </div>
                         <button type="button" class="btn btn-sm btn-phu" onclick="themDongThietBi()">
-                            + Thêm thiết bị
+                            <?= icon('plus', 'bieu-tuong-sm') ?>
+                            <span>Thêm thiết bị</span>
                         </button>
                     </div>
 
@@ -244,8 +270,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
 
             <div class="modal-footer border-top bg-light">
-                <button type="button" class="btn btn-phu" data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn btn-chinh">Lưu phòng học</button>
+                <button type="button" class="btn btn-phu" data-bs-dismiss="modal">
+                    <?= icon('x', 'bieu-tuong-sm') ?>
+                    <span>Hủy</span>
+                </button>
+                <button type="submit" class="btn btn-chinh">
+                    <?= icon('save', 'bieu-tuong-sm') ?>
+                    <span>Lưu phòng học</span>
+                </button>
             </div>
         </form>
     </div>
