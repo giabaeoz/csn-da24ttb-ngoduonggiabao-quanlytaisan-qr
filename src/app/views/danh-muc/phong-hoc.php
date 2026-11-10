@@ -11,9 +11,12 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var list<array<string, mixed>> $danhSachPhongHoc
+ * @var string $tuKhoa
+ */
+
 $tieuDeTrang = 'Quản lý phòng học';
-$danhSachPhongHoc = $danhSachPhongHoc ?? [];
-$tuKhoa = $tuKhoa ?? '';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 

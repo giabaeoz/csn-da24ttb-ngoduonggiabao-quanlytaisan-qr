@@ -10,6 +10,10 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var array<string, mixed> $phieu
+ */
+
 $tieuDeTrang = 'Phiếu điều chuyển: ' . ($phieu['ma_dieu_chuyen'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 $dsChiTiet = $phieu['chi_tiet'] ?? [];

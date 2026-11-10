@@ -10,6 +10,10 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var list<array<string, mixed>> $danhSachLoai
+ */
+
 $tieuDeTrang = 'Quản lý loại tài sản';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

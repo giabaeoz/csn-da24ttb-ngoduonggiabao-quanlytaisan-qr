@@ -10,6 +10,11 @@ if (!defined('APP_KHOI_DONG')) {
     http_response_code(403);
     exit;
 }
+
+/**
+ * @var list<array<string, mixed>> $danhSachIn
+ * @var string $tieuDeTrang
+ */
 ?>
 <!DOCTYPE html>
 <html lang="vi">

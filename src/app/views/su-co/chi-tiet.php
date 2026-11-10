@@ -10,15 +10,17 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
-$suCo = $suCo ?? [];
-$danhSachPhongHoc = $danhSachPhongHoc ?? [];
+/**
+ * @var array<string, mixed> $suCo
+ * @var list<array<string, mixed>> $danhSachPhongHoc
+ */
 
 $tieuDeTrang = 'Chi tiết sự cố: ' . ($suCo['ma_su_co'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 
-$chuaXuLy = (($suCo['trang_thai'] ?? '') === 'CHUA_XU_LY');
-$dangXuLy = (($suCo['trang_thai'] ?? '') === 'DANG_XU_LY');
-$daXuLy = (($suCo['trang_thai'] ?? '') === 'DA_XU_LY');
+$chuaXuLy = ($suCo['trang_thai'] === 'CHUA_XU_LY');
+$dangXuLy = ($suCo['trang_thai'] === 'DANG_XU_LY');
+$daXuLy = ($suCo['trang_thai'] === 'DA_XU_LY');
 $coQuyenXuLy = co_quyen('xu_ly_su_co');
 ?>
 
@@ -184,7 +186,7 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                     <div class="col-6 fw-semibold text-end"><?= e($suCo['ten_loai_tai_san'] ?? 'Thiết bị') ?></div>
 
                     <div class="col-6 text-muted">Hãng / Model:</div>
-                    <div class="col-6 fw-semibold text-end"><?= e(trim(($suCo['hang_san_xuat'] ?? '') . ' ' . ($suCo['model'] ?? ''))) ?: '—' ?></div>
+                    <div class="col-6 fw-semibold text-end"><?= e(trim(($suCo['hang_san_xuat'] ?? '') . ' ' . ($suCo['model'] ?? ''))) ?: '-' ?></div>
 
                     <div class="col-6 text-muted">Bàn trực quản lý:</div>
                     <div class="col-6 fw-semibold text-end"><?= e($suCo['ten_phong_truc'] ?? 'Kho trực') ?></div>

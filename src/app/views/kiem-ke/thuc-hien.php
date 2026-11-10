@@ -10,6 +10,14 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var array<string, mixed> $dot
+ * @var list<array<string, mixed>> $danhSachChiTiet
+ * @var string $thongBaoLoi
+ * @var string $boLocChiTiet
+ * @var list<array<string, mixed>> $dotGanDay
+ */
+
 $tieuDeTrang = 'Kiểm kê';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 

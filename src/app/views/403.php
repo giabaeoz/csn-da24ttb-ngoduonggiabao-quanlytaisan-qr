@@ -10,6 +10,10 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var string|null $noiDungLoi
+ */
+
 $tieuDeTrang = '403 - Truy cập bị từ chối';
 $nguoiDung = nguoi_dung_hien_tai();
 ?>

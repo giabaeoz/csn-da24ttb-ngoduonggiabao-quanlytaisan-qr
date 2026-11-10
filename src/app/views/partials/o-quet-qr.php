@@ -12,6 +12,19 @@
 
 declare(strict_types=1);
 
+if (!defined('APP_KHOI_DONG')) {
+    http_response_code(403);
+    exit;
+}
+
+/**
+ * @var string|null $tieuDeOQuet
+ * @var string|null $placeholderNhaptay
+ * @var string|null $idInputTay
+ * @var string|null $idBtnThem
+ * @var string|null $tenHamXuLy
+ */
+
 $tieuDeOQuet = $tieuDeOQuet ?? 'Quét mã QR bằng Camera hoặc Nhập tay';
 $placeholderNhaptay = $placeholderNhaptay ?? 'Quét tem QR hoặc nhập mã thiết bị (MC-0001, QR-D6-MC0001)...';
 $idInputTay = $idInputTay ?? 'ma_quet_nhap';

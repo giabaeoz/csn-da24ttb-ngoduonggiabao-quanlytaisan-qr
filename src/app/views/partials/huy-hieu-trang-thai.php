@@ -11,6 +11,11 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var string $ma
+ * @var string|null $nhan
+ */
+
 $ma = $ma ?? '';
 $nhan = $nhan ?? null;
 

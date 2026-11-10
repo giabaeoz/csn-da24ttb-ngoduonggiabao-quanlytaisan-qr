@@ -5,6 +5,16 @@
 
 declare(strict_types=1);
 
+if (!defined('APP_KHOI_DONG')) {
+    http_response_code(403);
+    exit;
+}
+
+/**
+ * @var array<string, mixed> $dot
+ * @var list<array<string, mixed>> $danhSachChiTiet
+ */
+
 require dirname(__DIR__) . '/layout/dau-trang.php';
 $thongKe = $dot['thong_ke'];
 $laHoanTat = ($dot['trang_thai'] === KIEM_KE_HOAN_TAT);

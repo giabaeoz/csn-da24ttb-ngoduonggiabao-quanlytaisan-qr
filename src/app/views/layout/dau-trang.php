@@ -10,6 +10,10 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var string|null $tieuDeTrang
+ */
+
 $nguoiDung = nguoi_dung_hien_tai();
 $tieuDe = $tieuDeTrang ?? cau_hinh('ung_dung.ten', 'Quản lý tài sản bằng mã QR');
 $tepHienTai = basename($_SERVER['PHP_SELF'] ?? '');

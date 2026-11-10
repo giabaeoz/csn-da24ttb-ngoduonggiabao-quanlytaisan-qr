@@ -10,6 +10,11 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var string $thongBaoLoi
+ * @var string $tenDangNhapCu
+ */
+
 $tieuDe = 'Đăng nhập';
 ?>
 <!DOCTYPE html>

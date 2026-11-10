@@ -10,6 +10,11 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var array<string, mixed> $taiSan
+ * @var list<array<string, mixed>> $lichSuMuon
+ */
+
 $tieuDeTrang = 'Chi tiết thiết bị: ' . ($taiSan['ma_tai_san'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

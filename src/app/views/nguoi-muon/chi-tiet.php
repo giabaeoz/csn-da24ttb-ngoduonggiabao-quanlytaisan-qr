@@ -10,6 +10,11 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var array<string, mixed> $nguoiMuon
+ * @var list<array<string, mixed>> $lichSuMuon
+ */
+
 $tieuDeTrang = 'Hồ sơ người mượn: ' . ($nguoiMuon['ho_ten'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

@@ -13,6 +13,11 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var array<string, mixed> $phieu
+ * @var string $tieuDeTrang
+ */
+
 require dirname(__DIR__) . '/layout/dau-trang.php';
 $laDangMuon = ($phieu['trang_thai'] ?? '') === 'DANG_MUON';
 $quaHan = false;

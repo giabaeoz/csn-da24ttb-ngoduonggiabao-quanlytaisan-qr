@@ -10,6 +10,36 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var int $kpiThietBi
+ * @var int $kpiPhieuMuon
+ * @var int $kpiChuaTraDu
+ * @var int $kpiDaTraDu
+ * @var list<string> $chartLabels
+ * @var list<int> $chartMuon
+ * @var list<int> $chartTra
+ * @var list<string> $loaiLabels
+ * @var list<int> $loaiData
+ * @var int $tongThietBiLoai
+ * @var list<array<string, mixed>> $danhSach
+ * @var list<array<string, mixed>> $danhSachDc
+ * @var list<array<string, mixed>> $danhSachKk
+ * @var list<array<string, mixed>> $danhSachPhongHoc
+ * @var list<array<string, mixed>> $danhSachPhongTruc
+ * @var string $tuNgay
+ * @var string $denNgay
+ * @var string $tuKhoa
+ * @var string $trangThai
+ * @var string $tab
+ * @var int $phongHocId
+ * @var int $phongTrucFilter
+ * @var int $tongSo
+ * @var int $tongSoTrang
+ * @var int $trang
+ * @var int $offset
+ * @var array<string, mixed> $nguoiDung
+ */
+
 $tieuDeTrang = 'Tra cứu, thống kê';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

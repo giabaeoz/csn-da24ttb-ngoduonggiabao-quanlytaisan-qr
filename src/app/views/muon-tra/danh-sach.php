@@ -10,6 +10,18 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var list<array<string, mixed>> $danhSachPhieu
+ * @var list<array<string, mixed>> $danhSachPhongTruc
+ * @var string $tuKhoa
+ * @var string $trangThai
+ * @var int $phongTrucId
+ * @var string $ngayMuon
+ * @var int $trang
+ * @var int $tongSoTrang
+ * @var int $tongSo
+ */
+
 $tieuDeTrang = 'Lịch sử mượn - trả';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

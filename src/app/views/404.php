@@ -10,6 +10,10 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var string|null $noiDungLoi
+ */
+
 $tieuDeTrang = '404 - Không tìm thấy trang';
 ?>
 <!DOCTYPE html>

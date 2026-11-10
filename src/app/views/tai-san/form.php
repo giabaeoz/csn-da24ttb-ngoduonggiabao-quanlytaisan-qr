@@ -10,6 +10,15 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var bool $laThemMoi
+ * @var array<string, mixed> $taiSan
+ * @var list<array<string, mixed>> $danhSachLoai
+ * @var list<array<string, mixed>> $danhSachPhongTruc
+ * @var list<array<string, mixed>> $danhSachPhongHoc
+ * @var string $thongBaoLoi
+ */
+
 $tieuDeTrang = $laThemMoi ? 'Thêm thiết bị mới' : 'Chỉnh sửa thông tin thiết bị';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

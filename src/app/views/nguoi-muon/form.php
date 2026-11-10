@@ -10,6 +10,12 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var bool $laThemMoi
+ * @var array<string, mixed> $nguoiMuon
+ * @var string $thongBaoLoi
+ */
+
 $tieuDeTrang = $laThemMoi ? 'Thêm người mượn mới' : 'Chỉnh sửa hồ sơ người mượn';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>

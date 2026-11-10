@@ -10,11 +10,14 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+/**
+ * @var string $loi
+ * @var array<string, mixed>|null $taiSanChon
+ * @var array<string, mixed> $duLieu
+ * @var list<array<string, mixed>> $danhSachTaiSan
+ */
+
 $tieuDeTrang = 'Báo cáo sự cố thiết bị';
-$loi = $loi ?? '';
-$taiSanChon = $taiSanChon ?? null;
-$duLieu = $duLieu ?? ['tai_san_id' => 0, 'loai_su_co' => 'HU_HONG', 'mo_ta' => ''];
-$danhSachTaiSan = $danhSachTaiSan ?? [];
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
