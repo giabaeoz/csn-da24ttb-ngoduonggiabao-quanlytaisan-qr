@@ -11,6 +11,13 @@ if (!defined('APP_KHOI_DONG')) {
 }
 
 $tieuDeTrang = 'Quản lý sự cố & bảo trì';
+$thongKe = $thongKe ?? ['tong_so' => 0, 'so_chua_xu_ly' => 0, 'so_dang_xu_ly' => 0, 'so_da_xu_ly' => 0];
+$danhSachSuCo = $danhSachSuCo ?? [];
+$boLoc = $boLoc ?? [];
+$tongSo = $tongSo ?? 0;
+$tongTrang = $tongTrang ?? 1;
+$trangHienTai = $trangHienTai ?? 1;
+$danhSachPhongTruc = $danhSachPhongTruc ?? [];
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Giao diện Quản lý Phòng học & Thiết bị phòng - Chuẩn Design System
  */
@@ -11,6 +12,8 @@ if (!defined('APP_KHOI_DONG')) {
 }
 
 $tieuDeTrang = 'Quản lý phòng học';
+$danhSachPhongHoc = $danhSachPhongHoc ?? [];
+$tuKhoa = $tuKhoa ?? '';
 require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
@@ -82,90 +85,90 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </thead>
                 <tbody>
                     <?php if (empty($danhSachPhongHoc)): ?>
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">
-                            Không tìm thấy phòng học nào.
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Không tìm thấy phòng học nào.
+                            </td>
+                        </tr>
                     <?php else: ?>
-                    <?php foreach ($danhSachPhongHoc as $ph): 
-                        $thietBi = [];
-                        if (!empty($ph['thiet_bi_phong'])) {
-                            $thietBi = is_string($ph['thiet_bi_phong']) ? json_decode($ph['thiet_bi_phong'], true) : $ph['thiet_bi_phong'];
-                        }
-                    ?>
-                    <tr>
-                        <td class="fw-semibold text-primary">
-                            <span class="badge bg-light text-primary border">
-                                <?= e($ph['ma_phong']) ?>
-                            </span>
-                        </td>
-                        <td>
-                            <div class="fw-medium text-dark"><?= e($ph['ten_phong']) ?></div>
-                            <div class="text-muted small">
-                                Đang dùng: <strong><?= (int)$ph['so_tai_san_hien_tai'] ?></strong> thiết bị
-                                &bull; Gợi ý tem: <strong><?= (int)$ph['so_tai_san_gan_nhan'] ?></strong>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-light text-secondary border">
-                                <?= e($ph['toa_nha'] ?: 'Toà —') ?> / Tầng <?= e($ph['tang'] ?: '—') ?>
-                            </span>
-                        </td>
-                        <td>
-                            <?php if (empty($thietBi) || !is_array($thietBi)): ?>
-                                <span class="text-muted small">Chưa khai báo thiết bị cố định</span>
-                            <?php else: ?>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <?php foreach ($thietBi as $tb): ?>
-                                        <span class="badge bg-light text-dark border py-1 px-2 small">
-                                            <strong><?= e($tb['ten'] ?? 'Thiết bị') ?>:</strong>
-                                            <span class="text-primary"><?= e($tb['hang'] ?? '—') ?></span>
-                                            <?php if (!empty($tb['model'])): ?>
-                                                <span class="text-muted">(<?= e($tb['model']) ?>)</span>
-                                            <?php endif; ?>
-                                        </span>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-center">
-                            <?php if ((int)$ph['dang_hoat_dong'] === 1): ?>
-                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang mở</span>
-                            <?php else: ?>
-                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm đóng</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="text-end">
-                            <div class="d-flex justify-content-end gap-1">
-                                <button type="button" class="btn btn-sm btn-phu"
-                                        onclick='moModalSua(<?= json_encode($ph, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                    Sửa
-                                </button>
+                        <?php foreach ($danhSachPhongHoc as $ph):
+                            $thietBi = [];
+                            if (!empty($ph['thiet_bi_phong'])) {
+                                $thietBi = is_string($ph['thiet_bi_phong']) ? json_decode($ph['thiet_bi_phong'], true) : $ph['thiet_bi_phong'];
+                            }
+                        ?>
+                            <tr>
+                                <td class="fw-semibold text-primary">
+                                    <span class="badge bg-light text-primary border">
+                                        <?= e($ph['ma_phong']) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark"><?= e($ph['ten_phong']) ?></div>
+                                    <div class="text-muted small">
+                                        Đang dùng: <strong><?= (int)$ph['so_tai_san_hien_tai'] ?></strong> thiết bị
+                                        &bull; Gợi ý tem: <strong><?= (int)$ph['so_tai_san_gan_nhan'] ?></strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border">
+                                        <?= e($ph['toa_nha'] ?: 'Toà -') ?> / Tầng <?= e($ph['tang'] ?: '-') ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php if (empty($thietBi) || !is_array($thietBi)): ?>
+                                        <span class="text-muted small">Chưa khai báo thiết bị cố định</span>
+                                    <?php else: ?>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <?php foreach ($thietBi as $tb): ?>
+                                                <span class="badge bg-light text-dark border py-1 px-2 small">
+                                                    <strong><?= e($tb['ten'] ?? 'Thiết bị') ?>:</strong>
+                                                    <span class="text-primary"><?= e($tb['hang'] ?? '-') ?></span>
+                                                    <?php if (!empty($tb['model'])): ?>
+                                                        <span class="text-muted">(<?= e($tb['model']) ?>)</span>
+                                                    <?php endif; ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center">
+                                    <?php if ((int)$ph['dang_hoat_dong'] === 1): ?>
+                                        <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang mở</span>
+                                    <?php else: ?>
+                                        <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm đóng</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <button type="button" class="btn btn-sm btn-phu"
+                                            onclick='moModalSua(<?= json_encode($ph, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                                            Sửa
+                                        </button>
 
-                                <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng học này?');">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="hanh_dong" value="doi_trang_thai">
-                                    <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-phu">
-                                        <?= (int)$ph['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
-                                    </button>
-                                </form>
+                                        <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn đổi trạng thái phòng học này?');">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="hanh_dong" value="doi_trang_thai">
+                                            <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-phu">
+                                                <?= (int)$ph['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở' ?>
+                                            </button>
+                                        </form>
 
-                                <?php if ((int)$ph['so_tai_san_hien_tai'] === 0 && (int)$ph['so_tai_san_gan_nhan'] === 0): ?>
-                                <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn XÓA phòng học này?');">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="hanh_dong" value="xoa">
-                                    <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-phu text-danger">
-                                        Xóa
-                                    </button>
-                                </form>
-                                <?php endif; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                                        <?php if ((int)$ph['so_tai_san_hien_tai'] === 0 && (int)$ph['so_tai_san_gan_nhan'] === 0): ?>
+                                            <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn XÓA phòng học này?');">
+                                                <?= csrf_field() ?>
+                                                <input type="hidden" name="hanh_dong" value="xoa">
+                                                <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-phu text-danger">
+                                                    Xóa
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -246,16 +249,16 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <script>
-let demThietBi = 0;
+    let demThietBi = 0;
 
-function themDongThietBi(ten = '', hang = '', model = '') {
-    const container = document.getElementById('danhSachThietBiContainer');
-    const idx = demThietBi++;
+    function themDongThietBi(ten = '', hang = '', model = '') {
+        const container = document.getElementById('danhSachThietBiContainer');
+        const idx = demThietBi++;
 
-    const div = document.createElement('div');
-    div.className = 'row g-2 align-items-center bg-white p-2 rounded border dong-thiet-bi';
-    div.id = 'dong_tb_' + idx;
-    div.innerHTML = `
+        const div = document.createElement('div');
+        div.className = 'row g-2 align-items-center bg-white p-2 rounded border dong-thiet-bi';
+        div.id = 'dong_tb_' + idx;
+        div.innerHTML = `
         <div class="col-12 col-md-4">
             <input type="text" class="o-nhap py-1" name="thiet_bi_phong[${idx}][ten]" 
                    placeholder="Loại TB (Máy lạnh, Máy chiếu...)" value="${escapeHtml(ten)}" required>
@@ -274,71 +277,71 @@ function themDongThietBi(ten = '', hang = '', model = '') {
             </button>
         </div>
     `;
-    container.appendChild(div);
-}
-
-function xoaDongThietBi(id) {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-}
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-function moModalThem() {
-    document.getElementById('modalPhTieuDe').innerText = 'Thêm phòng học mới';
-    document.getElementById('modal_ph_id').value = '';
-    document.getElementById('modal_ph_ma').value = '';
-    document.getElementById('modal_ph_ma').readOnly = false;
-    document.getElementById('modal_ph_ten').value = '';
-    document.getElementById('modal_ph_toanha').value = '';
-    document.getElementById('modal_ph_tang').value = '';
-    document.getElementById('modal_ph_hoatdong').checked = true;
-
-    const container = document.getElementById('danhSachThietBiContainer');
-    container.innerHTML = '';
-    demThietBi = 0;
-    themDongThietBi('Máy lạnh', '', '');
-    themDongThietBi('Máy chiếu', '', '');
-}
-
-function moModalSua(ph) {
-    document.getElementById('modalPhTieuDe').innerText = 'Chỉnh sửa phòng học: ' + ph.ma_phong;
-    document.getElementById('modal_ph_id').value = ph.id;
-    document.getElementById('modal_ph_ma').value = ph.ma_phong;
-    document.getElementById('modal_ph_ten').value = ph.ten_phong;
-    document.getElementById('modal_ph_toanha').value = ph.toa_nha || '';
-    document.getElementById('modal_ph_tang').value = ph.tang || '';
-    document.getElementById('modal_ph_hoatdong').checked = parseInt(ph.dang_hoat_dong, 10) === 1;
-
-    const container = document.getElementById('danhSachThietBiContainer');
-    container.innerHTML = '';
-    demThietBi = 0;
-
-    let cacTb = [];
-    if (ph.thiet_bi_phong) {
-        cacTb = typeof ph.thiet_bi_phong === 'string' ? JSON.parse(ph.thiet_bi_phong) : ph.thiet_bi_phong;
+        container.appendChild(div);
     }
 
-    if (Array.isArray(cacTb) && cacTb.length > 0) {
-        cacTb.forEach(tb => {
-            themDongThietBi(tb.ten || '', tb.hang || '', tb.model || '');
-        });
-    } else {
+    function xoaDongThietBi(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.toString()
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function moModalThem() {
+        document.getElementById('modalPhTieuDe').innerText = 'Thêm phòng học mới';
+        document.getElementById('modal_ph_id').value = '';
+        document.getElementById('modal_ph_ma').value = '';
+        document.getElementById('modal_ph_ma').readOnly = false;
+        document.getElementById('modal_ph_ten').value = '';
+        document.getElementById('modal_ph_toanha').value = '';
+        document.getElementById('modal_ph_tang').value = '';
+        document.getElementById('modal_ph_hoatdong').checked = true;
+
+        const container = document.getElementById('danhSachThietBiContainer');
+        container.innerHTML = '';
+        demThietBi = 0;
         themDongThietBi('Máy lạnh', '', '');
         themDongThietBi('Máy chiếu', '', '');
     }
 
-    const modal = new bootstrap.Modal(document.getElementById('modalPhongHoc'));
-    modal.show();
-}
+    function moModalSua(ph) {
+        document.getElementById('modalPhTieuDe').innerText = 'Chỉnh sửa phòng học: ' + ph.ma_phong;
+        document.getElementById('modal_ph_id').value = ph.id;
+        document.getElementById('modal_ph_ma').value = ph.ma_phong;
+        document.getElementById('modal_ph_ten').value = ph.ten_phong;
+        document.getElementById('modal_ph_toanha').value = ph.toa_nha || '';
+        document.getElementById('modal_ph_tang').value = ph.tang || '';
+        document.getElementById('modal_ph_hoatdong').checked = parseInt(ph.dang_hoat_dong, 10) === 1;
+
+        const container = document.getElementById('danhSachThietBiContainer');
+        container.innerHTML = '';
+        demThietBi = 0;
+
+        let cacTb = [];
+        if (ph.thiet_bi_phong) {
+            cacTb = typeof ph.thiet_bi_phong === 'string' ? JSON.parse(ph.thiet_bi_phong) : ph.thiet_bi_phong;
+        }
+
+        if (Array.isArray(cacTb) && cacTb.length > 0) {
+            cacTb.forEach(tb => {
+                themDongThietBi(tb.ten || '', tb.hang || '', tb.model || '');
+            });
+        } else {
+            themDongThietBi('Máy lạnh', '', '');
+            themDongThietBi('Máy chiếu', '', '');
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('modalPhongHoc'));
+        modal.show();
+    }
 </script>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

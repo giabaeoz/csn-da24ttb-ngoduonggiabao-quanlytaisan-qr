@@ -10,12 +10,15 @@ if (!defined('APP_KHOI_DONG')) {
     exit;
 }
 
+$suCo = $suCo ?? [];
+$danhSachPhongHoc = $danhSachPhongHoc ?? [];
+
 $tieuDeTrang = 'Chi tiết sự cố: ' . ($suCo['ma_su_co'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
 
-$chuaXuLy = ($suCo['trang_thai'] === 'CHUA_XU_LY');
-$dangXuLy = ($suCo['trang_thai'] === 'DANG_XU_LY');
-$daXuLy = ($suCo['trang_thai'] === 'DA_XU_LY');
+$chuaXuLy = (($suCo['trang_thai'] ?? '') === 'CHUA_XU_LY');
+$dangXuLy = (($suCo['trang_thai'] ?? '') === 'DANG_XU_LY');
+$daXuLy = (($suCo['trang_thai'] ?? '') === 'DA_XU_LY');
 $coQuyenXuLy = co_quyen('xu_ly_su_co');
 ?>
 
