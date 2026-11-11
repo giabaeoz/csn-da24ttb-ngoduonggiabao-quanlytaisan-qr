@@ -110,7 +110,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                     </div>
                     <div class="col-6">
                         <label class="form-label">Loại kiểm kê</label>
-                        <input type="text" class="form-control" value="<?= e(TEN_LOAI_KIEM_KE[$dot['loai_kiem_ke'] ?? ''] ?? ($dot['loai_kiem_ke'] ?? '')) ?>" readonly>
+                        <input type="text" class="form-control" value="<?= e(nhan_loai_kiem_ke($dot['loai_kiem_ke'] ?? '')) ?>" readonly>
                     </div>
                 </div>
 
@@ -364,7 +364,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                         <tr>
                             <td>
                                 <div class="fw-semibold text-primary font-monospace"><?= e($d['ma_dot_kiem_ke'] ?? '') ?></div>
-                                <div class="mo-ta-phu"><?= e(TEN_LOAI_KIEM_KE[$d['loai_kiem_ke'] ?? ''] ?? ($d['loai_kiem_ke'] ?? '')) ?> • <?= !empty($d['thoi_gian_bat_dau']) ? date('d/m/Y', strtotime((string)$d['thoi_gian_bat_dau'])) : '' ?></div>
+                                <div class="mo-ta-phu"><?= e(nhan_loai_kiem_ke($d['loai_kiem_ke'] ?? '')) ?> • <?= !empty($d['thoi_gian_bat_dau']) ? date('d/m/Y', strtotime((string)$d['thoi_gian_bat_dau'])) : '' ?></div>
                             </td>
                             <td>Phòng <?= e($d['ten_phong_truc'] ?? '') ?></td>
                             <td>
@@ -387,18 +387,18 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     </div>
 </div>
 
-<div class="modal fade" id="modalGhiNhan" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalGhiNhan" tabindex="-1" aria-labelledby="modalGhiNhanTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form action="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$dot['id']) ?>" method="POST" onsubmit="chuanBiLuuGhiNhan()">
+            <form action="<?= url('kiem-ke/thuc-hien.php?id=' . (int)($dot['id'] ?? 0)) ?>" method="POST" onsubmit="chuanBiLuuGhiNhan()">
                 <?= csrf_field() ?>
                 <input type="hidden" name="hanh_dong" value="ghi_nhan">
-                <input type="hidden" name="dot_kiem_ke_id" value="<?= (int)$dot['id'] ?>">
+                <input type="hidden" name="dot_kiem_ke_id" value="<?= (int)($dot['id'] ?? 0) ?>">
                 <input type="hidden" name="chi_tiet_id" id="gn_chi_tiet_id">
                 <input type="hidden" name="tai_san_id" id="gn_tai_san_id">
 
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fs-6 fw-semibold">Đối chiếu thiết bị</h5>
+                    <h5 class="modal-title fs-6 fw-semibold" id="modalGhiNhanTitle">Đối chiếu thiết bị</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body p-4">

@@ -83,6 +83,12 @@ const LOAI_KIEM_KE_CUOI_BUOI = 'CUOI_BUOI';
 const LOAI_KIEM_KE_DINH_KY   = 'DINH_KY';
 const LOAI_KIEM_KE_DOT_XUAT  = 'DOT_XUAT';
 
+const TEN_LOAI_KIEM_KE = [
+    LOAI_KIEM_KE_CUOI_BUOI => 'Cuối buổi trực',
+    LOAI_KIEM_KE_DINH_KY   => 'Định kỳ',
+    LOAI_KIEM_KE_DOT_XUAT  => 'Đột xuất',
+];
+
 // =====================================================================
 // 7. SỰ CỐ TÀI SẢN (su_co_tai_san.trang_thai & loai_su_co)
 // =====================================================================
