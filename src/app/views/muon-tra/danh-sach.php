@@ -176,9 +176,16 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <?php endif; ?>
                     </td>
                     <td class="text-end pe-3">
-                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="btn-bieu-tuong" aria-label="Chi tiết" title="Chi tiết">
-                            <?= icon('eye', 'bieu-tuong-sm') ?>
-                        </a>
+                        <div class="d-inline-flex gap-1 align-items-center">
+                            <?php if ($pm['trang_thai'] === 'DANG_MUON' && co_quyen('nghiep_vu_muon_tra')): ?>
+                                <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode($pm['ma_phieu_muon'])) ?>" class="btn-vien-thuoc">
+                                    <span>Nhận trả</span>
+                                </a>
+                            <?php endif; ?>
+                            <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="btn-vien-thuoc">
+                                <span>Chi tiết</span>
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>

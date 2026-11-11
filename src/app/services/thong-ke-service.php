@@ -493,3 +493,379 @@ function thong_ke_hoat_dong_gan_day(int $limit = 8, ?int $phongTrucId = null): a
 
     return $rows;
 }
+
+// =====================================================================
+// BỔ SUNG CÁC HÀM NGHIỆP VỤ BẢNG ĐIỀU KHIỂN TỔNG QUAN (MỤC 5.9)
+// =====================================================================
+
+/**
+ * Xác định ID phòng trực an toàn của người dùng (truy vấn lại từ CSDL, không tin Session).
+ */
+function tong_quan_lay_phong_truc_id(mysqli $db, array $nguoiDung): ?int {
+    $vaiTro = (string)($nguoiDung['vai_tro'] ?? '');
+    if ($vaiTro !== 'NHAN_VIEN') {
+        return null; // QUAN_LY và QUAN_TRI xem toàn hệ thống
+    }
+
+    $nvId = (int)($nguoiDung['id'] ?? 0);
+    if ($nvId <= 0) {
+        return -1;
+    }
+    $stmt = $db->prepare("SELECT vai_tro, phong_truc_id FROM nhan_vien WHERE id = ? LIMIT 1");
+    $stmt->bind_param('i', $nvId);
+    $stmt->execute();
+    $nv = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$nv || empty($nv['phong_truc_id'])) {
+        return -1; // Không tồn tại hoặc chưa phân bàn trực -> không có quyền xem tài sản bàn khác
+    }
+    return (int)$nv['phong_truc_id'];
+}
+
+/**
+ * 1. Số liệu tổng quan 4 thẻ KPI và vành khuyên:
+ *    Đảm bảo quy tắc: tong_tai_san = co_the_muon + dang_muon + khac.
+ *
+ * @param mysqli $db
+ * @param array $nguoiDung
+ * @return array{tong_tai_san: int, co_the_muon: int, dang_muon: int, khac: int, qua_han: int}
+ */
+function tong_quan_so_lieu(mysqli $db, array $nguoiDung): array {
+    $phongTrucId = tong_quan_lay_phong_truc_id($db, $nguoiDung);
+
+    $whereTs = "1=1";
+    $wherePm = "1=1";
+    if ($phongTrucId !== null) {
+        $whereTs = "ts.phong_truc_id = " . (int)$phongTrucId;
+        $wherePm = "pm.phong_truc_id = " . (int)$phongTrucId;
+    }
+
+    // Đếm tài sản theo các nhóm trạng thái
+    $sqlTs = "SELECT 
+        COUNT(*) AS tong_tai_san,
+        SUM(CASE WHEN ts.trang_thai = 'SAN_SANG' AND ts.tinh_trang = 'TOT' THEN 1 ELSE 0 END) AS co_the_muon,
+        SUM(CASE WHEN ts.trang_thai = 'DANG_MUON' THEN 1 ELSE 0 END) AS dang_muon
+    FROM tai_san ts WHERE $whereTs";
+    $rowTs = $db->query($sqlTs)->fetch_assoc();
+
+    $tong = (int)($rowTs['tong_tai_san'] ?? 0);
+    $coTheMuon = (int)($rowTs['co_the_muon'] ?? 0);
+    $dangMuon = (int)($rowTs['dang_muon'] ?? 0);
+    $khac = max(0, $tong - $coTheMuon - $dangMuon);
+
+    // Đếm số lượng phiếu mượn quá hạn (còn thiết bị chưa trả và hạn trả < hiện tại)
+    $sqlQh = "SELECT COUNT(DISTINCT pm.id) AS so_qua_han
+              FROM phieu_muon pm
+              JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
+              WHERE pm.trang_thai = 'DANG_MUON'
+                AND ctm.thoi_gian_tra IS NULL
+                AND pm.han_tra < NOW()
+                AND $wherePm";
+    $rowQh = $db->query($sqlQh)->fetch_assoc();
+    $quaHan = (int)($rowQh['so_qua_han'] ?? 0);
+
+    return [
+        'tong_tai_san' => $tong,
+        'co_the_muon'  => $coTheMuon,
+        'dang_muon'    => $dangMuon,
+        'khac'         => $khac,
+        'qua_han'      => $quaHan,
+    ];
+}
+
+/**
+ * 2. Xu hướng mượn – trả trong tuần (T2 đến CN).
+ *
+ * @param mysqli $db
+ * @param array $nguoiDung
+ * @param int $tuan 0 = tuần này, 1 = tuần trước...
+ * @return array
+ */
+function tong_quan_xu_huong_tuan(mysqli $db, array $nguoiDung, int $tuan = 0): array {
+    $phongTrucId = tong_quan_lay_phong_truc_id($db, $nguoiDung);
+
+    $wherePm = "1=1";
+    if ($phongTrucId !== null) {
+        $wherePm = "pm.phong_truc_id = " . (int)$phongTrucId;
+    }
+
+    // Tính mốc Thứ Hai và Chủ Nhật của tuần chọn
+    $tz = new DateTimeZone('Asia/Ho_Chi_Minh');
+    $now = new DateTime('now', $tz);
+    $thuHienTai = (int)$now->format('N'); // 1 = T2, 7 = CN
+
+    $thuHai = clone $now;
+    $thuHai->modify('-' . ($thuHienTai - 1) . ' days')->setTime(0, 0, 0);
+    if ($tuan > 0) {
+        $thuHai->modify('-' . ($tuan * 7) . ' days');
+    }
+
+    $chuNhat = clone $thuHai;
+    $chuNhat->modify('+6 days')->setTime(23, 59, 59);
+
+    $tuNgayStr = $thuHai->format('Y-m-d 00:00:00');
+    $denNgayStr = $chuNhat->format('Y-m-d 23:59:59');
+
+    // Lấy số lượt mượn (số dòng chi tiết mượn) theo ngày
+    $sqlMuon = "SELECT DATE(pm.thoi_gian_muon) AS ngay, COUNT(ctm.id) AS so_luot
+                FROM chi_tiet_muon ctm
+                JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                WHERE pm.thoi_gian_muon BETWEEN ? AND ?
+                  AND $wherePm
+                GROUP BY DATE(pm.thoi_gian_muon)";
+    $stmtM = $db->prepare($sqlMuon);
+    $stmtM->bind_param('ss', $tuNgayStr, $denNgayStr);
+    $stmtM->execute();
+    $rowsM = $stmtM->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmtM->close();
+
+    $mapMuon = [];
+    foreach ($rowsM as $r) {
+        $mapMuon[$r['ngay']] = (int)$r['so_luot'];
+    }
+
+    // Lấy số lượt trả (số dòng chi tiết có thoi_gian_tra) theo ngày
+    $sqlTra = "SELECT DATE(ctm.thoi_gian_tra) AS ngay, COUNT(ctm.id) AS so_luot
+               FROM chi_tiet_muon ctm
+               JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+               WHERE ctm.thoi_gian_tra IS NOT NULL
+                 AND ctm.thoi_gian_tra BETWEEN ? AND ?
+                 AND $wherePm
+               GROUP BY DATE(ctm.thoi_gian_tra)";
+    $stmtT = $db->prepare($sqlTra);
+    $stmtT->bind_param('ss', $tuNgayStr, $denNgayStr);
+    $stmtT->execute();
+    $rowsT = $stmtT->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmtT->close();
+
+    $mapTra = [];
+    foreach ($rowsT as $r) {
+        $mapTra[$r['ngay']] = (int)$r['so_luot'];
+    }
+
+    $labels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+    $dataMuon = [];
+    $dataTra = [];
+    $tongMuon = 0;
+    $tongTra = 0;
+
+    $conTroNgay = clone $thuHai;
+    for ($i = 0; $i < 7; $i++) {
+        $k = $conTroNgay->format('Y-m-d');
+        $m = $mapMuon[$k] ?? 0;
+        $t = $mapTra[$k] ?? 0;
+        $dataMuon[] = $m;
+        $dataTra[] = $t;
+        $tongMuon += $m;
+        $tongTra += $t;
+        $conTroNgay->modify('+1 day');
+    }
+
+    return [
+        'labels'     => $labels,
+        'muon'       => $dataMuon,
+        'tra'        => $dataTra,
+        'tong_muon'  => $tongMuon,
+        'tong_tra'   => $tongTra,
+        'tu_ngay'    => $thuHai->format('d/m'),
+        'den_ngay'   => $chuNhat->format('d/m'),
+    ];
+}
+
+/**
+ * 3. Lượt mượn theo nhóm tài sản trong tuần đã chọn:
+ *    Đảm bảo quy tắc: Tổng số lượt theo nhóm phải khớp chính xác với tong_muon của biểu đồ xu hướng.
+ *
+ * @param mysqli $db
+ * @param array $nguoiDung
+ * @param int $tuan
+ * @return array{labels: list<string>, data: list<int>, tong: int}
+ */
+function tong_quan_theo_nhom(mysqli $db, array $nguoiDung, int $tuan = 0): array {
+    $phongTrucId = tong_quan_lay_phong_truc_id($db, $nguoiDung);
+
+    $wherePm = "1=1";
+    if ($phongTrucId !== null) {
+        $wherePm = "pm.phong_truc_id = " . (int)$phongTrucId;
+    }
+
+    $tz = new DateTimeZone('Asia/Ho_Chi_Minh');
+    $now = new DateTime('now', $tz);
+    $thuHienTai = (int)$now->format('N');
+
+    $thuHai = clone $now;
+    $thuHai->modify('-' . ($thuHienTai - 1) . ' days')->setTime(0, 0, 0);
+    if ($tuan > 0) {
+        $thuHai->modify('-' . ($tuan * 7) . ' days');
+    }
+
+    $chuNhat = clone $thuHai;
+    $chuNhat->modify('+6 days')->setTime(23, 59, 59);
+
+    $tuNgayStr = $thuHai->format('Y-m-d 00:00:00');
+    $denNgayStr = $chuNhat->format('Y-m-d 23:59:59');
+
+    $sql = "SELECT COALESCE(lts.ten_loai, 'Khác') AS ten_nhom, COUNT(ctm.id) AS so_luot
+            FROM chi_tiet_muon ctm
+            JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+            JOIN tai_san ts ON ctm.tai_san_id = ts.id
+            LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.id
+            WHERE pm.thoi_gian_muon BETWEEN ? AND ?
+              AND $wherePm
+            GROUP BY COALESCE(lts.ten_loai, 'Khác')
+            ORDER BY so_luot DESC";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param('ss', $tuNgayStr, $denNgayStr);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    $tong = 0;
+    $labels = [];
+    $data = [];
+
+    // Lấy tối đa 4 nhóm lớn nhất, còn lại gộp thành "Khác"
+    $gioiHan = 4;
+    $soDong = count($rows);
+    $nhomKhacSoLuong = 0;
+
+    for ($i = 0; $i < $soDong; $i++) {
+        $sl = (int)$rows[$i]['so_luot'];
+        $tong += $sl;
+        if ($i < $gioiHan) {
+            $labels[] = $rows[$i]['ten_nhom'];
+            $data[] = $sl;
+        } else {
+            $nhomKhacSoLuong += $sl;
+        }
+    }
+
+    if ($nhomKhacSoLuong > 0) {
+        $labels[] = 'Khác';
+        $data[] = $nhomKhacSoLuong;
+    }
+
+    // Nếu không có dữ liệu, trả về mảng rỗng để vẽ trục
+    return [
+        'labels' => $labels,
+        'data'   => $data,
+        'tong'   => $tong,
+    ];
+}
+
+/**
+ * 4. Bảng "Lượt mượn cần theo dõi":
+ *    Các phiếu mượn còn thiết bị chưa trả, sắp xếp theo hạn trả tăng dần (quá hạn lên đầu).
+ *
+ * @param mysqli $db
+ * @param array $nguoiDung
+ * @param int $gioiHan
+ * @return array
+ */
+function tong_quan_can_theo_doi(mysqli $db, array $nguoiDung, int $gioiHan = 5): array {
+    $phongTrucId = tong_quan_lay_phong_truc_id($db, $nguoiDung);
+
+    $where = "pm.trang_thai = 'DANG_MUON'";
+    if ($phongTrucId !== null) {
+        $where .= " AND pm.phong_truc_id = " . (int)$phongTrucId;
+    }
+
+    $sql = "SELECT pm.id, pm.ma_phieu_muon, pm.han_tra, pm.thoi_gian_muon,
+                   nm.ho_ten AS ho_ten_nguoi_muon, nm.ma_so_truong,
+                   ph.ma_phong,
+                   COUNT(ctm.id) AS tong_thiet_bi,
+                   SUM(CASE WHEN ctm.thoi_gian_tra IS NULL THEN 1 ELSE 0 END) AS chua_tra,
+                   (
+                       SELECT ts_sub.ten_tai_san
+                       FROM chi_tiet_muon ctm_sub
+                       JOIN tai_san ts_sub ON ctm_sub.tai_san_id = ts_sub.id
+                       WHERE ctm_sub.phieu_muon_id = pm.id
+                         AND ctm_sub.thoi_gian_tra IS NULL
+                       ORDER BY ctm_sub.id ASC
+                       LIMIT 1
+                   ) AS ten_thiet_bi_dau,
+                   (
+                       SELECT ts_sub.ma_tai_san
+                       FROM chi_tiet_muon ctm_sub
+                       JOIN tai_san ts_sub ON ctm_sub.tai_san_id = ts_sub.id
+                       WHERE ctm_sub.phieu_muon_id = pm.id
+                         AND ctm_sub.thoi_gian_tra IS NULL
+                       ORDER BY ctm_sub.id ASC
+                       LIMIT 1
+                   ) AS ma_thiet_bi_dau
+            FROM phieu_muon pm
+            JOIN nguoi_muon nm ON pm.nguoi_muon_id = nm.id
+            JOIN phong_hoc ph ON pm.phong_hoc_id = ph.id
+            JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
+            WHERE $where
+            GROUP BY pm.id
+            HAVING chua_tra > 0
+            ORDER BY pm.han_tra ASC
+            LIMIT ?";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param('i', $gioiHan);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    $nowTs = time();
+    $todayDate = date('Y-m-d');
+
+    foreach ($rows as &$r) {
+        $hanTraTs = strtotime($r['han_tra']);
+        $ngayHanTra = date('Y-m-d', $hanTraTs);
+
+        // Xác định trạng thái theo dõi
+        if ($hanTraTs < $nowTs) {
+            $r['trang_thai_theo_doi'] = 'QUA_HAN';
+            $r['nhan_trang_thai'] = 'Quá hạn';
+            $r['lop_huy_hieu'] = 'huy-hieu-tt-do';
+        } elseif ($ngayHanTra === $todayDate) {
+            $r['trang_thai_theo_doi'] = 'DEN_HAN_HOM_NAY';
+            $r['nhan_trang_thai'] = 'Đến hạn hôm nay';
+            $r['lop_huy_hieu'] = 'huy-hieu-tt-vang';
+        } else {
+            $r['trang_thai_theo_doi'] = 'DANG_MUON';
+            $r['nhan_trang_thai'] = 'Đang mượn';
+            $r['lop_huy_hieu'] = 'huy-hieu-tt-xanh';
+        }
+
+        // Tên tài sản hiển thị (+N nếu nhiều)
+        $chuaTra = (int)$r['chua_tra'];
+        $tenDau = $r['ten_thiet_bi_dau'] ?: 'Thiết bị';
+        if ($chuaTra > 1) {
+            $r['tai_san_hien_thi'] = $tenDau . ' +' . ($chuaTra - 1);
+        } else {
+            $r['tai_san_hien_thi'] = $tenDau;
+        }
+
+        // Thời gian tương đối
+        $r['han_tra_dinh_dang'] = dinh_dang_thoi_gian_tuong_doi($r['han_tra']);
+    }
+    unset($r);
+
+    return $rows;
+}
+
+/**
+ * 5. Kiểm tra có phiếu mượn quá hạn trong phạm vi quản lý không (dùng cho chuông thông báo).
+ *
+ * @param mysqli $db
+ * @param array $nguoiDung
+ * @return bool
+ */
+function tong_quan_co_qua_han(mysqli $db, array $nguoiDung): bool {
+    $phongTrucId = tong_quan_lay_phong_truc_id($db, $nguoiDung);
+
+    $where = "pm.trang_thai = 'DANG_MUON' AND pm.han_tra < NOW()";
+    if ($phongTrucId !== null) {
+        $where .= " AND pm.phong_truc_id = " . (int)$phongTrucId;
+    }
+
+    $sql = "SELECT 1 FROM phieu_muon pm JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id WHERE $where AND ctm.thoi_gian_tra IS NULL LIMIT 1";
+    $res = $db->query($sql);
+    return ($res && $res->num_rows > 0);
+}

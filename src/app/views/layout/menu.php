@@ -20,8 +20,10 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
 ?>
 <aside class="sidebar-app">
     <div class="sidebar-dau">
-        <div class="d-flex align-items-center">
-            <div class="logo-box">LOGO</div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="logo-box">
+                <?= icon('qr-code', 'bieu-tuong-lg text-white') ?>
+            </div>
             <div>
                 <div class="ten-he-thong">TÀI SẢN QR</div>
                 <div class="ten-phong-truc"><?= e($tenPhong) ?></div>
@@ -34,7 +36,7 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
 
         <?php if (co_quyen('xem_tong_quan')): ?>
             <a class="menu-item <?= ($tepHienTai === 'tong-quan.php') ? 'active' : '' ?>" href="<?= url('tong-quan.php') ?>">
-                <?= icon('layout-dashboard') ?>
+                <?= icon('home') ?>
                 <span>Tổng quan</span>
             </a>
         <?php endif; ?>
@@ -56,7 +58,7 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
         <?php if (co_quyen('nghiep_vu_muon_tra') || co_quyen('xem_lich_su_muon_tra')): ?>
             <a class="menu-item <?= (str_contains($duongDanHienTai, '/muon-tra/')) ? 'active' : '' ?>" href="<?= url('muon-tra/muon.php') ?>">
                 <?= icon('repeat') ?>
-                <span>Mượn - trả</span>
+                <span>Mượn – trả</span>
             </a>
         <?php endif; ?>
 
@@ -102,6 +104,13 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
             </a>
         <?php endif; ?>
     </nav>
+
+    <div class="sidebar-song-bg" aria-hidden="true">
+        <svg viewBox="0 0 248 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 60 C80 20 160 90 248 40 L248 120 L0 120 Z" fill="rgba(255, 255, 255, 0.05)" />
+            <path d="M0 80 C90 50 170 110 248 70 L248 120 L0 120 Z" fill="rgba(255, 255, 255, 0.07)" />
+        </svg>
+    </div>
 
     <div class="sidebar-chan">
         <form action="<?= url('logout.php') ?>" method="POST" class="m-0">

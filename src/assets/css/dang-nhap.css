@@ -7,12 +7,12 @@
   display: flex;
   margin: 0;
   padding: 0;
-  background-color: var(--nen-trang);
+  background: linear-gradient(135deg, #EEF4FD 0%, #E0ECFB 100%);
 }
 
 .cot-thuong-hieu {
   width: 50%;
-  background-color: var(--nen-trang);
+  background: transparent;
   border-right: 1px solid var(--vien);
   display: flex;
   flex-direction: column;
@@ -32,9 +32,9 @@
 .logo-lon {
   width: 140px;
   height: 140px;
-  background-color: var(--mau-chinh-nhat);
+  background-color: var(--the-xanh);
   border: 1px solid var(--vien);
-  border-radius: 6px;
+  border-radius: var(--bo-the);
   box-shadow: var(--bong-the);
   display: flex;
   align-items: center;
@@ -70,14 +70,14 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  background-color: var(--nen-trang);
+  background: transparent;
 }
 
 .hop-dang-nhap {
   width: 100%;
   max-width: 400px;
   border: 1px solid var(--vien);
-  border-radius: 6px;
+  border-radius: var(--bo-the);
   padding: 36px 32px;
   background-color: var(--nen-the);
   box-shadow: var(--bong-the);

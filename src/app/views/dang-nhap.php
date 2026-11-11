@@ -35,7 +35,9 @@ $tieuDe = 'Đăng nhập';
     <div class="cot-thuong-hieu">
         <div></div>
         <div class="vung-giua">
-            <div class="logo-lon">LOGO</div>
+            <div class="logo-lon">
+                <?= icon('qr-code', 'w-50 h-50 text-primary') ?>
+            </div>
             <div class="tieu-de-thuong-hieu">QUẢN LÝ TÀI SẢN BẰNG MÃ QR</div>
             <div class="mo-ta-thuong-hieu">Hệ thống quản lý mượn - trả và kiểm kê tài sản bằng mã QR</div>
         </div>

@@ -109,13 +109,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             ['nhan' => 'Mô tả / Đặc điểm', 'gia_tri' => ($loai['mo_ta'] ?? '') ?: '---'],
                                         ];
                                         ?>
-                                        <button type="button" class="btn-bieu-tuong" aria-label="Xem" title="Xem"
+                                        <button type="button" class="btn-vien-thuoc"
                                             onclick='xemChiTietNhanh(<?= json_encode("Loại tài sản: " . ($loai["ten_loai"] ?? "")) ?>, <?= json_encode($chiTietLoai, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            <?= icon('eye', 'bieu-tuong-sm') ?>
+                                            <span>Xem</span>
                                         </button>
-                                        <button type="button" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa"
+                                        <button type="button" class="btn-vien-thuoc"
                                             onclick='moModalSua(<?= json_encode($loai, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            <?= icon('pencil', 'bieu-tuong-sm') ?>
+                                            <span>Sửa</span>
                                         </button>
 
                                         <form action="<?= url('danh-muc/loai-tai-san.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc muốn đổi trạng thái loại tài sản này?">
@@ -123,8 +123,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$loai['id'] ?>">
                                             <?php $nhanKhoaMoLoai = (int)$loai['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở'; ?>
-                                            <button type="submit" class="btn-bieu-tuong" aria-label="<?= $nhanKhoaMoLoai ?>" title="<?= $nhanKhoaMoLoai ?>">
-                                                <?= icon((int)$loai['dang_hoat_dong'] === 1 ? 'lock' : 'rotate-ccw', 'bieu-tuong-sm') ?>
+                                            <button type="submit" class="btn-vien-thuoc">
+                                                <span><?= $nhanKhoaMoLoai ?></span>
                                             </button>
                                         </form>
 
@@ -133,8 +133,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$loai['id'] ?>">
-                                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
-                                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
+                                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa loại tài sản">
+                                                    <span>Xóa</span>
                                                 </button>
                                             </form>
                                         <?php endif; ?>

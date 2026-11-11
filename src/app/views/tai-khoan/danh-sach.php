@@ -238,17 +238,17 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                                         ['nhan' => 'Trạng thái', 'gia_tri' => $dangHoatDong ? 'Đang hoạt động' : 'Tạm khóa'],
                                     ];
                                     ?>
-                                    <button type="button" class="btn-bieu-tuong" aria-label="Xem" title="Xem"
+                                    <button type="button" class="btn-vien-thuoc"
                                             onclick='xemChiTietNhanh(<?= json_encode("Tài khoản: " . $tk["ho_ten"]) ?>, <?= json_encode($chiTietTk, JSON_HEX_APOS | JSON_HEX_QUOT) ?>, <?= json_encode(url("tai-khoan/sua.php?id=" . (int)$tk["id"])) ?>)'>
-                                        <?= icon('eye', 'bieu-tuong-sm') ?>
+                                        <span>Xem</span>
                                     </button>
-                                    <a href="<?= url('tai-khoan/sua.php?id=' . (int)$tk['id']) ?>" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa">
-                                        <?= icon('pencil', 'bieu-tuong-sm') ?>
+                                    <a href="<?= url('tai-khoan/sua.php?id=' . (int)$tk['id']) ?>" class="btn-vien-thuoc">
+                                        <span>Sửa</span>
                                     </a>
 
-                                    <button type="button" class="btn-bieu-tuong" aria-label="Đổi mật khẩu" title="Đổi mật khẩu"
+                                    <button type="button" class="btn-vien-thuoc"
                                             onclick='moModalDatLaiMatKhau(<?= (int)$tk["id"] ?>, <?= json_encode((string)$tk["ten_dang_nhap"]) ?>, <?= json_encode((string)$tk["ho_ten"]) ?>)'>
-                                        <?= icon('user-cog', 'bieu-tuong-sm') ?>
+                                        <span>Đổi MK</span>
                                     </button>
 
                                     <?php if (!$laChinhMinh): ?>
@@ -258,8 +258,8 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
                                             <?php $nhanKhoaMoTk = $dangHoatDong ? 'Khóa' : 'Mở khóa'; ?>
-                                            <button type="submit" class="btn-bieu-tuong" aria-label="<?= $nhanKhoaMoTk ?>" title="<?= $nhanKhoaMoTk ?>">
-                                                <?= icon($dangHoatDong ? 'lock' : 'rotate-ccw', 'bieu-tuong-sm') ?>
+                                            <button type="submit" class="btn-vien-thuoc">
+                                                <span><?= $nhanKhoaMoTk ?></span>
                                             </button>
                                         </form>
 
@@ -269,8 +269,8 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
-                                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
-                                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
+                                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa tài khoản">
+                                                    <span>Xóa</span>
                                                 </button>
                                             </form>
                                         <?php endif; ?>

@@ -135,19 +135,19 @@ foreach ($danhSachNguoiMuon as $nm) {
                         <span class="huy-hieu huy-hieu-thanh-cong">Trong hạn</span>
                     </td>
                     <td class="text-end">
-                        <div class="d-inline-flex gap-1">
-                            <a href="<?= url('nguoi-muon/chi-tiet.php?id=' . (int)$nm['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
-                                <?= icon('eye', 'bieu-tuong-sm') ?>
+                        <div class="d-inline-flex gap-1 align-items-center">
+                            <a href="<?= url('nguoi-muon/chi-tiet.php?id=' . (int)$nm['id']) ?>" class="btn-vien-thuoc">
+                                <span>Chi tiết</span>
                             </a>
-                            <a href="<?= url('nguoi-muon/sua.php?id=' . (int)$nm['id']) ?>" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa">
-                                <?= icon('pencil', 'bieu-tuong-sm') ?>
+                            <a href="<?= url('nguoi-muon/sua.php?id=' . (int)$nm['id']) ?>" class="btn-vien-thuoc">
+                                <span>Sửa</span>
                             </a>
                             <form action="<?= url('nguoi-muon/index.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc chắn muốn xóa hồ sơ người mượn này?">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="hanh_dong" value="xoa">
                                 <input type="hidden" name="id" value="<?= (int)$nm['id'] ?>">
-                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
-                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
+                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa người mượn">
+                                    <span>Xóa</span>
                                 </button>
                             </form>
                         </div>

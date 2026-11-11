@@ -238,43 +238,53 @@ Khi bảo vệ trước Hội đồng chấm Đồ án Cơ sở ngành, giảng 
 
 ---
 
-## 7. QUY CHUẨN GIAO DIỆN (DESIGN SYSTEM)
+## 7. QUY CHUẨN GIAO DIỆN (DESIGN SYSTEM ĐỒNG BỘ)
 
-Hệ thống giao diện được thiết kế theo định hướng **sinh động nhưng chuyên nghiệp**, tối giản bảng màu, đồng bộ khoảng cách và hoạt động **100% ngoại tuyến (offline)**.
+Hệ thống giao diện được thiết kế theo phong cách **phần mềm quản trị nội bộ hiện đại, chuyên nghiệp**, lấy cảm hứng từ bản thiết kế chuẩn dashboard quản lý tài sản QR. Giao diện đậm đà màu chủ đạo xanh dương, cấu trúc thông tin dày dặn, nhất quán, loại bỏ hoàn toàn "dáng vẻ AI" và hoạt động **100% ngoại tuyến (offline)** không phụ thuộc internet.
 
 ### 7.1. Bảng màu chính thức (`:root` trong `src/assets/css/app.css`)
 
-Áp dụng nguyên tắc tỷ lệ màu **60–30–10** (60% trung tính, 30% họ xanh dương, tối đa 10% màu nhấn và màu ngữ nghĩa):
+Tuân thủ nguyên tắc tỷ lệ màu **60–30–10** (60% trung tính, 30% họ xanh dương, tối đa 10% màu nhấn và màu ngữ nghĩa):
 
 | Biến CSS | Mã màu | Ý nghĩa & Phạm vi sử dụng |
 | :--- | :--- | :--- |
-| `--mau-chinh` | `#1D5BBF` | Màu chủ đạo: nút chính `.btn-chinh`, liên kết, mục menu đang chọn, viền 2px tiêu đề bảng. |
-| `--mau-chinh-dam` | `#164A9A` | Trạng thái rê chuột (hover) hoặc nhấn giữ của nút chính. |
-| `--mau-navy` | `#0F2747` | Thanh bên sidebar, chữ tiêu đề trang `.tieu-de-trang`, số liệu lớn thẻ KPI. |
-| `--mau-chinh-nhat` | `#E1EBFA` | Nền huy hiệu thông tin, hàng bảng được chọn hoặc rê chuột (hover). |
-| `--mau-nhan` | `#0F8B8D` | Màu nhấn xanh ngọc: chuỗi dữ liệu thứ hai biểu đồ, vạch nhấn trang trí (tiết chế < 5%). |
+| `--mau-chinh` | `#1768D8` | Màu chủ đạo: nút chính `.btn-chinh`, liên kết, mục menu đang chọn, viền nhấn. |
+| `--mau-chinh-dam` | `#114FA7` | Trạng thái rê chuột (hover) hoặc nhấn giữ của nút chính. |
+| `--mau-chinh-sang` | `#1D6FE0` | Nền mục menu đang chọn trên thanh bên sidebar (bo góc 10px). |
+| `--mau-navy` | `#0F2747` | Chữ tiêu đề trang `.tieu-de-trang`, số liệu lớn thẻ KPI, tiêu đề khối. |
+| `--mau-chinh-nhat` | `#E0EDFD` | Nền hàng bảng được chọn hoặc rê chuột (hover), nền khối mượn-trả. |
+| `--thanh-ben-tren` | `#1A5BC4` | Điểm bắt đầu gradient nền thanh bên (xanh dương sáng hơn). |
+| `--thanh-ben-duoi` | `#0B3380` | Điểm kết thúc gradient nền thanh bên (xanh navy đậm). |
+| `--mau-nhan` | `#0F8B8D` | Màu nhấn xanh ngọc: chuỗi Trả trên biểu đồ xu hướng (tiết chế < 5%). |
 | `--mau-nhan-chu` | `#0B6E70` | Màu chữ nhấn khi cần thiết. |
 | `--chu-chinh` | `#1F2937` | Màu chữ nội dung chính trong bảng, biểu mẫu. |
-| `--chu-phu` | `#5B6676` | Màu chữ phụ, nhãn trường, nhãn số liệu. |
-| `--vien` | `#D8DFE8` | Đường viền mảnh 1px của thẻ, bảng, đường phân cách. |
-| `--vien-dam` | `#C5CEDA` | Viền ô nhập liệu `.form-control`, nút phụ `.btn-phu`. |
-| `--nen-trang` | `#EDF1F6` | Nền tổng thể của ứng dụng (đủ độ đậm để các thẻ trắng nổi rõ). |
+| `--chu-phu` | `#5B6676` | Màu chữ phụ, nhãn trường, mô tả. |
+| `--vien` | `#CBD5E1` | Đường viền mảnh 1px của thẻ, bảng, đường phân cách. |
+| `--vien-dam` | `#94A3B8` | Viền ô nhập liệu `.form-control`, nút phụ `.btn-phu`. |
+| `--nen-trang` | `#F1F5F9` | Nền tổng thể của ứng dụng (xám nhạt trung tính giúp thẻ trắng nổi bật). |
 | `--nen-the` | `#FFFFFF` | Nền thẻ nội dung `.card`, bảng dữ liệu, biểu mẫu. |
-| `--nen-tieu-de-bang` | `#EAF0F8` | Nền hàng tiêu đề bảng (`thead th`). |
-| `--chu-tieu-de-bang` | `#1F3A5F` | Màu chữ hàng tiêu đề bảng (đậm 600, 13px). |
-| `--thanh-cong` / `--thanh-cong-nhat` | `#16803C` / `#DFF3E6` | Trạng thái tích cực (Sẵn sàng, Tốt, Đã trả đủ, Đã hoàn tất). |
-| `--canh-bao` / `--canh-bao-nhat` | `#92400E` / `#FEF3C7` | Trạng thái lưu ý (Đang xử lý, Bảo trì, Chưa trả, vạch cảnh báo `#D97706`). |
-| `--nguy-hiem` / `--nguy-hiem-nhat` | `#C0262D` / `#FBE4E4` | Trạng thái nghiêm trọng (Hư hỏng, Mất, Quá hạn, nút `.btn-nguy-hiem`). |
-| `--trung-tinh-nhat` | `#EAEEF3` | Huy hiệu trạng thái trung tính, chữ `--chu-phu`. |
+| `--nen-tieu-de-bang` | `#F8FAFC` | Nền hàng tiêu đề bảng (`thead th`). |
+| `--chu-tieu-de-bang` | `#0F2747` | Màu chữ hàng tiêu đề bảng (đậm 600, 13px). |
+| `--the-xanh` / `--the-la` | `#EDF4FE` / `#EDFAF2` | Nền pha màu nhạt riêng cho thẻ Tổng tài sản / Có thể mượn. |
+| `--the-cam` / `--the-do` | `#FEF3EB` / `#FDF1F1` | Nền pha màu nhạt riêng cho thẻ Đang mượn / Quá hạn. |
+| `--the-tim` | `#F5EDFA` | Nền pha màu nhạt cho nút thao tác nhanh Quét mã QR. |
+| `--hh-do` / `--hh-do-chu` | `#FBE6E7` / `#A82025` | Huy hiệu trạng thái Quá hạn, Hư hỏng, Mất. |
+| `--hh-vang` / `--hh-vang-chu` | `#FEF3C7` / `#78350F` | Huy hiệu Đến hạn hôm nay, Bảo trì, Cảnh báo. |
+| `--hh-xanh` / `--hh-xanh-chu` | `#E0EDFD` / `#1355B3` | Huy hiệu Đang mượn, Đang kiểm kê. |
+| `--hh-la` / `--hh-la-chu` | `#DCF4E7` / `#0E6B34` | Huy hiệu Sẵn sàng, Tốt, Đã trả đủ, Hoàn tất. |
+| `--hh-xam` / `--hh-xam-chu` | `#E9ECEF` / `#495057` | Huy hiệu Đã hủy, Trạng thái khác. |
 
-### 7.2. Thang khoảng cách, quy chuẩn bo góc và cỡ chữ
+### 7.2. Quy chuẩn bo góc, bóng mờ và cỡ chữ
 
-- **Quy chuẩn bo góc (Border Radius):**
-  - Ô nhập liệu (`.form-control`, `.o-nhap`), nút bấm (`.btn`), huy hiệu (`.huy-hieu`): bo đúng **4px**.
-  - Thẻ (`.card`, `.the-noi-dung`), bảng (`.table-responsive`): bo đúng **6px**.
-  - Tuyệt đối không dùng bo góc lớn dạng viên thuốc, không dùng bóng mềm đổ bóng lan rộng.
+- **Quy chuẩn bo góc (Border Radius 4 nấc cố định):**
+  - **`12px` (`--bo-the`):** Thẻ nội dung (`.card`, `.the-noi-dung`, `.banner-tong-quan`).
+  - **`10px` (`--bo-nut`):** Nút bấm chính/phụ (`.btn`, `.btn-nhanh`), mục menu điều hướng đang chọn.
+  - **`8px` (`--bo-o`):** Ô nhập liệu (`.form-control`, `.o-nhap`, `.form-select`).
+  - **`999px` (`--bo-vien-thuoc`):** Huy hiệu trạng thái (`.huy-hieu`, `.huy-hieu-tt`) và nút thao tác trong bảng (`.btn-vien-thuoc`).
+- **Quy chuẩn bóng mờ (Shadow):**
+  - Chỉ dùng một mức bóng duy nhất: `--bong-the: 0 2px 10px rgba(16, 62, 140, .08)`. Không dùng bóng mềm lan rộng mờ ảo.
 - **Thang khoảng cách (Spacing Scale):**
-  - `--kc-1`: `4px` | `--kc-2`: `8px` | `--kc-3`: `12px` | `--kc-4`: `16px` | `--kc-5`: `24px` | `--kc-6`: `32px`.
+  - Tuân thủ thang bội số chuẩn: `4px` (kc-1) $\rightarrow$ `8px` (kc-2) $\rightarrow$ `12px` (kc-3) $\rightarrow$ `16px` (kc-4) $\rightarrow$ `24px` (kc-5) $\rightarrow$ `32px` (kc-6).
 - **Thang cỡ chữ (Typography Scale):**
   - Tiêu đề trang (`.tieu-de-trang`): `24px`, đậm `700`, màu `--mau-navy`.
   - Tiêu đề khối/thẻ (`.tieu-de-khoi`): `16px`, đậm `600`, màu `--mau-navy`.
@@ -283,29 +293,45 @@ Hệ thống giao diện được thiết kế theo định hướng **sinh đ�
   - Tiêu đề cột bảng: `13px`, đậm `600`, màu `--chu-tieu-de-bang`.
   - Số liệu lớn trên thẻ KPI: `28px`, đậm `700`, màu `--mau-navy`, `font-variant-numeric: tabular-nums`.
 
-### 7.3. Danh mục 30 biểu tượng SVG Lucide (`src/assets/icons/sprite.svg`)
+### 7.3. Khung chung toàn hệ thống
 
-Toàn bộ biểu tượng được đóng gói nội bộ tại `src/assets/vendor/lucide/` (kèm giấy phép ISC `LICENSE`) và gộp thành `src/assets/icons/sprite.svg`. Giao diện gọi hàm trợ giúp `icon(string $ten, string $lop = ''): string` trong `src/app/views/partials/icon.php`.
+1. **Thanh bên (Sidebar):**
+   - Chiều rộng cố định 240px, nền gradient từ `--thanh-ben-tren` xuống `--thanh-ben-duoi`.
+   - Đáy thanh bên có họa tiết sóng SVG nội tuyến bán trong suốt tinh tế.
+   - Logo "TÀI SẢN QR" kèm biểu tượng QR trắng sắc nét.
+   - Mục menu đang chọn bo góc 10px, nền xanh sáng `--mau-chinh-sang`, có vạch sáng định vị.
+   - Nút "Đăng xuất" ở chân menu có viền mờ trong suốt, chữ trắng rõ ràng.
+2. **Thanh trên (Topbar):**
+   - Chiều cao cố định 64px, nền trắng, đường viền đáy mảnh 1px.
+   - Bên trái: Đường dẫn điều hướng (Breadcrumb) có biểu tượng ngôi nhà (`home`), mục hiện tại in đậm.
+   - Bên phải: Chuông thông báo có chấm đỏ cảnh báo khi hệ thống có lượt mượn quá hạn (`tong_quan_co_qua_han`), ảnh đại diện tròn nền xanh chứa hai chữ cái viết tắt của cán bộ đăng nhập (`viet_tat_hai_chu_cai()`), khối tên vai trò và mũi tên mở menu thả xuống.
 
-1. **Điều hướng thanh bên (10 biểu tượng):** `layout-dashboard`, `package`, `repeat`, `arrow-left-right`, `clipboard-check`, `users`, `folder-tree`, `user-cog`, `wrench`, `bar-chart-3`.
-2. **Nghiệp vụ & thao tác (13 biểu tượng):** `qr-code`, `scan-line`, `plus`, `pencil`, `trash-2`, `eye`, `search`, `printer`, `save`, `log-out`, `menu`, `x`, `filter`, `rotate-ccw`, `lock`, `arrow-left`.
-3. **Thông báo & trạng thái (4 biểu tượng):** `check-circle-2`, `alert-triangle`, `alert-circle`, `info`.
+### 7.4. Quy chuẩn thành phần nghiệp vụ
 
-**Vị trí được phép đặt biểu tượng:**
-- Mục điều hướng thanh bên, góc phải trên thẻ KPI (biểu tượng nét xám 20px, không có ô vuông hay hình tròn màu bao quanh), nút hành động chính/phụ/nguy hiểm, nút thao tác cuối dòng bảng (`.btn-bieu-tuong`), bên trái ô tìm kiếm (`.o-tim-kiem`), và đầu thông báo flash (`.alert`).
-- **Không đặt biểu tượng** trong huy hiệu trạng thái (`.huy-hieu`), tiêu đề cột bảng (`<th>`), nhãn trường biểu mẫu (`<label>`), hoặc tiêu đề thẻ (`<h2>`, `<h3>`).
+1. **Thẻ thống kê KPI pha màu (`.the-kpi-pha-mau`):**
+   - Mỗi thẻ có nền pha màu nhạt riêng (xanh dương, xanh lá, cam, đỏ).
+   - Biểu tượng lớn màu đậm đặt bên trái số liệu. Số liệu đậm 28px, nhãn mô tả đặt bên dưới.
+   - Biểu tượng khối mờ kích thước lớn đặt chìm làm hình nền trang trí ở góc phải dưới thẻ.
+   - Nguyên tắc bảo toàn số liệu: $\text{Tổng} = \text{Có thể mượn} + \text{Đang mượn} + \text{Khác}$.
+2. **Hàng thao tác nhanh (`.btn-nhanh`):**
+   - Ba nút lớn nằm ngang: "Lập phiếu mượn" (xanh dương nhạt), "Nhận trả tài sản" (xanh lá nhạt), "Quét mã QR" (tím nhạt).
+   - Mỗi nút có biểu tượng Lucide phía trước chữ, bo góc 10px, hiệu ứng hover nhấc nhẹ 1px.
+3. **Nút thao tác trong bảng (`.btn-vien-thuoc`):**
+   - Bo tròn hình viên thuốc 999px, viền mảnh 1px, kích thước nhỏ gọn (`padding: 3px 10px`, `font-size: 12px`, `font-weight: 500`).
+   - Luôn có chữ biểu thị rõ nghĩa nghiệp vụ: `[Chi tiết]`, `[Sửa]`, `[Xóa]`, `[Nhận trả]`, `[Xem]`, `[Báo cáo]`, `[QR]`.
+   - Loại bỏ hoàn toàn các nút vuông icon rời rạc (`btn-bieu-tuong`).
+4. **Huy hiệu trạng thái (`.huy-hieu`, `.huy-hieu-tt`):**
+   - Hình viên thuốc 999px, chiều cao 26px, `padding: 3px 12px`, `font-size: 12.5px`, `font-weight: 600`.
+   - Màu sắc ngữ nghĩa tương phản cao: Đỏ (Quá hạn/Hư hỏng), Vàng (Đến hạn hôm nay/Bảo trì), Xanh dương (Đang mượn), Xanh lá (Sẵn sàng/Đã trả đủ/Hoàn tất). Không đặt biểu tượng bên trong huy hiệu.
+5. **Hệ thống 3 biểu đồ Chart.js (Ngoại tuyến 100%):**
+   - **Xu hướng mượn – trả trong tuần:** Biểu đồ vùng/đường 2 chuỗi (*Mượn* màu xanh dương, *Trả* màu xanh ngọc), trục T2..CN.
+   - **Lượt mượn theo nhóm tài sản:** Biểu đồ cột xanh dương, số liệu hiển thị trực tiếp trên đầu cột, tổng số khớp 100% chuỗi Mượn của biểu đồ xu hướng.
+   - **Tình trạng tài sản:** Biểu đồ vành khuyên (donut) độ rộng 70%, chính giữa hiển thị tổng số tài sản, chú giải bên phải có chấm tròn, tên, số lượng và phần trăm.
 
-### 7.4. Ba kiểu nút bấm thống nhất toàn hệ thống
+### 7.5. Kỷ luật giao diện & Không "dáng vẻ AI"
 
-1. **Nút chính (`.btn-chinh`, `.btn-primary`):** Nền `--mau-chinh`, viền `--mau-chinh`, chữ trắng. Dùng cho hành động xác nhận, lưu, thêm mới quan trọng nhất.
-2. **Nút phụ (`.btn-phu`, `.btn-outline-secondary`):** Nền trắng, viền `--vien-dam`, chữ `--chu-chinh`. Dùng cho hủy, quay lại, lọc, tác vụ thứ cấp.
-3. **Nút nguy hiểm (`.btn-nguy-hiem`, `.btn-danger`):** Nền `--nguy-hiem`, chữ trắng. Dùng cho xóa, khóa đợt, hủy bỏ giao dịch.
-
-### 7.5. Quy tắc kỷ luật giao diện & Hộp thoại tương tác bật lên (Popup Modal)
-
-- **Không thêm chữ hiển thị vô nghĩa:** Giữ nguyên nội dung chữ nghiệp vụ tiếng Việt rõ ràng; các nút biểu tượng vuông `.btn-bieu-tuong` luôn có `aria-label` và `title` đầy đủ.
-- **Không dùng CSS nội tuyến (`style=""`):** Toàn bộ quy tắc định kiểu phải đặt trong `src/assets/css/app.css` (hoặc `dang-nhap.css`).
-- **Tương tác Xem / Thêm / Sửa / Xóa bằng hộp thoại bật lên:**
-  - Mọi thao tác **Xem chi tiết**, **Thêm mới**, **Chỉnh sửa** của các đối tượng được mở trực tiếp trong hộp thoại `#modalTuongTac` (tải và gửi biểu mẫu qua AJAX trong `src/assets/js/app.js`), giúp cán bộ thao tác nhanh mà không bị gián đoạn ngữ cảnh danh sách.
-  - Mọi thao tác **Xóa / Khóa / Mở khóa** có thuộc tính `data-xac-nhan` hiển thị hộp thoại xác nhận `#modalXacNhan` đồng bộ thay cho hộp thoại `confirm()` mặc định của trình duyệt.
+- **Không gradient tùy tiện:** Chỉ duy nhất thanh bên sidebar được sử dụng gradient xanh đậm có chủ đích; toàn bộ thẻ, nút và thanh trên đều dùng màu phẳng (flat color).
+- **Không ảnh nền tùy tiện:** Chỉ duy nhất banner trang Tổng quan sử dụng ảnh minh họa phẳng bản vẽ; các trang chức năng khác không dùng ảnh nền hay banner chào mừng.
+- **Không chữ thừa:** Loại bỏ hoàn toàn các câu chào hỏi quảng cáo ("Chúc một ngày tốt lành", "Hệ thống quản lý thông minh 4.0"), các dòng chú thích hiển nhiên dưới tiêu đề trang, và comment HTML giải thích mã nguồn trong views.
+- **Hoạt động 100% ngoại tuyến:** Thư viện Bootstrap, Lucide icons, Chart.js, jsQR, QRCode.js đều được lưu trữ cục bộ trong thư mục `src/assets/vendor/`. Không sử dụng bất kỳ liên kết CDN hay tải font nào từ Internet.
 

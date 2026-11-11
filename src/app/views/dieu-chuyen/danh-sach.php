@@ -138,8 +138,8 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                             <td><?= (int)$dc['tong_so_thiet_bi'] ?> thiết bị</td>
                             <td><?= e($dc['ho_ten_can_bo']) ?></td>
                             <td class="text-end">
-                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem phiếu" title="Xem phiếu">
-                                    <?= icon('eye', 'bieu-tuong-sm') ?>
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc">
+                                    <span>Chi tiết</span>
                                 </a>
                             </td>
                         </tr>

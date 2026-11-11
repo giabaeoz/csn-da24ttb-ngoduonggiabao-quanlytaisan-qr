@@ -273,21 +273,21 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                                     <span class="text-phu">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end">
+                            <td class="text-end cot-thao-tac">
                                 <?php if ($laDangMuon): ?>
                                     <?php if (!empty($ct['phieu_muon_id'])): ?>
-                                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$ct['phieu_muon_id']) ?>" class="btn btn-phu btn-sm">
+                                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$ct['phieu_muon_id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">
                                             Xem phiếu
                                         </a>
                                     <?php else: ?>
                                         <span class="text-phu small">Đang mượn</span>
                                     <?php endif; ?>
                                 <?php elseif ($daKiemDoi): ?>
-                                    <button type="button" class="btn btn-phu btn-sm text-success" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
+                                    <button type="button" class="btn-vien-thuoc btn-vien-thuoc-phu text-success" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
                                         Đã lưu (Sửa)
                                     </button>
                                 <?php else: ?>
-                                    <button type="button" class="btn btn-chinh btn-sm" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
+                                    <button type="button" class="btn-vien-thuoc btn-vien-thuoc-chinh" onclick="moModalGhiNhan(<?= htmlspecialchars(json_encode($ct), ENT_QUOTES, 'UTF-8') ?>)">
                                         Ghi nhận
                                     </button>
                                 <?php endif; ?>
@@ -376,10 +376,8 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                                     <span class="huy-hieu huy-hieu-xam">Đã hủy</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end">
-                                <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$d['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
-                                    <?= icon('eye', 'bieu-tuong-sm') ?>
-                                </a>
+                            <td class="text-end cot-thao-tac">
+                                <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$d['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -232,8 +232,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     </div>
                                 </td>
                                 <td class="text-end">
-                                    <a href="<?= url('su-co/chi-tiet.php?id=' . $sc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
-                                        <?= icon('eye', 'bieu-tuong-sm') ?>
+                                    <a href="<?= url('su-co/chi-tiet.php?id=' . $sc['id']) ?>" class="btn-vien-thuoc">
+                                        <span>Chi tiết</span>
                                     </a>
                                 </td>
                             </tr>

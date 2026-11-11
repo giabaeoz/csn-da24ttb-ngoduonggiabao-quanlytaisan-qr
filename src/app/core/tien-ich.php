@@ -284,4 +284,63 @@ function nhan_tinh_trang_tai_san(?string $tinhTrang): string {
     };
 }
 
+/**
+ * Trích xuất 2 chữ cái viết tắt đại diện cho người dùng (ví dụ: "Nguyễn Văn An" -> "NA").
+ */
+function viet_tat_hai_chu_cai(string $hoTen): string {
+    $hoTen = trim($hoTen);
+    if ($hoTen === '') {
+        return 'NV';
+    }
+    // Tách các từ dựa trên khoảng trắng
+    $cacTu = preg_split('/\s+/u', $hoTen);
+    if (!$cacTu || empty($cacTu)) {
+        return 'NV';
+    }
+    if (count($cacTu) === 1) {
+        return mb_strtoupper(mb_substr($cacTu[0], 0, 2, 'UTF-8'), 'UTF-8');
+    }
+    $tuDau = mb_substr($cacTu[0], 0, 1, 'UTF-8');
+    $tuCuoi = mb_substr($cacTu[count($cacTu) - 1], 0, 1, 'UTF-8');
+    return mb_strtoupper($tuDau . $tuCuoi, 'UTF-8');
+}
+
+/**
+ * Định dạng thời gian theo mốc tương đối: "Hôm qua, HH:mm", "Hôm nay, HH:mm", "Ngày mai, HH:mm" hoặc "d/m/Y, H:i".
+ */
+function dinh_dang_thoi_gian_tuong_doi(?string $thoiGian): string {
+    if (!$thoiGian) {
+        return '-';
+    }
+    $ts = strtotime($thoiGian);
+    if ($ts === false) {
+        return '-';
+    }
+
+    $ngayMoc = date('Y-m-d', $ts);
+    $ngayHienTai = date('Y-m-d');
+    $ngayHomQua = date('Y-m-d', strtotime('-1 day'));
+    $ngayMai = date('Y-m-d', strtotime('+1 day'));
+    $gio = date('H:i', $ts);
+
+    if ($ngayMoc === $ngayHienTai) {
+        return "Hôm nay, $gio";
+    }
+    if ($ngayMoc === $ngayHomQua) {
+        return "Hôm qua, $gio";
+    }
+    if ($ngayMoc === $ngayMai) {
+        return "Ngày mai, $gio";
+    }
+    return date('d/m/Y, H:i', $ts);
+}
+
+/**
+ * Định dạng phần trăm kiểu Việt Nam (ví dụ: 70.8 -> "70,8%").
+ */
+function dinh_dang_phan_tram(float $tyLe, int $chuSoThapPhan = 1): string {
+    return number_format($tyLe, $chuSoThapPhan, ',', '.') . '%';
+}
+
+
 

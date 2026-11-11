@@ -556,10 +556,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <td class="fw-semibold">${escapeHtml(ts.ma_tai_san)}</td>
             <td>${escapeHtml(ts.ten_tai_san)}</td>
             <td>${escapeHtml(maPhong)}</td>
-            <td class="text-end">
-                <button type="button" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa" onclick="xoaThietBi(${idx})">
-                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
-                </button>
+            <td class="text-end cot-thao-tac">
+                <button type="button" class="btn-vien-thuoc btn-vien-thuoc-nguy-hiem" onclick="xoaThietBi(${idx})">Bỏ</button>
             </td>
         `;
             tbody.appendChild(tr);

@@ -238,10 +238,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             <td><?= e($dc['ma_phong_di']) ?></td>
                             <td><?= e($dc['ma_phong_den']) ?></td>
                             <td><?= (int)$dc['tong_so_thiet_bi'] ?></td>
-                            <td class="text-end">
-                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem phiếu" title="Xem phiếu">
-                                    <?= icon('eye', 'bieu-tuong-sm') ?>
-                                </a>
+                            <td class="text-end cot-thao-tac">
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -348,10 +346,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <div class="mo-ta-phu">${escapeHtml(phongHt)}</div>
             </td>
             <td>Bình thường</td>
-            <td class="text-end">
-                <button type="button" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Bỏ" title="Bỏ" onclick="boThietBi(${idx})">
-                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
-                </button>
+            <td class="text-end cot-thao-tac">
+                <button type="button" class="btn-vien-thuoc btn-vien-thuoc-nguy-hiem" onclick="boThietBi(${idx})">Bỏ</button>
             </td>
         `;
             tbody.appendChild(tr);

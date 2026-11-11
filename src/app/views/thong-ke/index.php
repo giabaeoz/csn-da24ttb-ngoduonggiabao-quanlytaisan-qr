@@ -298,8 +298,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-end">
-                                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$row['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
-                                            <?= icon('eye', 'bieu-tuong-sm') ?>
+                                        <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$row['id']) ?>" class="btn-vien-thuoc">
+                                            <span>Chi tiết</span>
                                         </a>
                                     </td>
                                 </tr>
@@ -410,10 +410,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <td><?= e($dc['ma_phong_den'] ?? $dc['ten_phong_nhan'] ?? $dc['phong_nhan_ten'] ?? '—') ?></td>
                                     <td class="text-center fw-bold"><?= (int)($dc['tong_so_thiet_bi'] ?? $dc['so_luong_thiet_bi'] ?? $dc['so_thiet_bi'] ?? 0) ?></td>
                                     <td><?= e($dc['ho_ten_can_bo'] ?? $dc['ho_ten_nguoi_tao'] ?? $dc['nguoi_tao_ten'] ?? '—') ?></td>
-                                    <td class="text-end">
-                                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
-                                            <?= icon('eye', 'bieu-tuong-sm') ?>
-                                        </a>
+                                    <td class="text-end cot-thao-tac">
+                                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -486,10 +484,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Đang thực hiện</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-end">
-                                        <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$kk['id']) ?>" class="btn-bieu-tuong" aria-label="Xem" title="Xem">
-                                            <?= icon('eye', 'bieu-tuong-sm') ?>
-                                        </a>
+                                    <td class="text-end cot-thao-tac">
+                                        <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$kk['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

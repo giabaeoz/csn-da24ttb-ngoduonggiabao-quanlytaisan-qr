@@ -160,13 +160,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             ['nhan' => 'Ghi chú', 'gia_tri' => ($ph['ghi_chu'] ?? '') ?: '---'],
                                         ];
                                         ?>
-                                        <button type="button" class="btn-bieu-tuong" aria-label="Xem" title="Xem"
+                                        <button type="button" class="btn-vien-thuoc"
                                             onclick='xemChiTietNhanh(<?= json_encode("Phòng học: " . ($ph["ma_phong"] ?? "")) ?>, <?= json_encode($chiTietPh, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            <?= icon('eye', 'bieu-tuong-sm') ?>
+                                            <span>Xem</span>
                                         </button>
-                                        <button type="button" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa"
+                                        <button type="button" class="btn-vien-thuoc"
                                             onclick='moModalSua(<?= json_encode($ph, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            <?= icon('pencil', 'bieu-tuong-sm') ?>
+                                            <span>Sửa</span>
                                         </button>
 
                                         <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc muốn đổi trạng thái phòng học này?">
@@ -174,8 +174,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
                                             <?php $nhanKhoaMoPh = (int)$ph['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở'; ?>
-                                            <button type="submit" class="btn-bieu-tuong" aria-label="<?= $nhanKhoaMoPh ?>" title="<?= $nhanKhoaMoPh ?>">
-                                                <?= icon((int)$ph['dang_hoat_dong'] === 1 ? 'lock' : 'rotate-ccw', 'bieu-tuong-sm') ?>
+                                            <button type="submit" class="btn-vien-thuoc">
+                                                <span><?= $nhanKhoaMoPh ?></span>
                                             </button>
                                         </form>
 
@@ -184,8 +184,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
-                                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
-                                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
+                                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa phòng học">
+                                                    <span>Xóa</span>
                                                 </button>
                                             </form>
                                         <?php endif; ?>

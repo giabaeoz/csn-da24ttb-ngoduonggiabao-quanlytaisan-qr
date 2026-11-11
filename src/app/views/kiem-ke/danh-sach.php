@@ -204,14 +204,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             </td>
                             <td class="text-end pe-3">
                                 <?php if ($item['trang_thai'] === KIEM_KE_DANG_KIEM_KE): ?>
-                                    <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$item['id']) ?>"
-                                        class="btn-bieu-tuong" aria-label="Kiểm tra" title="Kiểm tra">
-                                        <?= icon('clipboard-check', 'bieu-tuong-sm') ?>
+                                    <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$item['id']) ?>" class="btn-vien-thuoc">
+                                        <span>Kiểm tra</span>
                                     </a>
                                 <?php else: ?>
-                                    <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$item['id']) ?>"
-                                        class="btn-bieu-tuong" aria-label="Báo cáo" title="Báo cáo">
-                                        <?= icon('eye', 'bieu-tuong-sm') ?>
+                                    <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$item['id']) ?>" class="btn-vien-thuoc">
+                                        <span>Báo cáo</span>
                                     </a>
                                 <?php endif; ?>
                             </td>

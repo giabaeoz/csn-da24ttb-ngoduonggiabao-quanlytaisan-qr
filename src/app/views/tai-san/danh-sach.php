@@ -235,25 +235,26 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">
-                                <div class="d-inline-flex gap-1">
-                                    <button type="button" class="btn-bieu-tuong" aria-label="Xem mã QR" title="Xem mã QR"
+                                <div class="d-inline-flex gap-1 align-items-center">
+                                    <button type="button" class="btn-vien-thuoc"
                                         onclick="xemQrModal('<?= e($ts['ma_tai_san']) ?>', '<?= e($ts['ten_tai_san']) ?>', '<?= url('tai-san/in-qr.php?id=' . (int)$ts['id']) ?>')">
                                         <?= icon('qr-code', 'bieu-tuong-sm') ?>
+                                        <span>QR</span>
                                     </button>
-                                    <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$ts['id']) ?>" class="btn-bieu-tuong" aria-label="Chi tiết" title="Chi tiết">
-                                        <?= icon('eye', 'bieu-tuong-sm') ?>
+                                    <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$ts['id']) ?>" class="btn-vien-thuoc">
+                                        <span>Chi tiết</span>
                                     </a>
                                     <?php if (co_quyen('quan_ly_tai_san')): ?>
-                                        <a href="<?= url('tai-san/sua.php?id=' . (int)$ts['id']) ?>" class="btn-bieu-tuong" aria-label="Sửa" title="Sửa">
-                                            <?= icon('pencil', 'bieu-tuong-sm') ?>
+                                        <a href="<?= url('tai-san/sua.php?id=' . (int)$ts['id']) ?>" class="btn-vien-thuoc">
+                                            <span>Sửa</span>
                                         </a>
                                         <?php if ($ts['trang_thai'] !== 'DANG_MUON'): ?>
                                             <form action="<?= url('tai-san/index.php') ?>" method="POST" class="d-inline" data-xac-nhan="Xác nhận xóa hoặc ngừng sử dụng tài sản <?= e($ts['ma_tai_san']) ?>?">
                                                 <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$ts['id'] ?>">
-                                                <button type="submit" class="btn-bieu-tuong btn-bieu-tuong-xoa text-danger" aria-label="Xóa" title="Xóa">
-                                                    <?= icon('trash-2', 'bieu-tuong-sm') ?>
+                                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa tài sản">
+                                                    <span>Xóa</span>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
