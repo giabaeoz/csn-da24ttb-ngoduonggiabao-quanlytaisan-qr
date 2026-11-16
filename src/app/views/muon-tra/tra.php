@@ -57,8 +57,14 @@ if ($thietBiVuaQuet !== '') {
         <h1 class="tieu-de-trang">Mượn - trả tài sản</h1>
     </div>
     <div class="d-flex gap-2">
-        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-phu">Mượn</a>
-        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-chinh">Trả</a>
+        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-phu bg-white">
+            <?= icon('repeat', 'bieu-tuong-sm') ?>
+            <span>Mượn</span>
+        </a>
+        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-chinh">
+            <?= icon('corner-down-left', 'bieu-tuong-sm') ?>
+            <span>Trả</span>
+        </a>
     </div>
 </div>
 
@@ -85,14 +91,18 @@ if ($thietBiVuaQuet !== '') {
         <div class="col-12 col-lg-5">
             <div class="card mb-4">
                 <div class="card-body p-3">
-                    <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị trả</h2>
+                    <h2 class="tieu-de-khoi mb-3 d-flex align-items-center gap-2">
+                        <span class="text-primary"><?= icon('qr-code', 'bieu-tuong-md') ?></span>
+                        <span>Quét QR thiết bị trả</span>
+                    </h2>
                     <div class="row g-2 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
                                 <video id="videoQuetCamera" playsinline class="d-none"></video>
                                 <canvas id="canvasQuetCamera" class="d-none"></canvas>
                                 <div class="overlay-ngam" id="overlayCamera">
-                                    <div class="fw-semibold text-dark mb-1">Khung camera</div>
+                                    <div class="text-primary mb-1"><?= icon('scan-line', 'bieu-tuong-lg') ?></div>
+                                    <div class="fw-semibold text-dark mb-1">Khung quét QR</div>
                                     <div class="chu-nho-11">Đưa mã QR thiết bị vào khung</div>
                                 </div>
                             </div>
@@ -127,7 +137,10 @@ if ($thietBiVuaQuet !== '') {
 
             <div class="card">
                 <div class="card-body p-4">
-                    <h2 class="tieu-de-khoi mb-3">Phiếu trả tài sản</h2>
+                    <h2 class="tieu-de-khoi mb-3 d-flex align-items-center gap-2">
+                        <span class="text-primary"><?= icon('file-plus', 'bieu-tuong-md') ?></span>
+                        <span>Phiếu trả tài sản</span>
+                    </h2>
                     <?php if ($phieuHienTai): ?>
                         <div class="mb-3">
                             <div class="fw-semibold text-dark">
@@ -161,8 +174,8 @@ if ($thietBiVuaQuet !== '') {
                             Tổng nhận: 0 thiết bị
                         </div>
                     <?php else: ?>
-                        <div class="text-center py-4 text-phu">
-                            Chưa quét thiết bị cần trả. Hãy đưa mã QR trên thiết bị vào khung camera hoặc nhập mã bên trên.
+                        <div class="text-center py-3 text-phu">
+                            <?= minh_hoa_hop_trong('Chưa quét thiết bị cần trả. Hãy đưa mã QR trên thiết bị vào khung camera hoặc nhập mã bên trên.') ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -173,7 +186,10 @@ if ($thietBiVuaQuet !== '') {
             <div class="card mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="tieu-de-khoi mb-0">Thông tin phiếu mượn</h2>
+                        <h2 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+                            <span class="text-primary"><?= icon('info', 'bieu-tuong-md') ?></span>
+                            <span>Thông tin phiếu mượn</span>
+                        </h2>
                         <?php if ($phieuHienTai): ?>
                             <span class="font-monospace fw-semibold text-dark"><?= e($phieuHienTai['ma_phieu_muon']) ?></span>
                         <?php endif; ?>
@@ -211,8 +227,9 @@ if ($thietBiVuaQuet !== '') {
                             </div>
                         </div>
                     <?php else: ?>
-                        <div class="text-center py-4 text-phu">
-                            Vui lòng quét mã QR trên thiết bị để nạp thông tin phiếu mượn.
+                        <div class="p-3 rounded-3 d-flex align-items-center justify-content-center gap-2 text-phu" style="background: #EFF8FF; border: 1px solid #BFDBFE;">
+                            <span class="text-primary"><?= icon('qr-code', 'bieu-tuong-md') ?></span>
+                            <span>Vui lòng quét mã QR trên thiết bị để nạp thông tin phiếu mượn.</span>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -220,7 +237,10 @@ if ($thietBiVuaQuet !== '') {
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <h2 class="tieu-de-khoi mb-0">Danh sách thiết bị trong phiếu (<span id="demNhanTra">0</span>/<?= $soChuaTra ?> nhận trả)</h2>
+                    <h2 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+                        <span class="text-primary"><?= icon('list', 'bieu-tuong-md') ?></span>
+                        <span>Danh sách thiết bị trong phiếu (<span id="demNhanTra">0</span>/<?= $soChuaTra ?> nhận trả)</span>
+                    </h2>
                     <?php if (!empty($dsChiTiet) && $soChuaTra > 0): ?>
                         <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn btn-phu btn-sm" onclick="chonTatCaThietBi(true)">
@@ -248,7 +268,7 @@ if ($thietBiVuaQuet !== '') {
                             <?php if (empty($dsChiTiet)): ?>
                                 <tr>
                                     <td colspan="4" class="text-center py-4 text-phu">
-                                        Chưa có thiết bị nào.
+                                        <?= minh_hoa_hop_trong('Chưa có thiết bị nào.') ?>
                                     </td>
                                 </tr>
                             <?php else: ?>

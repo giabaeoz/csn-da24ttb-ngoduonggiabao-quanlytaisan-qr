@@ -60,23 +60,20 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<ul class="nav nav-tabs mb-3 border-bottom">
-    <li class="nav-item">
-        <a class="nav-link <?= $tab === 'muon-tra' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=muon-tra') ?>">
-            Mượn – trả
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?= $tab === 'dieu-chuyen' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=dieu-chuyen') ?>">
-            Điều chuyển
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?= $tab === 'kiem-ke' ? 'active fw-semibold' : 'text-secondary fw-semibold' ?>" href="<?= url('thong-ke/index.php?tab=kiem-ke') ?>">
-            Kiểm kê
-        </a>
-    </li>
-</ul>
+<div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+    <a class="btn-tab-xanh <?= $tab === 'muon-tra' ? 'active' : '' ?>" href="<?= url('thong-ke/index.php?tab=muon-tra') ?>">
+        <?= icon('repeat', 'bieu-tuong-sm') ?>
+        <span>Mượn – trả</span>
+    </a>
+    <a class="btn-tab-xanh <?= $tab === 'dieu-chuyen' ? 'active' : '' ?>" href="<?= url('thong-ke/index.php?tab=dieu-chuyen') ?>">
+        <?= icon('arrow-left-right', 'bieu-tuong-sm') ?>
+        <span>Điều chuyển</span>
+    </a>
+    <a class="btn-tab-xanh <?= $tab === 'kiem-ke' ? 'active' : '' ?>" href="<?= url('thong-ke/index.php?tab=kiem-ke') ?>">
+        <?= icon('clipboard-check', 'bieu-tuong-sm') ?>
+        <span>Kiểm kê</span>
+    </a>
+</div>
 
 <?php if ($tab === 'muon-tra'): ?>
 
@@ -87,17 +84,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <input type="hidden" name="phong_truc_id" value="<?= (int)$phongTrucFilter ?>">
             <?php endif; ?>
 
-            <div class="row g-3 align-items-end mb-3">
-                <div class="col-12 col-md-5">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-lg-3">
                     <label class="nhan-truong">Từ khóa</label>
                     <div class="o-tim-kiem">
                         <?= icon('search', 'bieu-tuong-sm') ?>
                         <input type="text" name="tu_khoa" class="o-nhap" 
-                               placeholder="Mã phiếu / mã số / họ tên / mã hoặc tên thiết bị" 
+                               placeholder="Mã phiếu / họ tên / thiết bị..." 
                                value="<?= e($tuKhoa) ?>">
                     </div>
                 </div>
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-6 col-lg-2">
                     <label class="nhan-truong">Phòng học</label>
                     <select name="phong_hoc_id" class="o-nhap">
                         <option value="">Tất cả phòng</option>
@@ -108,7 +105,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4">
+                <div class="col-12 col-sm-6 col-lg-2">
                     <label class="nhan-truong">Trạng thái phiếu</label>
                     <select name="trang_thai" class="o-nhap">
                         <option value="TAT_CA" <?= ($trangThai === 'TAT_CA' || $trangThai === '') ? 'selected' : '' ?>>Tất cả</option>
@@ -118,118 +115,31 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <option value="QUA_HAN" <?= $trangThai === 'QUA_HAN' ? 'selected' : '' ?>>Quá hạn</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="row g-3 align-items-end">
-                <div class="col-12 col-sm-6 col-md-3">
-                    <label class="nhan-truong">Ngày mượn từ</label>
+                <div class="col-6 col-lg-2">
+                    <label class="nhan-truong">Từ ngày</label>
                     <input type="date" name="tu_ngay" class="o-nhap" value="<?= e($tuNgay) ?>">
                 </div>
-                <div class="col-12 col-sm-6 col-md-3">
-                    <label class="nhan-truong">Đến ngày</label>
-                    <input type="date" name="den_ngay" class="o-nhap" value="<?= e($denNgay) ?>">
-                </div>
-                <div class="col-12 col-md-6 d-flex gap-2">
-                    <button type="submit" class="btn btn-chinh">
+                <div class="col-6 col-lg-3 d-flex gap-2 align-items-end">
+                    <div class="flex-grow-1">
+                        <label class="nhan-truong">Đến ngày</label>
+                        <input type="date" name="den_ngay" class="o-nhap" value="<?= e($denNgay) ?>">
+                    </div>
+                    <button type="submit" class="btn btn-chinh px-3" title="Tra cứu">
                         <?= icon('search', 'bieu-tuong-sm') ?>
                         <span>Tra cứu</span>
                     </button>
-                    <a href="<?= url('thong-ke/index.php?tab=muon-tra') ?>" class="btn btn-phu">
+                    <a href="<?= url('thong-ke/index.php?tab=muon-tra') ?>" class="btn btn-phu px-2" title="Xóa bộ lọc">
                         <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
-                        <span>Xóa bộ lọc</span>
                     </a>
                 </div>
             </div>
-
-            <div class="mo-ta-phu mt-2 pt-1 border-top text-muted">
-                Số liệu, biểu đồ và danh sách bên dưới cùng áp dụng bộ lọc đang chọn.
-            </div>
         </form>
-    </div>
-
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="the-so-lieu">
-                <div class="o-bieu-tuong-thong-ke"><?= icon('repeat', 'bieu-tuong-lg') ?></div>
-                <div>
-                    <div class="nhan-so-lieu">Phiếu mượn</div>
-                    <div class="so-lieu"><?= sprintf('%02d', $kpiPhieuMuon) ?></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="the-so-lieu">
-                <div class="o-bieu-tuong-thong-ke"><?= icon('package', 'bieu-tuong-lg') ?></div>
-                <div>
-                    <div class="nhan-so-lieu">Thiết bị cho mượn</div>
-                    <div class="so-lieu"><?= sprintf('%02d', $kpiThietBi) ?></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="the-so-lieu">
-                <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
-                <div>
-                    <div class="nhan-so-lieu">Phiếu đã trả đủ</div>
-                    <div class="so-lieu chu-thanh-cong"><?= sprintf('%02d', $kpiDaTraDu) ?></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="the-so-lieu">
-                <div class="o-bieu-tuong-thong-ke"><?= icon('alert-triangle', 'bieu-tuong-lg') ?></div>
-                <div>
-                    <div class="nhan-so-lieu">Phiếu chưa trả đủ</div>
-                    <div class="so-lieu chu-canh-bao"><?= sprintf('%02d', $kpiChuaTraDu) ?></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-lg-6">
-            <div class="the-noi-dung h-100 p-4">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <div class="tieu-de-khoi mb-0">Mượn – trả theo ngày</div>
-                    
-                </div>
-                <div class="d-flex align-items-center gap-3 mb-3 small">
-                    <div class="d-flex align-items-center gap-1">
-                        <span class="net-chu-thich-chinh"></span>
-                        <span class="text-secondary">Phiếu mượn mới</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-1">
-                        <span class="net-chu-thich-dut"></span>
-                        <span class="text-secondary">Phiếu có nhận trả</span>
-                    </div>
-                </div>
-                <div class="khung-bieu-do-220">
-                    <canvas id="chartMuonTraNgay"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-            <div class="the-noi-dung h-100 p-4">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <div class="tieu-de-khoi mb-0">Thiết bị cho mượn theo loại</div>
-                    
-                </div>
-                <div class="mb-3 small text-secondary">
-                    Phân bố thiết bị được mượn theo từng nhóm loại.
-                </div>
-                <div class="khung-bieu-do-220">
-                    <canvas id="chartThietBiLoai"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="the-noi-dung mb-4">
         <div class="the-noi-dung-dau d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
-                <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu mượn – trả</h3>
-                
+                <h3 class="tieu-de-khoi mb-0">Danh sách kết quả mượn – trả</h3>
             </div>
             <div>
                 <span class="badge bg-light text-secondary border px-2 py-1 fw-semibold">
@@ -321,33 +231,35 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <div class="mo-ta-phu mb-0">
                     Hiển thị <?= $tuBanGhi ?>–<?= $denBanGhi ?> / <?= (int)$tongSo ?> phiếu
                 </div>
-                <div class="d-flex align-items-center gap-1">
-                    <?php if ($trang > 1): ?>
-                        <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $trang - 1]))) ?>" class="btn btn-sm btn-phu">
-                            Trước
-                        </a>
-                    <?php else: ?>
-                        <button type="button" class="btn btn-sm btn-phu" disabled>Trước</button>
-                    <?php endif; ?>
-
-                    <?php for ($p = 1; $p <= $tongSoTrang; $p++): ?>
-                        <?php if ($p === $trang): ?>
-                            <span class="btn btn-sm btn-chinh"><?= $p ?></span>
-                        <?php elseif ($p <= 3 || $p >= $tongSoTrang - 2 || abs($p - $trang) <= 1): ?>
-                            <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $p]))) ?>" class="btn btn-sm btn-phu">
-                                <?= $p ?>
+                <?php if ($tongSoTrang > 1): ?>
+                    <div class="d-flex align-items-center gap-1">
+                        <?php if ($trang > 1): ?>
+                            <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $trang - 1]))) ?>" class="btn btn-sm btn-phu">
+                                Trước
                             </a>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-sm btn-phu" disabled>Trước</button>
                         <?php endif; ?>
-                    <?php endfor; ?>
 
-                    <?php if ($trang < $tongSoTrang): ?>
-                        <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $trang + 1]))) ?>" class="btn btn-sm btn-phu">
-                            Sau
-                        </a>
-                    <?php else: ?>
-                        <button type="button" class="btn btn-sm btn-phu" disabled>Sau</button>
-                    <?php endif; ?>
-                </div>
+                        <?php for ($p = 1; $p <= $tongSoTrang; $p++): ?>
+                            <?php if ($p === $trang): ?>
+                                <span class="btn btn-sm btn-chinh"><?= $p ?></span>
+                            <?php elseif ($p <= 3 || $p >= $tongSoTrang - 2 || abs($p - $trang) <= 1): ?>
+                                <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $p]))) ?>" class="btn btn-sm btn-phu">
+                                    <?= $p ?>
+                                </a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($trang < $tongSoTrang): ?>
+                            <a href="<?= url('thong-ke/index.php?' . http_build_query(array_merge($queryBase, ['trang' => $trang + 1]))) ?>" class="btn btn-sm btn-phu">
+                                Sau
+                            </a>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-sm btn-phu" disabled>Sau</button>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>
@@ -357,21 +269,29 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div class="the-noi-dung p-3 mb-4">
         <form method="GET" action="<?= url('thong-ke/index.php') ?>" class="row g-3 align-items-end">
             <input type="hidden" name="tab" value="dieu-chuyen">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-5">
                 <label class="nhan-truong">Từ khóa điều chuyển</label>
                 <div class="o-tim-kiem">
                     <?= icon('search', 'bieu-tuong-sm') ?>
-                    <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã phiếu / lý do..." value="<?= e($tuKhoa) ?>">
+                    <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã phiếu / phòng chuyển / người lập..." value="<?= e($tuKhoa) ?>">
                 </div>
             </div>
-            <div class="col-12 col-md-6 d-flex gap-2">
+            <div class="col-6 col-md-2">
+                <label class="nhan-truong">Từ ngày</label>
+                <input type="date" name="tu_ngay" class="o-nhap" value="<?= e($tuNgay) ?>">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="nhan-truong">Đến ngày</label>
+                <input type="date" name="den_ngay" class="o-nhap" value="<?= e($denNgay) ?>">
+            </div>
+            <div class="col-12 col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-chinh">
                     <?= icon('search', 'bieu-tuong-sm') ?>
                     <span>Tra cứu</span>
                 </button>
                 <a href="<?= url('thong-ke/index.php?tab=dieu-chuyen') ?>" class="btn btn-phu">
                     <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
-                    <span>Xóa bộ lọc</span>
+                    <span>Xóa lọc</span>
                 </a>
             </div>
         </form>
@@ -379,7 +299,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
     <div class="the-noi-dung mb-4">
         <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
-            <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu điều chuyển</h3>
+            <h3 class="tieu-de-khoi mb-0">Danh sách kết quả điều chuyển</h3>
             <span class="badge bg-light text-secondary border"><?= (int)$tongSo ?> phiếu</span>
         </div>
         <div class="the-noi-dung-than p-0">
@@ -389,8 +309,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <tr>
                             <th>Mã phiếu</th>
                             <th>Ngày chuyển</th>
-                            <th>Bàn trực gửi</th>
-                            <th>Bàn trực nhận</th>
+                            <th>Phòng đi</th>
+                            <th>Phòng đến</th>
                             <th class="text-center">Số thiết bị</th>
                             <th>Người tạo</th>
                             <th class="text-end">Chi tiết</th>
@@ -411,7 +331,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <td class="text-center fw-bold"><?= (int)($dc['tong_so_thiet_bi'] ?? $dc['so_luong_thiet_bi'] ?? $dc['so_thiet_bi'] ?? 0) ?></td>
                                     <td><?= e($dc['ho_ten_can_bo'] ?? $dc['ho_ten_nguoi_tao'] ?? $dc['nguoi_tao_ten'] ?? '—') ?></td>
                                     <td class="text-end cot-thao-tac">
-                                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
+                                        <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc">Chi tiết</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -427,21 +347,36 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div class="the-noi-dung p-3 mb-4">
         <form method="GET" action="<?= url('thong-ke/index.php') ?>" class="row g-3 align-items-end">
             <input type="hidden" name="tab" value="kiem-ke">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
                 <label class="nhan-truong">Từ khóa kiểm kê</label>
                 <div class="o-tim-kiem">
                     <?= icon('search', 'bieu-tuong-sm') ?>
-                    <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã đợt / tên đợt..." value="<?= e($tuKhoa) ?>">
+                    <input type="text" name="tu_khoa" class="o-nhap" placeholder="Mã đợt / tên đợt / phòng trực..." value="<?= e($tuKhoa) ?>">
                 </div>
             </div>
-            <div class="col-12 col-md-6 d-flex gap-2">
-                <button type="submit" class="btn btn-chinh">
+            <div class="col-12 col-sm-6 col-md-2">
+                <label class="nhan-truong">Trạng thái</label>
+                <select name="trang_thai" class="o-nhap">
+                    <option value="">Tất cả</option>
+                    <option value="DANG_KIEM_KE" <?= $trangThai === 'DANG_KIEM_KE' ? 'selected' : '' ?>>Đang thực hiện</option>
+                    <option value="HOAN_TAT" <?= $trangThai === 'HOAN_TAT' ? 'selected' : '' ?>>Hoàn tất</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="nhan-truong">Từ ngày</label>
+                <input type="date" name="tu_ngay" class="o-nhap" value="<?= e($tuNgay) ?>">
+            </div>
+            <div class="col-6 col-md-4 d-flex gap-2 align-items-end">
+                <div class="flex-grow-1">
+                    <label class="nhan-truong">Đến ngày</label>
+                    <input type="date" name="den_ngay" class="o-nhap" value="<?= e($denNgay) ?>">
+                </div>
+                <button type="submit" class="btn btn-chinh px-3">
                     <?= icon('search', 'bieu-tuong-sm') ?>
                     <span>Tra cứu</span>
                 </button>
-                <a href="<?= url('thong-ke/index.php?tab=kiem-ke') ?>" class="btn btn-phu">
+                <a href="<?= url('thong-ke/index.php?tab=kiem-ke') ?>" class="btn btn-phu px-2" title="Xóa bộ lọc">
                     <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
-                    <span>Xóa bộ lọc</span>
                 </a>
             </div>
         </form>
@@ -449,7 +384,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
     <div class="the-noi-dung mb-4">
         <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
-            <h3 class="tieu-de-khoi mb-0">Kết quả tra cứu kiểm kê</h3>
+            <h3 class="tieu-de-khoi mb-0">Danh sách kết quả kiểm kê</h3>
             <span class="badge bg-light text-secondary border"><?= (int)$tongSo ?> đợt</span>
         </div>
         <div class="the-noi-dung-than p-0">
@@ -485,7 +420,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-end cot-thao-tac">
-                                        <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$kk['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
+                                        <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$kk['id']) ?>" class="btn-vien-thuoc">Chi tiết</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -496,115 +431,6 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
     </div>
 
-<?php endif; ?>
-
-<script src="<?= url('assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
-<?php if ($tab === 'muon-tra'): ?>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const giamChuyenDong = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const thoiGianHoatAnh = giamChuyenDong ? 0 : 350;
-    const cauHinhTooltip = {
-        backgroundColor: '#1F2937',
-        padding: 8,
-        cornerRadius: 6,
-        titleFont: { size: 12 },
-        bodyFont: { size: 12 }
-    };
-
-    // 1. Biểu đồ Line: Mượn – trả theo ngày
-    const ctxNgay = document.getElementById('chartMuonTraNgay');
-    if (ctxNgay) {
-        new Chart(ctxNgay.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: <?= json_encode($chartLabels, JSON_UNESCAPED_UNICODE) ?>,
-                datasets: [
-                    {
-                        label: 'Phiếu mượn mới',
-                        data: <?= json_encode($chartMuon) ?>,
-                        borderColor: '#1E4E8C',
-                        backgroundColor: '#E8EFF8',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#1E4E8C',
-                        pointRadius: 4,
-                        fill: true,
-                        tension: 0.25
-                    },
-                    {
-                        label: 'Phiếu có nhận trả',
-                        data: <?= json_encode($chartTra) ?>,
-                        borderColor: '#6B7280',
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointBackgroundColor: '#6B7280',
-                        pointRadius: 4,
-                        fill: false,
-                        tension: 0.25
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: thoiGianHoatAnh },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: cauHinhTooltip
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#E5E7EB' },
-                        ticks: { precision: 0, font: { family: 'system-ui' } }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { family: 'system-ui' } }
-                    }
-                }
-            }
-        });
-    }
-
-    // 2. Biểu đồ Bar: Thiết bị cho mượn theo loại
-    const ctxLoai = document.getElementById('chartThietBiLoai');
-    if (ctxLoai) {
-        new Chart(ctxLoai.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: <?= json_encode($loaiLabels, JSON_UNESCAPED_UNICODE) ?>,
-                datasets: [{
-                    data: <?= json_encode($loaiData) ?>,
-                    backgroundColor: '#1E4E8C',
-                    borderRadius: 4,
-                    maxBarThickness: 36
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: thoiGianHoatAnh },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: cauHinhTooltip
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#E5E7EB' },
-                        ticks: { precision: 0, font: { family: 'system-ui' } }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { family: 'system-ui' } }
-                    }
-                }
-            }
-        });
-    }
-});
-</script>
 <?php endif; ?>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

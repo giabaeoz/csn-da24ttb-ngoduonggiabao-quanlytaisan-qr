@@ -39,7 +39,7 @@ $trangThai = trim((string)($_GET['trang_thai'] ?? ''));
 $tuNgay = trim((string)($_GET['tu_ngay'] ?? ''));
 $denNgay = trim((string)($_GET['den_ngay'] ?? ''));
 $trang = max(1, doc_so_nguyen('trang', 1, $_GET));
-$soMoiTrang = 6; // Khớp phác thảo 6 dòng hiển thị
+$soMoiTrang = 100; // Hiển thị danh sách toàn bộ kết quả tra cứu
 
 $danhSachPhongHoc = phong_hoc_danh_sach(true);
 $danhSachPhongTruc = phong_truc_danh_sach(true);
@@ -304,20 +304,31 @@ if ($tab === 'muon-tra') {
 // TAB 2: ĐIỀU CHUYỂN
 // =========================================================================
 elseif ($tab === 'dieu-chuyen') {
-    $ketQuaDc = dieu_chuyen_danh_sach(['tu_khoa' => $tuKhoa], $trang, $soMoiTrang);
+    $ketQuaDc = dieu_chuyen_danh_sach([
+        'tu_khoa'       => $tuKhoa,
+        'tu_ngay'       => $tuNgay,
+        'den_ngay'      => $denNgay,
+        'phong_truc_id' => $phongTrucFilter ?? 0,
+    ], $trang, $soMoiTrang);
     $danhSachDc = $ketQuaDc['danh_sach'] ?? [];
     $tongSo = $ketQuaDc['tong_so'] ?? 0;
-    $tongSoTrang = $ketQuaDc['tong_so_trang'] ?? 1;
+    $tongSoTrang = $ketQuaDc['tong_trang'] ?? $ketQuaDc['tong_so_trang'] ?? 1;
 }
 
 // =========================================================================
 // TAB 3: KIỂM KÊ
 // =========================================================================
 elseif ($tab === 'kiem-ke') {
-    $ketQuaKk = kiem_ke_danh_sach(['tu_khoa' => $tuKhoa], $trang, $soMoiTrang);
+    $ketQuaKk = kiem_ke_danh_sach([
+        'tu_khoa'       => $tuKhoa,
+        'trang_thai'    => $trangThai,
+        'tu_ngay'       => $tuNgay,
+        'den_ngay'      => $denNgay,
+        'phong_truc_id' => $phongTrucFilter ?? 0,
+    ], $trang, $soMoiTrang);
     $danhSachKk = $ketQuaKk['danh_sach'] ?? [];
     $tongSo = $ketQuaKk['tong_so'] ?? 0;
-    $tongSoTrang = $ketQuaKk['tong_so_trang'] ?? 1;
+    $tongSoTrang = $ketQuaKk['tong_trang'] ?? $ketQuaKk['tong_so_trang'] ?? 1;
 }
 
 $tieuDeTrang = 'Tra cứu, thống kê';

@@ -31,23 +31,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </button>
 </div>
 
-<ul class="nav nav-tabs mb-3 border-bottom">
-    <li class="nav-item">
-        <a class="nav-link active fw-semibold" href="<?= url('danh-muc/phong-hoc.php') ?>">
-            Phòng học
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-secondary fw-semibold" href="<?= url('danh-muc/phong-truc.php') ?>">
-            Phòng trực
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-secondary fw-semibold" href="<?= url('danh-muc/loai-tai-san.php') ?>">
-            Loại tài sản
-        </a>
-    </li>
-</ul>
+<div class="d-flex gap-2 mb-4">
+    <a class="btn btn-chinh" href="<?= url('danh-muc/phong-hoc.php') ?>">
+        Phòng học
+    </a>
+    <a class="btn btn-phu bg-white" href="<?= url('danh-muc/phong-truc.php') ?>">
+        Phòng trực
+    </a>
+    <a class="btn btn-phu bg-white" href="<?= url('danh-muc/loai-tai-san.php') ?>">
+        Loại tài sản
+    </a>
+</div>
 
 <div class="the-noi-dung p-3 mb-4">
     <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="GET" class="row g-2 align-items-center">
@@ -77,7 +71,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau">
-        <h3 class="tieu-de-khoi mb-0">Danh sách phòng học & cấu hình thiết bị cố định</h3>
+        <h3 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+            <span class="text-primary"><?= icon('list', 'bieu-tuong-md') ?></span>
+            <span>Danh sách phòng học & cấu hình thiết bị cố định</span>
+        </h3>
     </div>
     <div class="the-noi-dung-than p-0">
         <div class="table-responsive">
@@ -108,7 +105,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         ?>
                             <tr>
                                 <td class="fw-semibold text-primary">
-                                    <span class="badge bg-light text-primary border">
+                                    <span class="badge rounded-pill bg-light text-primary border px-2 py-1">
                                         <?= e($ph['ma_phong']) ?>
                                     </span>
                                 </td>
@@ -120,7 +117,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-secondary border">
+                                    <span class="badge rounded-pill bg-light text-secondary border px-2 py-1">
                                         <?= e($ph['toa_nha'] ?: 'Toà -') ?> / Tầng <?= e($ph['tang'] ?: '-') ?>
                                     </span>
                                 </td>
@@ -143,9 +140,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </td>
                                 <td class="text-center">
                                     <?php if ((int)$ph['dang_hoat_dong'] === 1): ?>
-                                        <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đang mở</span>
+                                        <span class="huy-hieu-tt huy-hieu-tt-thanh-cong"><?= icon('check-circle-2') ?> <span>Đang mở</span></span>
                                     <?php else: ?>
-                                        <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Tạm đóng</span>
+                                        <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem"><?= icon('alert-circle') ?> <span>Tạm đóng</span></span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
@@ -160,13 +157,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             ['nhan' => 'Ghi chú', 'gia_tri' => ($ph['ghi_chu'] ?? '') ?: '---'],
                                         ];
                                         ?>
-                                        <button type="button" class="btn-vien-thuoc"
+                                        <button type="button" class="btn-bieu-tuong" title="Xem"
                                             onclick='xemChiTietNhanh(<?= json_encode("Phòng học: " . ($ph["ma_phong"] ?? "")) ?>, <?= json_encode($chiTietPh, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            <span>Xem</span>
+                                            <?= icon('eye') ?>
                                         </button>
-                                        <button type="button" class="btn-vien-thuoc"
+                                        <button type="button" class="btn-bieu-tuong" title="Sửa"
                                             onclick='moModalSua(<?= json_encode($ph, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-                                            <span>Sửa</span>
+                                            <?= icon('pencil') ?>
                                         </button>
 
                                         <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="POST" class="d-inline" data-xac-nhan="Bạn có chắc muốn đổi trạng thái phòng học này?">
@@ -174,8 +171,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
                                             <?php $nhanKhoaMoPh = (int)$ph['dang_hoat_dong'] === 1 ? 'Khóa' : 'Mở'; ?>
-                                            <button type="submit" class="btn-vien-thuoc">
-                                                <span><?= $nhanKhoaMoPh ?></span>
+                                            <button type="submit" class="btn-bieu-tuong" title="<?= $nhanKhoaMoPh ?>">
+                                                <?= icon('lock') ?>
                                             </button>
                                         </form>
 
@@ -184,8 +181,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
-                                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa phòng học">
-                                                    <span>Xóa</span>
+                                                <button type="submit" class="btn-bieu-tuong text-danger" title="Xóa phòng học">
+                                                    <?= icon('trash-2') ?>
                                                 </button>
                                             </form>
                                         <?php endif; ?>

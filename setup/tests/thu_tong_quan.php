@@ -110,6 +110,19 @@ $fakeUser = ['id' => 999999, 'vai_tro' => 'NHAN_VIEN', 'phong_truc_id' => 999999
 $soLieuRong = tong_quan_so_lieu($db, $fakeUser);
 kt_assert($soLieuRong['tong_tai_san'] === 0 && $soLieuRong['co_the_muon'] === 0, "Dữ liệu phòng trực trống xử lý an toàn, trả về 0 không crash");
 
+// 9. Kiểm tra bộ dữ liệu đa biểu đồ của Quản trị viên (QUAN_TRI)
+$bieuDoAdmin = tong_quan_bieu_do_admin($db);
+kt_assert(isset($bieuDoAdmin['phong_truc']['labels']) && is_array($bieuDoAdmin['phong_truc']['labels']), "Biểu đồ Admin có danh sách tất cả các phòng trực");
+kt_assert(
+    $bieuDoAdmin['tai_khoan']['tong'] === ($bieuDoAdmin['tai_khoan']['quan_tri'] + $bieuDoAdmin['tai_khoan']['quan_ly'] + $bieuDoAdmin['tai_khoan']['nhan_vien']),
+    "Biểu đồ Admin: Tổng tài khoản ({$bieuDoAdmin['tai_khoan']['tong']}) khớp tổng 3 vai trò"
+);
+kt_assert(
+    $bieuDoAdmin['nguoi_muon']['tong_ho_so'] === ($bieuDoAdmin['nguoi_muon']['hs_giang_vien'] + $bieuDoAdmin['nguoi_muon']['hs_sinh_vien']),
+    "Biểu đồ Admin: Tổng người mượn ({$bieuDoAdmin['nguoi_muon']['tong_ho_so']}) khớp tổng Giảng viên + Sinh viên"
+);
+kt_assert(count($bieuDoAdmin['van_hanh']['labels']) === 5 && count($bieuDoAdmin['van_hanh']['data']) === 5, "Biểu đồ Admin: Chỉ số vận hành trả về đủ 5 nhóm nghiệp vụ");
+
 echo "\n------------------------------------------------------------\n";
 echo "  KẾT QUẢ [TỔNG QUAN (DASHBOARD)]: {$soBaiDat} / {$tongSoBai} bài đạt.\n";
 echo "============================================================\n";

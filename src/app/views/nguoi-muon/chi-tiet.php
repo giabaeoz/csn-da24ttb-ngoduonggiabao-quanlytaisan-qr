@@ -39,25 +39,33 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <div class="the-noi-dung p-4 mb-4">
     <div class="row align-items-center">
         <div class="col-12 col-md-8">
-            <div class="mb-2">
-                <h3 class="tieu-de-khoi mb-1"><?= e($nguoiMuon['ho_ten']) ?></h3>
-                <div class="text-secondary small">
-                    Mã số trường: <strong><?= e($nguoiMuon['ma_so_truong']) ?></strong> &bull; Mã hệ thống: <?= e($nguoiMuon['ma_nguoi_muon']) ?>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="hop-icon-trang rounded-circle">
+                    <?= icon('users') ?>
+                </div>
+                <div>
+                    <h3 class="tieu-de-khoi mb-1"><?= e($nguoiMuon['ho_ten']) ?></h3>
+                    <div class="text-secondary small">
+                        Mã số trường: <strong><?= e($nguoiMuon['ma_so_truong']) ?></strong> &bull; Mã hệ thống: <?= e($nguoiMuon['ma_nguoi_muon']) ?>
+                    </div>
                 </div>
             </div>
 
             <div class="row g-2 mt-2 pt-2 border-top small">
-                <div class="col-sm-4">
+                <div class="col-sm-4 d-flex align-items-center gap-1">
+                    <span class="text-primary"><?= icon('users', 'bieu-tuong-sm') ?></span>
                     <span class="text-muted">Đối tượng:</span>
                     <strong class="text-primary ms-1">
                         <?= $nguoiMuon['loai_nguoi_muon'] === 'GIANG_VIEN' ? 'Giảng viên' : 'Sinh viên' ?>
                     </strong>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-4 d-flex align-items-center gap-1">
+                    <span class="text-primary"><?= icon('home', 'bieu-tuong-sm') ?></span>
                     <span class="text-muted">Lớp / Khoa:</span>
                     <strong class="text-dark ms-1"><?= e($nguoiMuon['lop_don_vi'] ?: '-') ?></strong>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-4 d-flex align-items-center gap-1">
+                    <span class="text-primary"><?= icon('info', 'bieu-tuong-sm') ?></span>
                     <span class="text-muted">Số điện thoại:</span>
                     <strong class="text-dark ms-1"><?= e($nguoiMuon['so_dien_thoai'] ?: '-') ?></strong>
                 </div>
@@ -67,12 +75,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <div class="col-12 col-md-4 mt-3 mt-md-0 text-md-end border-start-md ps-md-4">
             <div class="text-secondary small mb-1">Trạng thái:</div>
             <?php if ((int)$nguoiMuon['so_thiet_bi_dang_muon'] > 0): ?>
-                <div class="huy-hieu-tt huy-hieu-tt-canh-bao fs-6 px-3 py-2 mb-2 d-inline-block">
-                    Đang giữ <?= (int)$nguoiMuon['so_thiet_bi_dang_muon'] ?> thiết bị
+                <div class="huy-hieu-tt huy-hieu-tt-canh-bao px-3 py-2 mb-2 d-inline-flex">
+                    <?= icon('clock') ?>
+                    <span>Đang giữ <?= (int)$nguoiMuon['so_thiet_bi_dang_muon'] ?> thiết bị</span>
                 </div>
             <?php else: ?>
-                <div class="huy-hieu-tt huy-hieu-tt-thanh-cong fs-6 px-3 py-2 mb-2 d-inline-block">
-                    Không giữ thiết bị nào
+                <div class="huy-hieu-tt huy-hieu-tt-thanh-cong px-3 py-2 mb-2 d-inline-flex">
+                    <?= icon('check-circle-2') ?>
+                    <span>Không giữ thiết bị nào</span>
                 </div>
             <?php endif; ?>
 
@@ -90,8 +100,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <div class="the-noi-dung mb-4">
     <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
-        <h3 class="tieu-de-khoi mb-0">Lịch sử mượn trả tài sản</h3>
-        <span class="badge bg-light text-secondary border">
+        <h3 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+            <span class="text-primary"><?= icon('clock', 'bieu-tuong-md') ?></span>
+            <span>Lịch sử mượn trả tài sản</span>
+        </h3>
+        <span class="huy-hieu huy-hieu-chinh">
             Tổng cộng <?= count($lichSuMuon) ?> lượt mượn
         </span>
     </div>
@@ -119,14 +132,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             &bull; Bàn trực: <?= e($pm['ten_phong_truc'] ?? '') ?>
                                         </span>
                                     </div>
-                                    <div class="small">
-                                        <span class="text-muted me-3">
+                                    <div class="small d-flex align-items-center gap-2">
+                                        <span class="text-muted me-2">
                                             Mượn lúc: <strong><?= dinh_dang_ngay_gio($pm['thoi_gian_muon']) ?></strong>
                                         </span>
                                         <?php if ($pm['trang_thai'] === 'DA_TRA'): ?>
-                                            <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đã trả đủ</span>
+                                            <span class="huy-hieu-tt huy-hieu-tt-thanh-cong"><?= icon('check-circle-2') ?> <span>Đã trả đủ</span></span>
                                         <?php else: ?>
-                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Đang mượn</span>
+                                            <span class="huy-hieu-tt huy-hieu-tt-chinh"><?= icon('repeat') ?> <span>Đang mượn</span></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -139,10 +152,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                         Hạn trả dự kiến: <strong class="text-danger"><?= dinh_dang_ngay_gio($pm['han_tra']) ?></strong>
                                     </div>
                                     <div class="col-sm-4">
-                                        Cán bộ lập phiếu: <strong><?= e($pm['ten_nhan_vien_lap'] ?? '') ?></strong>
+                                        Cán bộ lập phiếu: <strong class="text-dark"><?= e($pm['ten_nhan_vien_lap'] ?? '') ?></strong>
                                     </div>
                                     <div class="col-sm-4">
-                                        Mục đích: <?= e(($pm['muc_dich_su_dung'] ?? $pm['ghi_chu'] ?? '') ?: 'Giảng dạy / học tập') ?>
+                                        Mục đích: <strong class="text-dark"><?= e(($pm['muc_dich_su_dung'] ?? $pm['ghi_chu'] ?? '') ?: 'Giảng dạy / học tập') ?></strong>
                                     </div>
                                 </div>
 
@@ -169,25 +182,26 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                                     </td>
                                                     <td>
                                                         <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">
-                                                            <?= e(TEN_TINH_TRANG[$ct['tinh_trang_khi_muon']] ?? $ct['tinh_trang_khi_muon']) ?>
+                                                            <?= icon('check-circle-2') ?>
+                                                            <span><?= e(TEN_TINH_TRANG[$ct['tinh_trang_khi_muon']] ?? $ct['tinh_trang_khi_muon']) ?></span>
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <?php if ($ct['thoi_gian_tra'] !== null): ?>
                                                             <span class="text-success fw-semibold"><?= dinh_dang_ngay_gio($ct['thoi_gian_tra']) ?></span>
                                                         <?php else: ?>
-                                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Chưa trả</span>
+                                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao"><?= icon('clock') ?> <span>Chưa trả</span></span>
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
                                                         <?php if ($ct['tinh_trang_khi_tra'] !== null): ?>
                                                             <?php if ($ct['tinh_trang_khi_tra'] === 'HU_HONG'): ?>
-                                                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Hư hỏng</span>
+                                                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem"><?= icon('alert-triangle') ?> <span>Hư hỏng</span></span>
                                                                 <?php if (!empty($ct['ghi_chu_tra']) || !empty($ct['ghi_chu'])): ?>
                                                                     <div class="text-danger small fst-italic"><?= e($ct['ghi_chu_tra'] ?? $ct['ghi_chu'] ?? '') ?></div>
                                                                 <?php endif; ?>
                                                             <?php else: ?>
-                                                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Tốt</span>
+                                                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong"><?= icon('check-circle-2') ?> <span>Tốt</span></span>
                                                             <?php endif; ?>
                                                         <?php else: ?>
                                                             <span class="text-muted">-</span>

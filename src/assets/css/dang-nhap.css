@@ -7,13 +7,13 @@
   display: flex;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #EEF4FD 0%, #E0ECFB 100%);
+  background: #EEF4FD url('../images/nen-dang-nhap.jpg') center center / cover no-repeat fixed;
 }
 
 .cot-thuong-hieu {
   width: 50%;
   background: transparent;
-  border-right: 1px solid var(--vien);
+  border-right: 1px solid rgba(215, 226, 240, 0.7);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -30,38 +30,55 @@
 }
 
 .logo-lon {
-  width: 140px;
-  height: 140px;
-  background-color: var(--the-xanh);
-  border: 1px solid var(--vien);
-  border-radius: var(--bo-the);
-  box-shadow: var(--bong-the);
+  width: 148px;
+  height: 148px;
+  background-color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(15, 39, 71, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--mau-chinh);
-  letter-spacing: 0.05em;
+  padding: 6px;
+  overflow: hidden;
   margin-bottom: var(--kc-6);
+}
+
+.logo-lon .logo-lon-anh,
+.logo-lon img {
+  width: 100%;
+  height: 100%;
+  max-width: 136px;
+  max-height: 136px;
+  object-fit: contain;
+  border-radius: 50%;
+  display: block;
 }
 
 .tieu-de-thuong-hieu {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--chu-chinh);
   margin-bottom: var(--kc-2);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 .mo-ta-thuong-hieu {
   font-size: 14px;
-  color: var(--chu-phu);
+  font-weight: 500;
+  color: var(--chu-chinh);
   max-width: 420px;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 .chan-thuong-hieu {
   font-size: 13px;
-  color: var(--chu-phu);
+  font-weight: 500;
+  color: var(--chu-chinh);
+  background-color: rgba(255, 255, 255, 0.88);
+  padding: 5px 16px;
+  border-radius: var(--bo-vien-thuoc);
+  border: 1px solid var(--vien);
 }
 
 .cot-bieu-mau {
@@ -79,7 +96,8 @@
   border: 1px solid var(--vien);
   border-radius: var(--bo-the);
   padding: 36px 32px;
-  background-color: var(--nen-the);
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
   box-shadow: var(--bong-the);
 }
 

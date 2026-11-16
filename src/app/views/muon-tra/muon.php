@@ -36,8 +36,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <h1 class="tieu-de-trang">Mượn - trả tài sản</h1>
     </div>
     <div class="d-flex gap-2">
-        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-chinh">Mượn</a>
-        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu">Trả</a>
+        <a href="<?= url('muon-tra/muon.php') ?>" class="btn btn-chinh">
+            <?= icon('repeat', 'bieu-tuong-sm') ?>
+            <span>Mượn</span>
+        </a>
+        <a href="<?= url('muon-tra/tra.php') ?>" class="btn btn-phu bg-white">
+            <?= icon('corner-down-left', 'bieu-tuong-sm') ?>
+            <span>Trả</span>
+        </a>
     </div>
 </div>
 
@@ -66,14 +72,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <div class="col-12 col-lg-5">
             <div class="card mb-4">
                 <div class="card-body p-3">
-                    <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị</h2>
+                    <h2 class="tieu-de-khoi mb-3 d-flex align-items-center gap-2">
+                        <span class="text-primary"><?= icon('qr-code', 'bieu-tuong-md') ?></span>
+                        <span>Quét QR thiết bị</span>
+                    </h2>
                     <div class="row g-2 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
                                 <video id="videoQuetCamera" playsinline class="d-none"></video>
                                 <canvas id="canvasQuetCamera" class="d-none"></canvas>
                                 <div class="overlay-ngam" id="overlayCamera">
-                                    <div class="fw-semibold text-dark mb-1">Khung camera</div>
+                                    <div class="text-primary mb-1"><?= icon('scan-line', 'bieu-tuong-lg') ?></div>
+                                    <div class="fw-semibold text-dark mb-1">Khung quét QR</div>
                                     <div class="chu-nho-11">Đưa mã QR thiết bị vào khung</div>
                                 </div>
                             </div>
@@ -104,11 +114,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
             <div class="card">
                 <div class="card-body p-4">
-                    <h2 class="tieu-de-khoi mb-3">Phiếu mượn</h2>
-                    <div class="mb-3">
-                        <div class="fw-semibold text-dark" id="pvThongTinNguoi">Chưa chọn người mượn</div>
-                        <div class="mo-ta-phu" id="pvThongTinPhong">SĐT: --- • Phòng cần mượn: ---</div>
-                        <div class="mo-ta-phu" id="pvThongTinThoiGian">Thời gian mượn: <?= date('d/m/Y H:i') ?> • Hạn trả: ---</div>
+                    <h2 class="tieu-de-khoi mb-3 d-flex align-items-center gap-2">
+                        <span class="text-primary"><?= icon('file-plus', 'bieu-tuong-md') ?></span>
+                        <span>Phiếu mượn</span>
+                    </h2>
+                    <div class="mb-3 p-3 rounded-3 d-flex align-items-start gap-2" style="background: #EFF8FF; border: 1px solid #BFDBFE;">
+                        <span class="text-primary mt-1"><?= icon('info', 'bieu-tuong-sm') ?></span>
+                        <div>
+                            <div class="fw-semibold text-dark" id="pvThongTinNguoi">Chưa chọn người mượn</div>
+                            <div class="mo-ta-phu" id="pvThongTinPhong">SĐT: --- • Phòng cần mượn: ---</div>
+                            <div class="mo-ta-phu" id="pvThongTinThoiGian">Thời gian mượn: <?= date('d/m/Y H:i') ?> • Hạn trả: ---</div>
+                        </div>
                     </div>
 
                     <div class="table-responsive mb-2">
@@ -139,10 +155,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <div>
-                            <h2 class="tieu-de-khoi mb-1">Khai báo người mượn & phòng học</h2>
+                            <h2 class="tieu-de-khoi mb-1 d-flex align-items-center gap-2">
+                                <span class="text-primary"><?= icon('users', 'bieu-tuong-md') ?></span>
+                                <span>Khai báo người mượn & phòng học</span>
+                            </h2>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <span id="nhanTrangThaiNm" class="badge-trang-thai badge-thong-tin">Khai báo trực tiếp</span>
+                            <span id="nhanTrangThaiNm" class="huy-hieu huy-hieu-chinh"><?= icon('info', 'bieu-tuong-sm') ?> <span>Khai báo trực tiếp</span></span>
                             <button type="button" class="btn btn-phu btn-sm d-none" id="btnXoaChonNm" onclick="xoaThongTinNguoiMuon()">
                                 <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
                                 <span>Nhập người mới</span>
@@ -220,7 +239,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="tieu-de-khoi mb-0">Thiết bị cần mượn - đã quét (<span id="demThietBi">0</span>)</h2>
+                    <h2 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+                        <span class="text-primary"><?= icon('list', 'bieu-tuong-md') ?></span>
+                        <span>Thiết bị cần mượn - đã quét (<span id="demThietBi">0</span>)</span>
+                    </h2>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
@@ -235,7 +257,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <tbody id="bangThietBiQuet">
                             <tr id="hangChuaCoThietBi">
                                 <td colspan="4" class="text-center py-4 text-phu">
-                                    Chưa có thiết bị nào được quét.
+                                    <?= minh_hoa_hop_trong('Chưa có thiết bị nào được quét.') ?>
                                 </td>
                             </tr>
                         </tbody>
@@ -244,7 +266,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
 
             <div class="d-flex justify-content-end gap-2">
-                <a href="<?= url('tong-quan.php') ?>" class="btn btn-phu">
+                <a href="<?= url('tong-quan.php') ?>" class="btn btn-phu bg-white">
                     <?= icon('x', 'bieu-tuong-sm') ?>
                     <span>Hủy</span>
                 </a>
@@ -261,6 +283,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <script>
     const danhSachThietBi = [];
     let phongHocHienTai = null;
+    const HTML_HOP_TRONG_MUON = <?= json_encode(minh_hoa_hop_trong('Chưa có thiết bị nào được quét.')) ?>;
 
     // ==========================================
     // 1. KHAI BÁO TRỰC TIẾP & TÌM KIẾM NGƯỜI MƯỢN
@@ -278,16 +301,16 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         const btnXoa = document.getElementById('btnXoaChonNm');
 
         if (nmId > 0) {
-            badge.className = 'badge-trang-thai badge-thanh-cong';
-            badge.textContent = 'Đã có hồ sơ người mượn';
+            badge.className = 'huy-hieu huy-hieu-thanh-cong';
+            badge.innerHTML = '<?= icon("check-circle-2", "bieu-tuong-sm") ?> <span>Đã có hồ sơ người mượn</span>';
             btnXoa.classList.remove('d-none');
         } else if (maSo !== '' || hoTen !== '') {
-            badge.className = 'badge-trang-thai badge-thong-tin';
-            badge.textContent = 'Người mượn mới (tự động lưu)';
+            badge.className = 'huy-hieu huy-hieu-chinh';
+            badge.innerHTML = '<?= icon("info", "bieu-tuong-sm") ?> <span>Người mượn mới (tự động lưu)</span>';
             btnXoa.classList.remove('d-none');
         } else {
-            badge.className = 'badge-trang-thai badge-trung-tinh';
-            badge.textContent = 'Khai báo trực tiếp';
+            badge.className = 'huy-hieu huy-hieu-chinh';
+            badge.innerHTML = '<?= icon("info", "bieu-tuong-sm") ?> <span>Khai báo trực tiếp</span>';
             btnXoa.classList.add('d-none');
         }
     }
@@ -537,7 +560,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
         hiddenContainer.innerHTML = '';
         if (danhSachThietBi.length === 0) {
-            tbody.innerHTML = '<tr id="hangChuaCoThietBi"><td colspan="4" class="text-center py-4 text-phu">Chưa có thiết bị nào được quét.</td></tr>';
+            tbody.innerHTML = '<tr id="hangChuaCoThietBi"><td colspan="4" class="text-center py-4 text-phu">' + HTML_HOP_TRONG_MUON + '</td></tr>';
             return;
         }
 

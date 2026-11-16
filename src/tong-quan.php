@@ -52,6 +52,7 @@ $soLieu = tong_quan_so_lieu($db, $nguoiDung);
 $xuHuong = tong_quan_xu_huong_tuan($db, $nguoiDung, $tuan);
 $theoNhom = tong_quan_theo_nhom($db, $nguoiDung, $tuan);
 $canTheoDoi = tong_quan_can_theo_doi($db, $nguoiDung, 5);
+$bieuDoAdmin = (($nguoiDung['vai_tro'] ?? '') === 'QUAN_TRI') ? tong_quan_bieu_do_admin($db) : null;
 
 // 5. Kiểm tra quyền thực hiện thao tác nhanh (chỉ hiện cho cán bộ trực bàn)
 $coQuyenThaoTacNhanh = co_quyen('nghiep_vu_muon_tra') && (($nguoiDung['vai_tro'] ?? '') === 'NHAN_VIEN');

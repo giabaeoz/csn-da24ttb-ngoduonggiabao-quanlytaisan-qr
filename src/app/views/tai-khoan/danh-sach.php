@@ -47,40 +47,58 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
 
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('users', 'bieu-tuong-lg') ?></div>
-            <div>
-                <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['tong_so'] ?? 0)) ?></div>
-                <div class="nhan-so-lieu">Tổng tài khoản</div>
+        <div class="the-kpi-pha-mau the-kpi-xanh h-100">
+            <div class="kpi-icon-trai">
+                <?= icon('users') ?>
+            </div>
+            <div class="kpi-noi-dung">
+                <div class="kpi-so"><?= sprintf('%02d', (int)($thongKe['tong_so'] ?? 0)) ?></div>
+                <div class="kpi-nhan">Tổng tài khoản</div>
+            </div>
+            <div class="kpi-icon-nen" aria-hidden="true">
+                <?= icon('users') ?>
             </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
-            <div>
-                <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['dang_hoat_dong'] ?? 0)) ?></div>
-                <div class="nhan-so-lieu">Đang hoạt động</div>
+        <div class="the-kpi-pha-mau the-kpi-la h-100">
+            <div class="kpi-icon-trai">
+                <?= icon('check-circle-2') ?>
+            </div>
+            <div class="kpi-noi-dung">
+                <div class="kpi-so"><?= sprintf('%02d', (int)($thongKe['dang_hoat_dong'] ?? 0)) ?></div>
+                <div class="kpi-nhan">Đang hoạt động</div>
+            </div>
+            <div class="kpi-icon-nen" aria-hidden="true">
+                <?= icon('check-circle-2') ?>
             </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('user-cog', 'bieu-tuong-lg') ?></div>
-            <div>
-                <div class="so-lieu"><?= sprintf('%02d', (int)($thongKe['nhan_vien'] ?? 0)) ?></div>
-                <div class="nhan-so-lieu">Nhân viên trực</div>
+        <div class="the-kpi-pha-mau the-kpi-cam h-100">
+            <div class="kpi-icon-trai">
+                <?= icon('user-cog') ?>
+            </div>
+            <div class="kpi-noi-dung">
+                <div class="kpi-so"><?= sprintf('%02d', (int)($thongKe['nhan_vien'] ?? 0)) ?></div>
+                <div class="kpi-nhan">Nhân viên trực</div>
+            </div>
+            <div class="kpi-icon-nen" aria-hidden="true">
+                <?= icon('user-cog') ?>
             </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('lock', 'bieu-tuong-lg') ?></div>
-            <div>
-                <div class="so-lieu <?= ((int)($thongKe['tam_khoa'] ?? 0) > 0) ? 'chu-nguy-hiem' : '' ?>">
-                    <?= sprintf('%02d', (int)($thongKe['tam_khoa'] ?? 0)) ?>
-                </div>
-                <div class="nhan-so-lieu">Tạm khóa</div>
+        <div class="the-kpi-pha-mau the-kpi-do h-100">
+            <div class="kpi-icon-trai">
+                <?= icon('lock') ?>
+            </div>
+            <div class="kpi-noi-dung">
+                <div class="kpi-so"><?= sprintf('%02d', (int)($thongKe['tam_khoa'] ?? 0)) ?></div>
+                <div class="kpi-nhan">Tạm khóa</div>
+            </div>
+            <div class="kpi-icon-nen" aria-hidden="true">
+                <?= icon('lock') ?>
             </div>
         </div>
     </div>
@@ -88,6 +106,10 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
 
 <div class="card mb-4">
     <div class="card-body p-3">
+        <div class="d-flex align-items-center gap-2 mb-3 fw-bold text-dark">
+            <span class="text-primary"><?= icon('filter', 'bieu-tuong-sm') ?></span>
+            <span>Bộ lọc tìm kiếm</span>
+        </div>
         <form action="<?= url('tai-khoan/index.php') ?>" method="GET">
             <div class="row g-2 align-items-end">
                 <div class="col-12 col-md-3">
@@ -151,11 +173,14 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
-            <h2 class="tieu-de-khoi mb-0">Danh sách tài khoản cán bộ</h2>
+            <h2 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+                <span class="text-primary"><?= icon('list', 'bieu-tuong-md') ?></span>
+                <span>Danh sách tài khoản cán bộ</span>
+            </h2>
         </div>
-        <div class="mo-ta-phu">
+        <span class="huy-hieu huy-hieu-chinh">
             Hiển thị <?= count($danhSachTaiKhoan) ?> / <?= $tongSo ?> tài khoản
-        </div>
+        </span>
     </div>
     <div class="table-responsive">
         <table class="table">
@@ -185,7 +210,7 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                         $coGiaoDich = ((int)($tk['tong_giao_dich'] ?? 0) > 0);
                     ?>
                         <tr>
-                            <td class="fw-semibold font-monospace">
+                            <td class="fw-semibold font-monospace text-primary">
                                 <?= e($tk['ma_nhan_vien']) ?>
                             </td>
                             <td>
@@ -220,9 +245,9 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                             </td>
                             <td>
                                 <?php if ($dangHoatDong): ?>
-                                    <span class="huy-hieu huy-hieu-thanh-cong">Đang hoạt động</span>
+                                    <span class="huy-hieu huy-hieu-thanh-cong"><?= icon('check-circle-2') ?> <span>Đang hoạt động</span></span>
                                 <?php else: ?>
-                                    <span class="huy-hieu huy-hieu-nguy-hiem">Tạm khóa</span>
+                                    <span class="huy-hieu huy-hieu-nguy-hiem"><?= icon('lock') ?> <span>Tạm khóa</span></span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">
@@ -238,17 +263,17 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                                         ['nhan' => 'Trạng thái', 'gia_tri' => $dangHoatDong ? 'Đang hoạt động' : 'Tạm khóa'],
                                     ];
                                     ?>
-                                    <button type="button" class="btn-vien-thuoc"
+                                    <button type="button" class="btn-bieu-tuong" title="Xem"
                                             onclick='xemChiTietNhanh(<?= json_encode("Tài khoản: " . $tk["ho_ten"]) ?>, <?= json_encode($chiTietTk, JSON_HEX_APOS | JSON_HEX_QUOT) ?>, <?= json_encode(url("tai-khoan/sua.php?id=" . (int)$tk["id"])) ?>)'>
-                                        <span>Xem</span>
+                                        <?= icon('eye') ?>
                                     </button>
-                                    <a href="<?= url('tai-khoan/sua.php?id=' . (int)$tk['id']) ?>" class="btn-vien-thuoc">
-                                        <span>Sửa</span>
+                                    <a href="<?= url('tai-khoan/sua.php?id=' . (int)$tk['id']) ?>" class="btn-bieu-tuong" title="Sửa">
+                                        <?= icon('pencil') ?>
                                     </a>
 
-                                    <button type="button" class="btn-vien-thuoc"
+                                    <button type="button" class="btn-bieu-tuong" title="Đổi mật khẩu"
                                             onclick='moModalDatLaiMatKhau(<?= (int)$tk["id"] ?>, <?= json_encode((string)$tk["ten_dang_nhap"]) ?>, <?= json_encode((string)$tk["ho_ten"]) ?>)'>
-                                        <span>Đổi MK</span>
+                                        <?= icon('user-cog') ?>
                                     </button>
 
                                     <?php if (!$laChinhMinh): ?>
@@ -258,8 +283,8 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                                             <input type="hidden" name="hanh_dong" value="doi_trang_thai">
                                             <input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
                                             <?php $nhanKhoaMoTk = $dangHoatDong ? 'Khóa' : 'Mở khóa'; ?>
-                                            <button type="submit" class="btn-vien-thuoc">
-                                                <span><?= $nhanKhoaMoTk ?></span>
+                                            <button type="submit" class="btn-bieu-tuong" title="<?= $nhanKhoaMoTk ?>">
+                                                <?= icon('lock') ?>
                                             </button>
                                         </form>
 
@@ -269,8 +294,8 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiKhoan);
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="hanh_dong" value="xoa">
                                                 <input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
-                                                <button type="submit" class="btn-vien-thuoc text-danger" title="Xóa tài khoản">
-                                                    <span>Xóa</span>
+                                                <button type="submit" class="btn-bieu-tuong text-danger" title="Xóa tài khoản">
+                                                    <?= icon('trash-2') ?>
                                                 </button>
                                             </form>
                                         <?php endif; ?>

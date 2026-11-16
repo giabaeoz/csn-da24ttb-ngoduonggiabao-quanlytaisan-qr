@@ -38,11 +38,16 @@ try {
 ?>
 
 <div class="thanh-cong-cu-trang">
-    <div>
-        <h1 class="tieu-de-trang mb-0">
-            <?= $laThemMoi ? 'Thêm thiết bị mới' : 'Chỉnh sửa thông tin thiết bị' ?>
-        </h1>
-        
+    <div class="d-flex align-items-center gap-3">
+        <div class="hop-icon-trang">
+            <?= icon('package') ?>
+        </div>
+        <div>
+            <h1 class="tieu-de-trang mb-1">
+                <?= $laThemMoi ? 'Thêm thiết bị mới' : 'Chỉnh sửa thông tin thiết bị' ?>
+            </h1>
+            <div class="mo-ta-phu">Khai báo thông tin thiết bị và tạo mã QR quản lý tài sản.</div>
+        </div>
     </div>
     <div>
         <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
@@ -62,99 +67,110 @@ try {
         </div>
     <?php endif; ?>
 
-    <form action="<?= $laThemMoi ? url('tai-san/them.php') : url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" method="POST" class="the-noi-dung p-0">
+    <form action="<?= $laThemMoi ? url('tai-san/them.php') : url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" method="POST">
         <?= csrf_field() ?>
 
-        <div class="the-noi-dung-dau">
-            <h3 class="tieu-de-khoi mb-0">Thông tin cơ bản & mã QR thiết bị</h3>
+        <div class="the-noi-dung p-0 mb-4">
+            <div class="the-noi-dung-dau d-flex align-items-center gap-2">
+                <div class="hop-icon-dau">
+                    <?= icon('qr-code', 'bieu-tuong-sm') ?>
+                </div>
+                <h3 class="tieu-de-khoi mb-0">Thông tin cơ bản & mã QR thiết bị</h3>
+            </div>
+
+            <div class="the-noi-dung-than p-4">
+                <div class="row g-3 mb-3 align-items-start">
+                    <div class="col-12 col-md-8">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="ten_tai_san" class="nhan-truong">
+                                    Tên thiết bị <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="o-nhap" id="ten_tai_san" name="ten_tai_san"
+                                    value="<?= e($taiSan['ten_tai_san'] ?? '') ?>"
+                                    placeholder="Ví dụ: Máy chiếu Epson EB-X06, Remote máy chiếu Sony, Micro Shure..." required <?= $laThemMoi ? 'autofocus' : '' ?>>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label for="ma_tai_san" class="nhan-truong">
+                                    Mã tài sản (Dùng tạo QR) <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-uppercase font-monospace fw-bold" id="ma_tai_san" name="ma_tai_san"
+                                        value="<?= e($taiSan['ma_tai_san'] ?? '') ?>"
+                                        placeholder="Ví dụ: MC-01, RMC-01" required>
+                                    <button type="button" class="btn btn-phu" onclick="goiYMaTuTen(true)" title="Tự động đặt mã viết tắt từ tên thiết bị">
+                                        <span>Gợi ý mã</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label for="loai_tai_san_id" class="nhan-truong">
+                                    Nhóm tài sản <span class="text-danger">*</span>
+                                </label>
+                                <select class="o-nhap" id="loai_tai_san_id" name="loai_tai_san_id" required>
+                                    <option value="">-- Chọn nhóm tài sản --</option>
+                                    <?php foreach ($danhSachLoai as $loai): ?>
+                                        <option value="<?= (int)$loai['id'] ?>" <?= ((int)($taiSan['loai_tai_san_id'] ?? 0) === (int)$loai['id']) ? 'selected' : '' ?>>
+                                            <?= e($loai['ten_loai']) ?> (<?= e($loai['ma_loai']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="nhan-truong">Mã QR sinh từ Mã tài sản</label>
+                        <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
+                            <div id="preview_qr_box" class="bg-white p-1 border flex-shrink-0 khung-qr-84 d-flex align-items-center justify-content-center">
+                                <span class="text-muted small chu-nho-10">Chưa có mã</span>
+                            </div>
+                            <div class="small overflow-hidden">
+                                <div class="text-secondary chu-nho-11">Mã nhúng trong QR:</div>
+                                <div id="preview_qr_val" class="font-monospace text-primary fw-bold fs-6 mt-1">---</div>
+                                <div class="text-muted chu-nho-11 mt-1">Quét QR sẽ nhận diện trực tiếp theo mã tài sản này.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label for="phong_truc_id" class="nhan-truong">
+                            Phòng trực quản lý <span class="text-danger">*</span>
+                        </label>
+                        <select class="o-nhap" id="phong_truc_id" name="phong_truc_id" required>
+                            <option value="">-- Chọn bàn trực --</option>
+                            <?php foreach ($danhSachPhongTruc as $pt): ?>
+                                <option value="<?= (int)$pt['id'] ?>" <?= ((int)($taiSan['phong_truc_id'] ?? 0) === (int)$pt['id']) ? 'selected' : '' ?>>
+                                    <?= e($pt['ten_phong_truc']) ?> (<?= e($pt['ma_phong_truc']) ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="ngay_dua_vao_su_dung" class="nhan-truong">
+                            Ngày đưa vào sử dụng
+                        </label>
+                        <input type="date" class="o-nhap" id="ngay_dua_vao_su_dung" name="ngay_dua_vao_su_dung"
+                            value="<?= e($taiSan['ngay_dua_vao_su_dung'] ?? date('Y-m-d')) ?>">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="the-noi-dung-than p-4">
-            <div class="row g-3 mb-3 align-items-start">
-                <div class="col-12 col-md-8">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label for="ten_tai_san" class="nhan-truong">
-                                Tên thiết bị <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" class="o-nhap" id="ten_tai_san" name="ten_tai_san"
-                                value="<?= e($taiSan['ten_tai_san'] ?? '') ?>"
-                                placeholder="Ví dụ: Máy chiếu Epson EB-X06, Remote máy chiếu Sony, Micro Shure..." required <?= $laThemMoi ? 'autofocus' : '' ?>>
-                        </div>
-
-                        <div class="col-12 col-sm-6">
-                            <label for="ma_tai_san" class="nhan-truong">
-                                Mã tài sản (Dùng tạo QR) <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                                <input type="text" class="form-control text-uppercase font-monospace fw-bold" id="ma_tai_san" name="ma_tai_san"
-                                    value="<?= e($taiSan['ma_tai_san'] ?? '') ?>"
-                                    placeholder="Ví dụ: MC-01, RMC-01" required>
-                                <button type="button" class="btn btn-phu" onclick="goiYMaTuTen(true)" title="Tự động đặt mã viết tắt từ tên thiết bị">
-                                    <span>Gợi ý mã</span>
-                                </button>
-                            </div>
-                            
-                        </div>
-
-                        <div class="col-12 col-sm-6">
-                            <label for="loai_tai_san_id" class="nhan-truong">
-                                Nhóm tài sản <span class="text-danger">*</span>
-                            </label>
-                            <select class="o-nhap" id="loai_tai_san_id" name="loai_tai_san_id" required>
-                                <option value="">-- Chọn nhóm tài sản --</option>
-                                <?php foreach ($danhSachLoai as $loai): ?>
-                                    <option value="<?= (int)$loai['id'] ?>" <?= ((int)($taiSan['loai_tai_san_id'] ?? 0) === (int)$loai['id']) ? 'selected' : '' ?>>
-                                        <?= e($loai['ten_loai']) ?> (<?= e($loai['ma_loai']) ?>)
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
+        <div class="the-noi-dung p-0 mb-4">
+            <div class="the-noi-dung-dau d-flex align-items-center gap-2">
+                <div class="hop-icon-dau">
+                    <?= icon('wrench', 'bieu-tuong-sm') ?>
                 </div>
-
-                <div class="col-12 col-md-4">
-                    <label class="nhan-truong">Mã QR sinh từ Mã tài sản</label>
-                    <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
-                        <div id="preview_qr_box" class="bg-white p-1 border flex-shrink-0 khung-qr-84 d-flex align-items-center justify-content-center">
-                            <span class="text-muted small chu-nho-10">Chưa có mã</span>
-                        </div>
-                        <div class="small overflow-hidden">
-                            <div class="text-secondary chu-nho-11">Mã nhúng trong QR:</div>
-                            <div id="preview_qr_val" class="font-monospace text-primary fw-bold fs-6 mt-1">---</div>
-                            <div class="text-muted chu-nho-11 mt-1">Quét QR sẽ nhận diện trực tiếp theo mã tài sản này.</div>
-                        </div>
-                    </div>
-                </div>
+                <h3 class="tieu-de-khoi mb-0">Thông số kỹ thuật & phạm vi sử dụng</h3>
             </div>
 
-            <div class="row g-3 mb-3">
-                <div class="col-12 col-md-6">
-                    <label for="phong_truc_id" class="nhan-truong">
-                        Phòng trực quản lý <span class="text-danger">*</span>
-                    </label>
-                    <select class="o-nhap" id="phong_truc_id" name="phong_truc_id" required>
-                        <option value="">-- Chọn bàn trực --</option>
-                        <?php foreach ($danhSachPhongTruc as $pt): ?>
-                            <option value="<?= (int)$pt['id'] ?>" <?= ((int)($taiSan['phong_truc_id'] ?? 0) === (int)$pt['id']) ? 'selected' : '' ?>>
-                                <?= e($pt['ten_phong_truc']) ?> (<?= e($pt['ma_phong_truc']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <label for="ngay_dua_vao_su_dung" class="nhan-truong">
-                        Ngày đưa vào sử dụng
-                    </label>
-                    <input type="date" class="o-nhap" id="ngay_dua_vao_su_dung" name="ngay_dua_vao_su_dung"
-                        value="<?= e($taiSan['ngay_dua_vao_su_dung'] ?? date('Y-m-d')) ?>">
-                </div>
-            </div>
-
-            <div class="the-noi-dung p-3 mb-3 bg-light">
-                <h4 class="tieu-de-khoi mb-2">Thông số kỹ thuật & phạm vi sử dụng</h4>
-
+            <div class="the-noi-dung-than p-4">
                 <div class="row g-3 mb-3">
                     <div class="col-12 col-md-6">
                         <label for="hang_san_xuat" class="nhan-truong">
@@ -175,7 +191,7 @@ try {
                     </div>
                 </div>
 
-                <div class="row g-3">
+                <div class="row g-3 mb-3">
                     <div class="col-12 col-md-6">
                         <label for="pham_vi_tuong_thich" class="nhan-truong">
                             Phạm vi tương thích phòng học
@@ -208,7 +224,7 @@ try {
                     </div>
                 </div>
 
-                <div id="khuVucTheoPhong" class="mt-3 <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? '' : 'd-none' ?>">
+                <div id="khuVucTheoPhong" class="mb-3 <?= ($taiSan['pham_vi_tuong_thich'] ?? '') === 'THEO_PHONG' ? '' : 'd-none' ?>">
                     <label class="nhan-truong">
                         Danh sách mã phòng học được phép mượn (phân cách bằng dấu phẩy)
                     </label>
@@ -223,46 +239,46 @@ try {
                     ?>
                     <input type="text" class="o-nhap bg-white" name="phong_tuong_thich" value="<?= e($cacPhongStr) ?>" placeholder="Ví dụ: B31.101, B31.102, B71.101">
                 </div>
-            </div>
 
-            <?php if (!$laThemMoi): ?>
-                <div class="row g-3 mb-3">
-                    <div class="col-12 col-md-6">
-                        <label for="tinh_trang" class="nhan-truong">Tình trạng vật lý</label>
-                        <select class="o-nhap" id="tinh_trang" name="tinh_trang">
-                            <option value="TOT" <?= ($taiSan['tinh_trang'] ?? '') === 'TOT' ? 'selected' : '' ?>>Tốt</option>
-                            <option value="HU_HONG" <?= ($taiSan['tinh_trang'] ?? '') === 'HU_HONG' ? 'selected' : '' ?>>Hư hỏng</option>
-                            <option value="MAT" <?= ($taiSan['tinh_trang'] ?? '') === 'MAT' ? 'selected' : '' ?>>Mất</option>
-                        </select>
-                    </div>
+                <?php if (!$laThemMoi): ?>
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label for="tinh_trang" class="nhan-truong">Tình trạng vật lý</label>
+                            <select class="o-nhap" id="tinh_trang" name="tinh_trang">
+                                <option value="TOT" <?= ($taiSan['tinh_trang'] ?? '') === 'TOT' ? 'selected' : '' ?>>Tốt</option>
+                                <option value="HU_HONG" <?= ($taiSan['tinh_trang'] ?? '') === 'HU_HONG' ? 'selected' : '' ?>>Hư hỏng</option>
+                                <option value="MAT" <?= ($taiSan['tinh_trang'] ?? '') === 'MAT' ? 'selected' : '' ?>>Mất</option>
+                            </select>
+                        </div>
 
-                    <div class="col-12 col-md-6">
-                        <label for="trang_thai" class="nhan-truong">Trạng thái vận hành</label>
-                        <select class="o-nhap" id="trang_thai" name="trang_thai">
-                            <option value="SAN_SANG" <?= ($taiSan['trang_thai'] ?? '') === 'SAN_SANG' ? 'selected' : '' ?>>Sẵn sàng</option>
-                            <option value="DANG_MUON" <?= ($taiSan['trang_thai'] ?? '') === 'DANG_MUON' ? 'selected' : '' ?> disabled>Đang mượn (Hệ thống khóa)</option>
-                            <option value="BAO_TRI" <?= ($taiSan['trang_thai'] ?? '') === 'BAO_TRI' ? 'selected' : '' ?>>Bảo trì</option>
-                            <option value="NGUNG_SU_DUNG" <?= ($taiSan['trang_thai'] ?? '') === 'NGUNG_SU_DUNG' ? 'selected' : '' ?>>Ngừng sử dụng</option>
-                        </select>
+                        <div class="col-12 col-md-6">
+                            <label for="trang_thai" class="nhan-truong">Trạng thái vận hành</label>
+                            <select class="o-nhap" id="trang_thai" name="trang_thai">
+                                <option value="SAN_SANG" <?= ($taiSan['trang_thai'] ?? '') === 'SAN_SANG' ? 'selected' : '' ?>>Sẵn sàng</option>
+                                <option value="DANG_MUON" <?= ($taiSan['trang_thai'] ?? '') === 'DANG_MUON' ? 'selected' : '' ?> disabled>Đang mượn (Hệ thống khóa)</option>
+                                <option value="BAO_TRI" <?= ($taiSan['trang_thai'] ?? '') === 'BAO_TRI' ? 'selected' : '' ?>>Bảo trì</option>
+                                <option value="NGUNG_SU_DUNG" <?= ($taiSan['trang_thai'] ?? '') === 'NGUNG_SU_DUNG' ? 'selected' : '' ?>>Ngừng sử dụng</option>
+                            </select>
+                        </div>
                     </div>
+                <?php endif; ?>
+
+                <div>
+                    <label for="mo_ta" class="nhan-truong">Mô tả đặc điểm / ghi chú</label>
+                    <textarea class="o-nhap" id="mo_ta" name="mo_ta" rows="2" placeholder="Ví dụ: Đi kèm cáp nguồn 1.5m, đựng trong túi chống sốc đen"><?= e($taiSan['mo_ta'] ?? '') ?></textarea>
                 </div>
-            <?php endif; ?>
-
-            <div class="mb-4">
-                <label for="mo_ta" class="nhan-truong">Mô tả đặc điểm / ghi chú</label>
-                <textarea class="o-nhap" id="mo_ta" name="mo_ta" rows="2" placeholder="Ví dụ: Đi kèm cáp nguồn 1.5m, đựng trong túi chống sốc đen"><?= e($taiSan['mo_ta'] ?? '') ?></textarea>
             </div>
+        </div>
 
-            <div class="d-flex justify-content-end align-items-center gap-2 pt-3 border-top">
-                <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu">
-                    <?= icon('x', 'bieu-tuong-sm') ?>
-                    <span>Hủy bỏ</span>
-                </a>
-                <button type="submit" class="btn btn-chinh">
-                    <?= icon('save', 'bieu-tuong-sm') ?>
-                    <span><?= $laThemMoi ? 'Lưu thiết bị' : 'Cập nhật thay đổi' ?></span>
-                </button>
-            </div>
+        <div class="d-flex justify-content-end align-items-center gap-2">
+            <a href="<?= url('tai-san/index.php') ?>" class="btn btn-phu bg-white">
+                <?= icon('x', 'bieu-tuong-sm') ?>
+                <span>Hủy bỏ</span>
+            </a>
+            <button type="submit" class="btn btn-chinh">
+                <?= icon('save', 'bieu-tuong-sm') ?>
+                <span><?= $laThemMoi ? 'Lưu thiết bị' : 'Cập nhật thay đổi' ?></span>
+            </button>
         </div>
     </form>
 

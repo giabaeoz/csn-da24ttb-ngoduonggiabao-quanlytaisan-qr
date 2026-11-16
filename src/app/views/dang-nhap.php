@@ -25,9 +25,10 @@ $tieuDe = 'Đăng nhập';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($tieuDe) ?> - <?= e(cau_hinh('ung_dung.ten', 'Quản lý tài sản bằng mã QR')) ?></title>
+    <link rel="icon" type="image/jpeg" href="<?= url('assets/images/logo-he-thong.jpg') ?>">
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
-    <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
-    <link rel="stylesheet" href="<?= url('assets/css/dang-nhap.css') ?>">
+    <link rel="stylesheet" href="<?= url('assets/css/app.css?v=' . @filemtime(dirname(__DIR__, 2) . '/assets/css/app.css')) ?>">
+    <link rel="stylesheet" href="<?= url('assets/css/dang-nhap.css?v=' . @filemtime(dirname(__DIR__, 2) . '/assets/css/dang-nhap.css')) ?>">
 </head>
 <body>
 
@@ -36,7 +37,7 @@ $tieuDe = 'Đăng nhập';
         <div></div>
         <div class="vung-giua">
             <div class="logo-lon">
-                <?= icon('qr-code', 'w-50 h-50 text-primary') ?>
+                <img src="<?= url('assets/images/logo-he-thong.jpg') ?>" alt="Logo Quản lý tài sản bằng mã QR" class="logo-lon-anh" width="136" height="136">
             </div>
             <div class="tieu-de-thuong-hieu">QUẢN LÝ TÀI SẢN BẰNG MÃ QR</div>
             <div class="mo-ta-thuong-hieu">Hệ thống quản lý mượn - trả và kiểm kê tài sản bằng mã QR</div>

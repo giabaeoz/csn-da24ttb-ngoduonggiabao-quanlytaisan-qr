@@ -21,12 +21,17 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 ?>
 
 <div class="thanh-cong-cu-trang">
-    <div>
-        <h1 class="tieu-de-trang mb-0">
-            <?= $laThemMoi ? 'Thêm người mượn mới' : 'Chỉnh sửa hồ sơ người mượn' ?>
-        </h1>
-        <div class="mo-ta-phu">
-            <?= $laThemMoi ? 'Đăng ký hồ sơ sinh viên hoặc giảng viên sử dụng thiết bị.' : 'Cập nhật thông tin định danh và liên hệ của người mượn.' ?>
+    <div class="d-flex align-items-center gap-3">
+        <div class="hop-icon-trang">
+            <?= icon('users') ?>
+        </div>
+        <div>
+            <h1 class="tieu-de-trang mb-1">
+                <?= $laThemMoi ? 'Thêm người mượn mới' : 'Chỉnh sửa hồ sơ người mượn' ?>
+            </h1>
+            <div class="mo-ta-phu">
+                <?= $laThemMoi ? 'Đăng ký hồ sơ sinh viên hoặc giảng viên sử dụng thiết bị.' : 'Cập nhật thông tin định danh và liên hệ của người mượn.' ?>
+            </div>
         </div>
     </div>
     <div>
@@ -48,7 +53,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <?php endif; ?>
 
         <div class="the-noi-dung p-0">
-            <div class="the-noi-dung-dau">
+            <div class="the-noi-dung-dau d-flex align-items-center gap-2">
+                <div class="hop-icon-dau">
+                    <?= icon('users', 'bieu-tuong-sm') ?>
+                </div>
                 <h3 class="tieu-de-khoi mb-0">Thông tin cá nhân & đơn vị</h3>
             </div>
 

@@ -565,12 +565,25 @@ function tong_quan_so_lieu(mysqli $db, array $nguoiDung): array {
     $rowQh = $db->query($sqlQh)->fetch_assoc();
     $quaHan = (int)($rowQh['so_qua_han'] ?? 0);
 
+    // Số liệu dành cho phân quyền Quản trị viên (Admin)
+    $rowTk = $db->query("SELECT COUNT(*) AS tong_tai_khoan FROM nhan_vien")->fetch_assoc();
+    $tongTaiKhoan = (int)($rowTk['tong_tai_khoan'] ?? 0);
+
+    $rowPt = $db->query("SELECT COUNT(*) AS tong_phong_truc_hd FROM phong_truc WHERE dang_hoat_dong = 1")->fetch_assoc();
+    $tongPhongTrucHd = (int)($rowPt['tong_phong_truc_hd'] ?? 0);
+
+    $rowNm = $db->query("SELECT COUNT(*) AS tong_nguoi_muon FROM nguoi_muon")->fetch_assoc();
+    $tongNguoiMuon = (int)($rowNm['tong_nguoi_muon'] ?? 0);
+
     return [
-        'tong_tai_san' => $tong,
-        'co_the_muon'  => $coTheMuon,
-        'dang_muon'    => $dangMuon,
-        'khac'         => $khac,
-        'qua_han'      => $quaHan,
+        'tong_tai_san'             => $tong,
+        'co_the_muon'              => $coTheMuon,
+        'dang_muon'                => $dangMuon,
+        'khac'                     => $khac,
+        'qua_han'                  => $quaHan,
+        'tong_tai_khoan'           => $tongTaiKhoan,
+        'tong_phong_truc_hoat_dong'=> $tongPhongTrucHd,
+        'tong_nguoi_muon'          => $tongNguoiMuon,
     ];
 }
 
@@ -775,6 +788,7 @@ function tong_quan_can_theo_doi(mysqli $db, array $nguoiDung, int $gioiHan = 5):
     $sql = "SELECT pm.id, pm.ma_phieu_muon, pm.han_tra, pm.thoi_gian_muon,
                    nm.ho_ten AS ho_ten_nguoi_muon, nm.ma_so_truong,
                    ph.ma_phong,
+                   pt.ma_phong_truc, pt.ten_phong_truc,
                    COUNT(ctm.id) AS tong_thiet_bi,
                    SUM(CASE WHEN ctm.thoi_gian_tra IS NULL THEN 1 ELSE 0 END) AS chua_tra,
                    (
@@ -798,6 +812,7 @@ function tong_quan_can_theo_doi(mysqli $db, array $nguoiDung, int $gioiHan = 5):
             FROM phieu_muon pm
             JOIN nguoi_muon nm ON pm.nguoi_muon_id = nm.id
             JOIN phong_hoc ph ON pm.phong_hoc_id = ph.id
+            LEFT JOIN phong_truc pt ON pm.phong_truc_id = pt.id
             JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
             WHERE $where
             GROUP BY pm.id
@@ -868,4 +883,259 @@ function tong_quan_co_qua_han(mysqli $db, array $nguoiDung): bool {
     $sql = "SELECT 1 FROM phieu_muon pm JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id WHERE $where AND ctm.thoi_gian_tra IS NULL LIMIT 1";
     $res = $db->query($sql);
     return ($res && $res->num_rows > 0);
+}
+
+/**
+ * 6. Tổng hợp dữ liệu đa biểu đồ dành riêng cho phân quyền Quản trị viên (QUAN_TRI):
+ *    Bao quát tình trạng mượn – trả của tất cả các phòng trực, nguồn lực nhân sự & thiết bị,
+ *    cơ cấu tài khoản cán bộ, cơ cấu người mượn và các chỉ số vận hành (sự cố, kiểm kê, điều chuyển).
+ *
+ * @param mysqli $db
+ * @return array<string, mixed>
+ */
+function tong_quan_bieu_do_admin(mysqli $db): array {
+    // 1. Tình trạng mượn – trả & Nguồn lực theo tất cả các phòng trực
+    $sqlPt = "SELECT pt.id, pt.ma_phong_truc, pt.ten_phong_truc, pt.dang_hoat_dong,
+                     (SELECT COUNT(*)
+                      FROM chi_tiet_muon ctm
+                      JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                      WHERE pm.phong_truc_id = pt.id AND ctm.thoi_gian_tra IS NOT NULL
+                     ) AS luot_da_tra,
+                     (SELECT COUNT(*)
+                      FROM chi_tiet_muon ctm
+                      JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                      WHERE pm.phong_truc_id = pt.id
+                        AND pm.trang_thai = 'DANG_MUON'
+                        AND ctm.thoi_gian_tra IS NULL
+                     ) AS luot_dang_muon,
+                     (SELECT COUNT(*)
+                      FROM chi_tiet_muon ctm
+                      JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                      WHERE pm.phong_truc_id = pt.id
+                        AND pm.trang_thai = 'DANG_MUON'
+                        AND ctm.thoi_gian_tra IS NULL
+                        AND pm.han_tra < NOW()
+                     ) AS luot_qua_han,
+                     (SELECT COUNT(*) FROM tai_san ts WHERE ts.phong_truc_id = pt.id) AS tong_ts,
+                     (SELECT COUNT(*) FROM tai_san ts WHERE ts.phong_truc_id = pt.id AND ts.trang_thai = 'SAN_SANG' AND ts.tinh_trang = 'TOT') AS ts_san_sang,
+                     (SELECT COUNT(*) FROM tai_san ts WHERE ts.phong_truc_id = pt.id AND ts.trang_thai = 'DANG_MUON') AS ts_dang_muon,
+                     (SELECT COUNT(*) FROM nhan_vien nv WHERE nv.phong_truc_id = pt.id) AS so_nhan_vien
+              FROM phong_truc pt
+              ORDER BY pt.dang_hoat_dong DESC, pt.ma_phong_truc ASC";
+
+    $rowsPt = $db->query($sqlPt)->fetch_all(MYSQLI_ASSOC);
+
+    $ptLabels = [];
+    $ptTenDayDu = [];
+    $ptDaTra = [];
+    $ptDangMuon = [];
+    $ptQuaHan = [];
+    $ptTsSanSang = [];
+    $ptTsDangMuon = [];
+    $ptTsKhac = [];
+    $ptNhanVien = [];
+
+    foreach ($rowsPt as $r) {
+        $ptLabels[] = (string)$r['ma_phong_truc'];
+        $ptTenDayDu[] = (string)$r['ten_phong_truc'];
+        $ptDaTra[] = (int)$r['luot_da_tra'];
+        $ptDangMuon[] = (int)$r['luot_dang_muon'];
+        $ptQuaHan[] = (int)$r['luot_qua_han'];
+
+        $tongTs = (int)$r['tong_ts'];
+        $ss = (int)$r['ts_san_sang'];
+        $dm = (int)$r['ts_dang_muon'];
+        $ptTsSanSang[] = $ss;
+        $ptTsDangMuon[] = $dm;
+        $ptTsKhac[] = max(0, $tongTs - $ss - $dm);
+        $ptNhanVien[] = (int)$r['so_nhan_vien'];
+    }
+
+    // 2. Cơ cấu tài khoản cán bộ theo vai trò & trạng thái hoạt động
+    $sqlTk = "SELECT
+                COUNT(*) AS tong,
+                SUM(CASE WHEN vai_tro = 'QUAN_TRI' THEN 1 ELSE 0 END) AS quan_tri,
+                SUM(CASE WHEN vai_tro = 'QUAN_LY' THEN 1 ELSE 0 END) AS quan_ly,
+                SUM(CASE WHEN vai_tro = 'NHAN_VIEN' THEN 1 ELSE 0 END) AS nhan_vien,
+                SUM(CASE WHEN dang_hoat_dong = 1 THEN 1 ELSE 0 END) AS dang_hoat_dong,
+                SUM(CASE WHEN dang_hoat_dong = 0 THEN 1 ELSE 0 END) AS tam_khoa
+              FROM nhan_vien";
+    $rowTk = $db->query($sqlTk)->fetch_assoc();
+    $tkTong = (int)($rowTk['tong'] ?? 0);
+    $tkQuanTri = (int)($rowTk['quan_tri'] ?? 0);
+    $tkQuanLy = (int)($rowTk['quan_ly'] ?? 0);
+    $tkNhanVien = (int)($rowTk['nhan_vien'] ?? 0);
+    $tkHoatDong = (int)($rowTk['dang_hoat_dong'] ?? 0);
+    $tkTamKhoa = (int)($rowTk['tam_khoa'] ?? 0);
+
+    // 3. Cơ cấu người mượn (Giảng viên vs Sinh viên) & số phiếu mượn
+    $sqlNm = "SELECT
+                COUNT(*) AS tong_ho_so,
+                SUM(CASE WHEN loai_nguoi_muon = 'GIANG_VIEN' THEN 1 ELSE 0 END) AS hs_giang_vien,
+                SUM(CASE WHEN loai_nguoi_muon = 'SINH_VIEN' THEN 1 ELSE 0 END) AS hs_sinh_vien
+              FROM nguoi_muon";
+    $rowNm = $db->query($sqlNm)->fetch_assoc();
+    $hsGiangVien = (int)($rowNm['hs_giang_vien'] ?? 0);
+    $hsSinhVien = (int)($rowNm['hs_sinh_vien'] ?? 0);
+    $tongHoSoNm = (int)($rowNm['tong_ho_so'] ?? 0);
+
+    $sqlPmNm = "SELECT
+                  SUM(CASE WHEN nm.loai_nguoi_muon = 'GIANG_VIEN' THEN 1 ELSE 0 END) AS phieu_gv,
+                  SUM(CASE WHEN nm.loai_nguoi_muon = 'SINH_VIEN' THEN 1 ELSE 0 END) AS phieu_sv
+                FROM phieu_muon pm
+                JOIN nguoi_muon nm ON pm.nguoi_muon_id = nm.id";
+    $rowPmNm = $db->query($sqlPmNm)->fetch_assoc();
+    $phieuGv = (int)($rowPmNm['phieu_gv'] ?? 0);
+    $phieuSv = (int)($rowPmNm['phieu_sv'] ?? 0);
+
+    // 4. Chỉ số vận hành quản trị: Sự cố, Kiểm kê, Điều chuyển
+    $sqlSc = "SELECT
+                SUM(CASE WHEN trang_thai IN ('CHUA_XU_LY', 'DANG_XU_LY') THEN 1 ELSE 0 END) AS sc_cho_xl,
+                SUM(CASE WHEN trang_thai = 'DA_XU_LY' THEN 1 ELSE 0 END) AS sc_da_xl
+              FROM su_co_tai_san";
+    $rowSc = $db->query($sqlSc)->fetch_assoc();
+    $scChoXl = (int)($rowSc['sc_cho_xl'] ?? 0);
+    $scDaXl = (int)($rowSc['sc_da_xl'] ?? 0);
+
+    $sqlKk = "SELECT
+                SUM(CASE WHEN trang_thai = 'DANG_KIEM_KE' THEN 1 ELSE 0 END) AS kk_dang_mo,
+                SUM(CASE WHEN trang_thai = 'HOAN_TAT' THEN 1 ELSE 0 END) AS kk_hoan_tat
+              FROM dot_kiem_ke";
+    $rowKk = $db->query($sqlKk)->fetch_assoc();
+    $kkDangMo = (int)($rowKk['kk_dang_mo'] ?? 0);
+    $kkHoanTat = (int)($rowKk['kk_hoan_tat'] ?? 0);
+
+    $rowDc = $db->query("SELECT COUNT(*) AS tong_dc FROM dieu_chuyen")->fetch_assoc();
+    $tongDc = (int)($rowDc['tong_dc'] ?? 0);
+
+    // 5. Chuỗi thời gian 14 ngày gần nhất cho biểu đồ đường trải dài (So sánh các phòng trực & toàn trường)
+    $soNgayChuoi = 14;
+    $ngayLabels = [];
+    $ngayKeys = [];
+    $tz = new DateTimeZone('Asia/Ho_Chi_Minh');
+    $homNay = new DateTime('now', $tz);
+    for ($i = $soNgayChuoi - 1; $i >= 0; $i--) {
+        $d = clone $homNay;
+        if ($i > 0) {
+            $d->modify("-{$i} days");
+        }
+        $k = $d->format('Y-m-d');
+        $ngayKeys[] = $k;
+        $ngayLabels[] = $d->format('d/m');
+    }
+
+    $tuNgay14 = $ngayKeys[0] . ' 00:00:00';
+    $denNgay14 = $ngayKeys[$soNgayChuoi - 1] . ' 23:59:59';
+
+    // Lượt mượn theo ngày và theo phòng trực trong 14 ngày
+    $sqlMuon14 = "SELECT DATE(pm.thoi_gian_muon) AS ngay, pm.phong_truc_id, COUNT(ctm.id) AS so_luot
+                  FROM chi_tiet_muon ctm
+                  JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                  WHERE pm.thoi_gian_muon BETWEEN ? AND ?
+                  GROUP BY DATE(pm.thoi_gian_muon), pm.phong_truc_id";
+    $stmtM14 = $db->prepare($sqlMuon14);
+    $stmtM14->bind_param('ss', $tuNgay14, $denNgay14);
+    $stmtM14->execute();
+    $rowsM14 = $stmtM14->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmtM14->close();
+
+    // Lượt trả theo ngày toàn trường trong 14 ngày
+    $sqlTra14 = "SELECT DATE(ctm.thoi_gian_tra) AS ngay, COUNT(ctm.id) AS so_luot
+                 FROM chi_tiet_muon ctm
+                 WHERE ctm.thoi_gian_tra IS NOT NULL
+                   AND ctm.thoi_gian_tra BETWEEN ? AND ?
+                 GROUP BY DATE(ctm.thoi_gian_tra)";
+    $stmtT14 = $db->prepare($sqlTra14);
+    $stmtT14->bind_param('ss', $tuNgay14, $denNgay14);
+    $stmtT14->execute();
+    $rowsT14 = $stmtT14->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmtT14->close();
+
+    $mapMuonTong14 = array_fill_keys($ngayKeys, 0);
+    $mapTraTong14 = array_fill_keys($ngayKeys, 0);
+    $mapMuonPt14 = [];
+    foreach ($rowsPt as $ptRow) {
+        $ptId = (int)$ptRow['id'];
+        $mapMuonPt14[$ptId] = array_fill_keys($ngayKeys, 0);
+    }
+
+    foreach ($rowsM14 as $rm) {
+        $ng = (string)$rm['ngay'];
+        $ptId = (int)$rm['phong_truc_id'];
+        $sl = (int)$rm['so_luot'];
+        if (isset($mapMuonTong14[$ng])) {
+            $mapMuonTong14[$ng] += $sl;
+        }
+        if (isset($mapMuonPt14[$ptId][$ng])) {
+            $mapMuonPt14[$ptId][$ng] += $sl;
+        }
+    }
+
+    foreach ($rowsT14 as $rt) {
+        $ng = (string)$rt['ngay'];
+        $sl = (int)$rt['so_luot'];
+        if (isset($mapTraTong14[$ng])) {
+            $mapTraTong14[$ng] += $sl;
+        }
+    }
+
+    $bangMauPt = ['#7A5AF8', '#F79009', '#12B76A', '#F04438', '#0BA5EC', '#EE46BC'];
+    $chuoiPhongTruc = [];
+    $idxMau = 0;
+    foreach ($rowsPt as $ptRow) {
+        $ptId = (int)$ptRow['id'];
+        $chuoiData = array_values($mapMuonPt14[$ptId] ?? array_fill(0, $soNgayChuoi, 0));
+        $chuoiPhongTruc[] = [
+            'ma_phong_truc'  => (string)$ptRow['ma_phong_truc'],
+            'ten_phong_truc' => (string)$ptRow['ten_phong_truc'],
+            'mau'            => $bangMauPt[$idxMau % count($bangMauPt)],
+            'data'           => $chuoiData,
+            'tong'           => array_sum($chuoiData),
+        ];
+        $idxMau++;
+    }
+
+    return [
+        'phong_truc' => [
+            'labels'       => $ptLabels,
+            'ten_day_du'   => $ptTenDayDu,
+            'da_tra'       => $ptDaTra,
+            'dang_muon'    => $ptDangMuon,
+            'qua_han'      => $ptQuaHan,
+            'tong_da_tra'  => array_sum($ptDaTra),
+            'tong_dang_muon' => array_sum($ptDangMuon),
+            'tong_qua_han' => array_sum($ptQuaHan),
+            'ts_san_sang'  => $ptTsSanSang,
+            'ts_dang_muon' => $ptTsDangMuon,
+            'ts_khac'      => $ptTsKhac,
+            'nhan_vien'    => $ptNhanVien,
+        ],
+        'tai_khoan' => [
+            'tong'           => $tkTong,
+            'quan_tri'       => $tkQuanTri,
+            'quan_ly'        => $tkQuanLy,
+            'nhan_vien'      => $tkNhanVien,
+            'dang_hoat_dong' => $tkHoatDong,
+            'tam_khoa'       => $tkTamKhoa,
+        ],
+        'nguoi_muon' => [
+            'tong_ho_so'    => $tongHoSoNm,
+            'hs_giang_vien' => $hsGiangVien,
+            'hs_sinh_vien'  => $hsSinhVien,
+            'phieu_gv'      => $phieuGv,
+            'phieu_sv'      => $phieuSv,
+            'tong_phieu'    => $phieuGv + $phieuSv,
+        ],
+        'van_hanh' => [
+            'labels' => ['Sự cố chờ XL', 'Sự cố đã XL', 'Kiểm kê mở', 'Kiểm kê xong', 'Điều chuyển'],
+            'data'   => [$scChoXl, $scDaXl, $kkDangMo, $kkHoanTat, $tongDc],
+            'tong'   => $scChoXl + $scDaXl + $kkDangMo + $kkHoanTat + $tongDc,
+        ],
+        'chuoi_14_ngay' => [
+            'labels'          => $ngayLabels,
+            'tong_muon'       => array_values($mapMuonTong14),
+            'tong_tra'        => array_values($mapTraTong14),
+            'theo_phong_truc' => $chuoiPhongTruc,
+        ],
+    ];
 }

@@ -68,8 +68,9 @@ if ($nguoiDung !== null) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($tieuDe) ?> - <?= e(cau_hinh('ung_dung.ten', 'TÀI SẢN QR')) ?></title>
+    <link rel="icon" type="image/jpeg" href="<?= url('assets/images/logo-he-thong.jpg') ?>">
     <link rel="stylesheet" href="<?= url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
-    <link rel="stylesheet" href="<?= url('assets/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= url('assets/css/app.css?v=' . @filemtime(dirname(__DIR__, 3) . '/assets/css/app.css')) ?>">
 </head>
 
 <body>

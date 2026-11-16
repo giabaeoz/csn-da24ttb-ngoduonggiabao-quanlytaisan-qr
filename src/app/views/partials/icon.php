@@ -31,3 +31,25 @@ if (!function_exists('icon')) {
     }
 }
 
+if (!function_exists('minh_hoa_hop_trong')) {
+    /**
+     * Hiển thị hình minh họa chiếc hộp mở nắp phát sáng kèm dòng thông báo khi bảng/khối trống.
+     */
+    function minh_hoa_hop_trong(string $thongDiep = 'Không có dữ liệu.'): string {
+        return '<div class="empty-state-hop">'
+            . '<svg viewBox="0 0 80 68" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+            . '<ellipse cx="40" cy="60" rx="26" ry="5" fill="#E0EDFD"/>'
+            . '<path d="M40 16L62 27V49L40 60L18 49V27L40 16Z" fill="#DBEAFE" stroke="#60A5FA" stroke-width="1.6" stroke-linejoin="round"/>'
+            . '<path d="M40 38V60" stroke="#60A5FA" stroke-width="1.6"/>'
+            . '<path d="M18 27L40 38L62 27" stroke="#60A5FA" stroke-width="1.6" stroke-linejoin="round"/>'
+            . '<path d="M18 27L10 19L32 9L40 16" fill="#EFF6FF" stroke="#60A5FA" stroke-width="1.5" stroke-linejoin="round"/>'
+            . '<path d="M62 27L70 19L48 9L40 16" fill="#EFF6FF" stroke="#60A5FA" stroke-width="1.5" stroke-linejoin="round"/>'
+            . '<circle cx="40" cy="24" r="3" fill="#93C5FD"/>'
+            . '<path d="M40 5V11M29 9L32 13M51 9L48 13" stroke="#93C5FD" stroke-width="1.5" stroke-linecap="round"/>'
+            . '</svg>'
+            . '<div>' . e($thongDiep) . '</div>'
+            . '</div>';
+    }
+}
+
+

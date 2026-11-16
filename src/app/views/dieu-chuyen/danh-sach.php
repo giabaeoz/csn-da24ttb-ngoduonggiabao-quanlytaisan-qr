@@ -45,6 +45,10 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
 
 <div class="card mb-4">
     <div class="card-body p-3">
+        <div class="d-flex align-items-center gap-2 mb-3 fw-bold text-dark">
+            <span class="text-primary"><?= icon('filter', 'bieu-tuong-sm') ?></span>
+            <span>Bộ lọc tra cứu</span>
+        </div>
         <form action="<?= url('dieu-chuyen/index.php') ?>" method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Từ khóa</label>
@@ -105,8 +109,11 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
 
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h2 class="tieu-de-khoi mb-0">Danh sách phiếu điều chuyển</h2>
-        <div class="mo-ta-phu">Tổng số: <?= $tongSo ?> phiếu</div>
+        <h2 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
+            <span class="text-primary"><?= icon('list', 'bieu-tuong-md') ?></span>
+            <span>Danh sách phiếu điều chuyển</span>
+        </h2>
+        <span class="huy-hieu huy-hieu-chinh">Tổng số: <?= $tongSo ?> phiếu</span>
     </div>
     <div class="table-responsive">
         <table class="table">
@@ -124,7 +131,9 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
             <tbody>
                 <?php if (empty($danhSachDieuChuyen)): ?>
                     <tr>
-                        <td colspan="7" class="text-center py-5 text-phu">Không có dữ liệu.</td>
+                        <td colspan="7" class="text-center py-5 text-phu">
+                            <?= minh_hoa_hop_trong('Không có dữ liệu.') ?>
+                        </td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($danhSachDieuChuyen as $dc): ?>
@@ -138,8 +147,8 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                             <td><?= (int)$dc['tong_so_thiet_bi'] ?> thiết bị</td>
                             <td><?= e($dc['ho_ten_can_bo']) ?></td>
                             <td class="text-end">
-                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc">
-                                    <span>Chi tiết</span>
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" title="Chi tiết">
+                                    <?= icon('eye') ?>
                                 </a>
                             </td>
                         </tr>
