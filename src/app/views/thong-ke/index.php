@@ -80,7 +80,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div class="the-noi-dung p-3 mb-4">
         <form method="GET" action="<?= url('thong-ke/index.php') ?>">
             <input type="hidden" name="tab" value="muon-tra">
-            <?php if ($phongTrucFilter !== null && $nguoiDung['vai_tro'] !== VAI_TRO_NHAN_VIEN): ?>
+            <?php if ($phongTrucFilter !== null && $nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI): ?>
                 <input type="hidden" name="phong_truc_id" value="<?= (int)$phongTrucFilter ?>">
             <?php endif; ?>
 
@@ -178,36 +178,36 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 $isPartial = ($row['trang_thai'] === 'DANG_MUON' && $soChuaTra < $soTb && $soChuaTra > 0);
                                 ?>
                                 <tr>
-                                    <td class="fw-semibold text-primary">
+                                    <td class="fw-semibold text-primary text-nowrap">
                                         <?= e($row['ma_phieu_muon']) ?>
                                     </td>
                                     <td>
-                                        <div class="fw-semibold text-secondary small"><?= e($row['ma_so_truong']) ?></div>
-                                        <div class="fw-medium text-dark"><?= e($row['ho_ten_nguoi_muon']) ?></div>
+                                        <div class="fw-semibold text-secondary small text-nowrap"><?= e($row['ma_so_truong']) ?></div>
+                                        <div class="fw-medium text-dark text-nowrap"><?= e($row['ho_ten_nguoi_muon']) ?></div>
                                     </td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <span class="badge bg-light text-dark border"><?= e($row['ma_phong']) ?></span>
                                     </td>
-                                    <td class="text-center fw-bold">
+                                    <td class="text-center fw-bold text-nowrap">
                                         <?= $soTb ?>
                                     </td>
-                                    <td>
-                                        <div class="small fw-semibold"><?= !empty($row['thoi_gian_muon']) ? date('d/m • H:i', strtotime((string)$row['thoi_gian_muon'])) : '—' ?></div>
-                                        <div class="small text-muted"><?= !empty($row['han_tra']) ? date('d/m • H:i', strtotime((string)$row['han_tra'])) : '—' ?></div>
+                                    <td class="text-nowrap">
+                                        <div class="small fw-semibold text-nowrap"><?= !empty($row['thoi_gian_muon']) ? date('d/m • H:i', strtotime((string)$row['thoi_gian_muon'])) : '—' ?></div>
+                                        <div class="small text-muted text-nowrap"><?= !empty($row['han_tra']) ? date('d/m • H:i', strtotime((string)$row['han_tra'])) : '—' ?></div>
                                     </td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <?php if ($row['trang_thai'] === 'DA_TRA'): ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đã trả đủ</span>
                                         <?php elseif ($isOverdue): ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Quá hạn</span>
                                         <?php elseif ($isPartial): ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Trả một phần</span>
-                                            <div class="text-muted small mt-1">Còn <?= $soChuaTra ?> thiết bị</div>
+                                            <div class="text-muted small mt-1 text-nowrap">Còn <?= $soChuaTra ?> thiết bị</div>
                                         <?php else: ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-chinh">Đang mượn</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
                                         <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$row['id']) ?>" class="btn-vien-thuoc">
                                             <span>Chi tiết</span>
                                         </a>
@@ -324,13 +324,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <?php else: ?>
                             <?php foreach ($danhSachDc as $dc): ?>
                                 <tr>
-                                    <td class="fw-semibold text-primary"><?= e($dc['ma_dieu_chuyen'] ?? $dc['ma_phieu_dieu_chuyen'] ?? $dc['ma_phieu'] ?? '') ?></td>
-                                    <td><?= !empty($dc['thoi_gian_tao'] ?? $dc['ngay_tao'] ?? '') ? date('d/m/Y H:i', strtotime((string)($dc['thoi_gian_tao'] ?? $dc['ngay_tao']))) : '—' ?></td>
-                                    <td><?= e($dc['ma_phong_di'] ?? $dc['ten_phong_chuyen'] ?? $dc['phong_chuyen_ten'] ?? '—') ?></td>
-                                    <td><?= e($dc['ma_phong_den'] ?? $dc['ten_phong_nhan'] ?? $dc['phong_nhan_ten'] ?? '—') ?></td>
-                                    <td class="text-center fw-bold"><?= (int)($dc['tong_so_thiet_bi'] ?? $dc['so_luong_thiet_bi'] ?? $dc['so_thiet_bi'] ?? 0) ?></td>
-                                    <td><?= e($dc['ho_ten_can_bo'] ?? $dc['ho_ten_nguoi_tao'] ?? $dc['nguoi_tao_ten'] ?? '—') ?></td>
-                                    <td class="text-end cot-thao-tac">
+                                    <td class="fw-semibold text-primary text-nowrap"><?= e($dc['ma_dieu_chuyen'] ?? $dc['ma_phieu_dieu_chuyen'] ?? $dc['ma_phieu'] ?? '') ?></td>
+                                    <td class="text-nowrap"><?= !empty($dc['thoi_gian_tao'] ?? $dc['ngay_tao'] ?? '') ? date('d/m/Y H:i', strtotime((string)($dc['thoi_gian_tao'] ?? $dc['ngay_tao']))) : '—' ?></td>
+                                    <td class="text-nowrap"><?= e($dc['ma_phong_di'] ?? $dc['ten_phong_chuyen'] ?? $dc['phong_chuyen_ten'] ?? '—') ?></td>
+                                    <td class="text-nowrap"><?= e($dc['ma_phong_den'] ?? $dc['ten_phong_nhan'] ?? $dc['phong_nhan_ten'] ?? '—') ?></td>
+                                    <td class="text-center fw-bold text-nowrap"><?= (int)($dc['tong_so_thiet_bi'] ?? $dc['so_luong_thiet_bi'] ?? $dc['so_thiet_bi'] ?? 0) ?></td>
+                                    <td class="text-nowrap"><?= e($dc['ho_ten_can_bo'] ?? $dc['ho_ten_nguoi_tao'] ?? $dc['nguoi_tao_ten'] ?? '—') ?></td>
+                                    <td class="text-end cot-thao-tac text-nowrap">
                                         <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc">Chi tiết</a>
                                     </td>
                                 </tr>
@@ -394,7 +394,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <tr>
                             <th>Mã đợt</th>
                             <th>Tên đợt kiểm kê</th>
-                            <th>Bàn trực</th>
+                            <th>Phòng trực</th>
                             <th>Ngày tạo</th>
                             <th>Trạng thái</th>
                             <th class="text-end">Chi tiết</th>
@@ -408,18 +408,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <?php else: ?>
                             <?php foreach ($danhSachKk as $kk): ?>
                                 <tr>
-                                    <td class="fw-semibold text-primary"><?= e($kk['ma_dot_kiem_ke'] ?? '') ?></td>
+                                    <td class="fw-semibold text-primary text-nowrap"><?= e($kk['ma_dot_kiem_ke'] ?? '') ?></td>
                                     <td class="fw-medium"><?= e($kk['ten_dot_kiem_ke'] ?? '') ?></td>
-                                    <td><?= e($kk['ten_phong_truc'] ?? '—') ?></td>
-                                    <td><?= !empty($kk['thoi_gian_bat_dau'] ?? $kk['ngay_bat_dau'] ?? '') ? date('d/m/Y H:i', strtotime((string)($kk['thoi_gian_bat_dau'] ?? $kk['ngay_bat_dau']))) : '—' ?></td>
-                                    <td>
+                                    <td class="text-nowrap"><?= e($kk['ten_phong_truc'] ?? '—') ?></td>
+                                    <td class="text-nowrap"><?= !empty($kk['thoi_gian_bat_dau'] ?? $kk['ngay_bat_dau'] ?? '') ? date('d/m/Y H:i', strtotime((string)($kk['thoi_gian_bat_dau'] ?? $kk['ngay_bat_dau']))) : '—' ?></td>
+                                    <td class="text-nowrap">
                                         <?php if (($kk['trang_thai'] ?? '') === 'HOAN_TAT'): ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Hoàn tất</span>
                                         <?php else: ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Đang thực hiện</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-end cot-thao-tac">
+                                    <td class="text-end cot-thao-tac text-nowrap">
                                         <a href="<?= url('kiem-ke/chi-tiet.php?id=' . (int)$kk['id']) ?>" class="btn-vien-thuoc">Chi tiết</a>
                                     </td>
                                 </tr>

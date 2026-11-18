@@ -1,0 +1,79 @@
+services:
+  # -------------------------------------------------------------
+  # 1. Ứng dụng Web PHP 8.2 + Apache
+  # -------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: qlts-web
+    ports:
+      - "8088:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root_password
+      DB_DATABASE: dacsn_qlts_qr
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # -------------------------------------------------------------
+  # 2. Cơ sở dữ liệu MySQL 8.0
+  # -------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: qlts-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: dacsn_qlts_qr
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+    volumes:
+      - qlts-db-data:/var/lib/mysql
+      # Tự động nạp cấu trúc bảng, dữ liệu mẫu và 3 tài khoản khi chạy lần đầu
+      - ./setup/database_dacsn_qlts_qr.sql:/docker-entrypoint-initdb.d/01-database_dacsn_qlts_qr.sql:ro
+      - ./setup/du_lieu_mau.sql:/docker-entrypoint-initdb.d/02-du_lieu_mau.sql:ro
+      - ./docker/mysql/init/03-tai_khoan_mau.sql:/docker-entrypoint-initdb.d/03-tai_khoan_mau.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
+  # -------------------------------------------------------------
+  # 3. Quản trị giao diện CSDL phpMyAdmin
+  # -------------------------------------------------------------
+  pma:
+    image: phpmyadmin:latest
+    container_name: qlts-pma
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  qlts-db-data:
+    name: qlts-db-data
+
+networks:
+  default:
+    name: qlts-network

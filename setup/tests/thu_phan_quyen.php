@@ -49,7 +49,7 @@ $nhanVienUser = [
 
 kiem_thu('Nhân viên trực KHÔNG có quyền quản lý tài khoản cán bộ', co_quyen('quan_ly_tai_khoan', $nhanVienUser) === false);
 kiem_thu('Nhân viên trực KHÔNG có quyền quản lý danh mục hệ thống', co_quyen('quan_ly_danh_muc', $nhanVienUser) === false);
-kiem_thu('Nhân viên trực KHÔNG có quyền xem báo cáo thống kê nâng cao', co_quyen('xem_thong_ke', $nhanVienUser) === false);
+kiem_thu('Nhân viên trực CÓ quyền tra cứu, thống kê tại phòng trực', co_quyen('xem_thong_ke', $nhanVienUser) === true);
 kiem_thu('Nhân viên trực CÓ quyền thực hiện nghiệp vụ mượn - trả QR', co_quyen('nghiep_vu_muon_tra', $nhanVienUser) === true);
 kiem_thu('Nhân viên trực CÓ quyền thực hiện kiểm kê tài sản', co_quyen('thuc_hien_kiem_ke', $nhanVienUser) === true);
 kiem_thu('Nhân viên trực CÓ quyền tạo phiếu điều chuyển thiết bị', co_quyen('tao_dieu_chuyen', $nhanVienUser) === true);

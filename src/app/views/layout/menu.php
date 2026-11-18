@@ -142,14 +142,4 @@ $tenPhong = $nguoiDung['ten_phong_truc'] ?? 'Phòng trực thiết bị';
             <path d="M0 80 C90 50 170 110 248 70 L248 120 L0 120 Z" fill="rgba(255, 255, 255, 0.07)" />
         </svg>
     </div>
-
-    <div class="sidebar-chan">
-        <form action="<?= url('logout.php') ?>" method="POST" class="m-0">
-            <?= csrf_field() ?>
-            <button type="submit" class="btn-dang-xuat">
-                <?= icon('log-out', 'bieu-tuong-sm') ?>
-                <span>Đăng xuất</span>
-            </button>
-        </form>
-    </div>
 </aside>

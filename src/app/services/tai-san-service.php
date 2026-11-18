@@ -23,7 +23,7 @@ if (!defined('APP_KHOI_DONG')) {
 function tai_san_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTrang = 15): array {
     $db = db();
     $trang = max(1, $trang);
-    $soMoiTrang = max(1, min(100, $soMoiTrang));
+    $soMoiTrang = max(1, min(5000, $soMoiTrang));
     $viTriBatDau = ($trang - 1) * $soMoiTrang;
 
     $where = " WHERE 1=1";
@@ -387,8 +387,8 @@ function tai_san_kiem_tra_tuong_thich(array $taiSan, array $phongHoc): array {
 
         if (empty($dsTbPhong) || !is_array($dsTbPhong)) {
             return [
-                'tuong_thich' => false,
-                'ly_do'       => "Phòng học " . ($phongHoc['ma_phong'] ?? '') . " chưa được cấu hình thiết bị cố định nào.",
+                'tuong_thich' => true,
+                'ly_do'       => "Phòng học " . ($phongHoc['ma_phong'] ?? '') . " cho phép mượn thiết bị linh hoạt.",
             ];
         }
 
@@ -429,6 +429,109 @@ function tai_san_kiem_tra_tuong_thich(array $taiSan, array $phongHoc): array {
 }
 
 /**
+ * Lấy URL hình ảnh đại diện của tài sản (hoặc null nếu chưa có / file không tồn tại).
+ */
+function tai_san_lay_url_anh(?string $hinhAnh): ?string {
+    if (empty($hinhAnh)) {
+        return null;
+    }
+    $duongDan = ltrim(str_replace('\\', '/', $hinhAnh), '/');
+    $srcDir = dirname(__DIR__, 2);
+    $fileVatLy = $srcDir . '/' . $duongDan;
+    if (file_exists($fileVatLy) && is_file($fileVatLy)) {
+        return url($duongDan);
+    }
+    return null;
+}
+
+/**
+ * Xử lý tải ảnh đại diện cho tài sản lên máy chủ.
+ *
+ * @param array $file Mảng $_FILES['hinh_anh']
+ * @param string|null $anhCu Đường dẫn ảnh cũ cần xóa nếu tải ảnh mới thành công
+ * @return array ['thanh_cong' => bool, 'duong_dan' => string|null, 'loi' => string]
+ */
+function tai_san_tai_anh_len(array $file, ?string $anhCu = null): array {
+    if (!isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['thanh_cong' => true, 'duong_dan' => $anhCu, 'loi' => ''];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $cacLoi = [
+            UPLOAD_ERR_INI_SIZE   => 'Dung lượng ảnh vượt quá giới hạn cấu hình của máy chủ (upload_max_filesize).',
+            UPLOAD_ERR_FORM_SIZE  => 'Dung lượng ảnh vượt quá giới hạn biểu mẫu.',
+            UPLOAD_ERR_PARTIAL    => 'File ảnh chỉ mới được tải lên một phần.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Máy chủ thiếu thư mục tạm để lưu file.',
+            UPLOAD_ERR_CANT_WRITE => 'Không thể ghi file ảnh vào đĩa máy chủ.',
+            UPLOAD_ERR_EXTENSION  => 'Quá trình tải file bị chặn bởi tiện ích mở rộng của máy chủ.',
+        ];
+        return ['thanh_cong' => false, 'duong_dan' => null, 'loi' => $cacLoi[$file['error']] ?? 'Lỗi tải file không xác định.'];
+    }
+
+    // Giới hạn dung lượng tối đa 5MB
+    $dungLuongToiDa = 5 * 1024 * 1024;
+    if ($file['size'] > $dungLuongToiDa) {
+        return ['thanh_cong' => false, 'duong_dan' => null, 'loi' => 'Dung lượng ảnh không được vượt quá 5MB.'];
+    }
+
+    // Kiểm tra định dạng qua getimagesize
+    $thongTinAnh = @getimagesize($file['tmp_name']);
+    if ($thongTinAnh === false) {
+        return ['thanh_cong' => false, 'duong_dan' => null, 'loi' => 'File tải lên không phải là định dạng hình ảnh hợp lệ.'];
+    }
+
+    $mime = strtolower((string)($thongTinAnh['mime'] ?? ''));
+    $duoiHopLe = [
+        'image/jpeg'  => 'jpg',
+        'image/pjpeg' => 'jpg',
+        'image/png'   => 'png',
+        'image/x-png' => 'png',
+        'image/webp'  => 'webp',
+        'image/gif'   => 'gif',
+    ];
+
+    if (!isset($duoiHopLe[$mime])) {
+        return ['thanh_cong' => false, 'duong_dan' => null, 'loi' => 'Chỉ chấp nhận các định dạng ảnh JPG, PNG, WEBP hoặc GIF.'];
+    }
+
+    $duoi = $duoiHopLe[$mime];
+    $tenFileMoi = 'ts_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $duoi;
+
+    $thuMucLuu = dirname(__DIR__, 2) . '/assets/uploads/tai-san';
+    if (!is_dir($thuMucLuu)) {
+        @mkdir($thuMucLuu, 0755, true);
+    }
+
+    $duongDanDich = $thuMucLuu . '/' . $tenFileMoi;
+    if (!@move_uploaded_file($file['tmp_name'], $duongDanDich)) {
+        return ['thanh_cong' => false, 'duong_dan' => null, 'loi' => 'Không thể lưu file ảnh vào thư mục máy chủ.'];
+    }
+
+    $duongDanTuongDoi = 'assets/uploads/tai-san/' . $tenFileMoi;
+
+    // Xóa file ảnh cũ nếu có
+    tai_san_xoa_file_anh($anhCu);
+
+    return ['thanh_cong' => true, 'duong_dan' => $duongDanTuongDoi, 'loi' => ''];
+}
+
+/**
+ * Xóa file ảnh vật lý của tài sản.
+ */
+function tai_san_xoa_file_anh(?string $duongDan): void {
+    if (empty($duongDan)) {
+        return;
+    }
+    $duongDan = ltrim(str_replace('\\', '/', $duongDan), '/');
+    if (str_starts_with($duongDan, 'assets/uploads/tai-san/')) {
+        $fileVatLy = dirname(__DIR__, 2) . '/' . $duongDan;
+        if (file_exists($fileVatLy) && is_file($fileVatLy)) {
+            @unlink($fileVatLy);
+        }
+    }
+}
+
+/**
  * Thêm mới hoặc cập nhật thông tin tài sản / thiết bị.
  *
  * @param array $duLieu
@@ -451,6 +554,25 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
     $phamVi = (string)($duLieu['pham_vi_tuong_thich'] ?? TUONG_THICH_LINH_HOAT);
     if (!in_array($phamVi, [TUONG_THICH_THEO_THIET_BI, TUONG_THICH_THEO_PHONG, TUONG_THICH_LINH_HOAT], true)) {
         $phamVi = TUONG_THICH_LINH_HOAT;
+    }
+
+    // Xử lý hình ảnh đại diện
+    $hinhAnh = null;
+    if ($id !== null) {
+        $taiSanHienTai = tai_san_tim_theo_id($id);
+        if ($taiSanHienTai === null) {
+            return ['thanh_cong' => false, 'loi' => 'Không tìm thấy tài sản.', 'id' => 0];
+        }
+        if (!empty($duLieu['xoa_hinh_anh'])) {
+            tai_san_xoa_file_anh($taiSanHienTai['hinh_anh'] ?? null);
+            $hinhAnh = null;
+        } elseif (array_key_exists('hinh_anh', $duLieu)) {
+            $hinhAnh = !empty($duLieu['hinh_anh']) ? trim((string)$duLieu['hinh_anh']) : null;
+        } else {
+            $hinhAnh = $taiSanHienTai['hinh_anh'] ?? null;
+        }
+    } else {
+        $hinhAnh = !empty($duLieu['hinh_anh']) ? trim((string)$duLieu['hinh_anh']) : null;
     }
 
     // Xử lý danh sách phòng tương thích nếu chọn THEO_PHONG
@@ -534,16 +656,16 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
 
         $sql = "INSERT INTO tai_san (
                     ma_tai_san, ma_qr, ten_tai_san, loai_tai_san_id, phong_truc_id,
-                    hang_san_xuat, model, phong_hoc_phu_hop_id, phong_hoc_hien_tai_id,
+                    hang_san_xuat, model, hinh_anh, phong_hoc_phu_hop_id, phong_hoc_hien_tai_id,
                     tinh_trang, trang_thai, ngay_dua_vao_su_dung, mo_ta,
                     pham_vi_tuong_thich, phong_tuong_thich
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $db->prepare($sql);
         $stmt->bind_param(
-            'sssiissiissssss',
+            'sssiisssiissssss',
             $maTaiSan, $maQr, $tenTaiSan, $loaiId, $phongTrucId,
-            $hang, $model, $phongPhuHopId, $phongHocHienTaiId,
+            $hang, $model, $hinhAnh, $phongPhuHopId, $phongHocHienTaiId,
             $tinhTrang, $trangThai, $ngayDuaVao, $moTa,
             $phamVi, $phongTuongThich
         );
@@ -554,10 +676,7 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
         return ['thanh_cong' => true, 'loi' => '', 'id' => $moiId];
     } else {
         // Cập nhật thông tin tài sản (không ghi đè vị trí hiện tại hoặc trạng thái mượn đang diễn ra)
-        $taiSanHienTai = tai_san_tim_theo_id($id);
-        if ($taiSanHienTai === null) {
-            return ['thanh_cong' => false, 'loi' => 'Không tìm thấy tài sản.', 'id' => 0];
-        }
+        // Lưu ý: $taiSanHienTai đã được lấy ở trên
 
         // Tình trạng vật lý có thể cập nhật qua form sửa nếu không đang mượn
         $tinhTrang = (string)($duLieu['tinh_trang'] ?? $taiSanHienTai['tinh_trang']);
@@ -577,15 +696,15 @@ function tai_san_luu(array $duLieu, ?int $id = null): array {
 
         $sql = "UPDATE tai_san SET 
                     ma_tai_san = ?, ma_qr = ?, ten_tai_san = ?, loai_tai_san_id = ?, phong_truc_id = ?,
-                    hang_san_xuat = ?, model = ?, phong_hoc_phu_hop_id = ?, tinh_trang = ?, trang_thai = ?,
+                    hang_san_xuat = ?, model = ?, hinh_anh = ?, phong_hoc_phu_hop_id = ?, tinh_trang = ?, trang_thai = ?,
                     ngay_dua_vao_su_dung = ?, mo_ta = ?, pham_vi_tuong_thich = ?, phong_tuong_thich = ?
                 WHERE id = ?";
 
         $stmt = $db->prepare($sql);
         $stmt->bind_param(
-            'sssiississssssi',
+            'sssiisssissssssi',
             $maTaiSan, $maQr, $tenTaiSan, $loaiId, $phongTrucId,
-            $hang, $model, $phongPhuHopId, $tinhTrang, $trangThai,
+            $hang, $model, $hinhAnh, $phongPhuHopId, $tinhTrang, $trangThai,
             $ngayDuaVao, $moTa, $phamVi, $phongTuongThich,
             $id
         );
@@ -666,6 +785,8 @@ function tai_san_xoa_hoac_ngung_su_dung(int $id): array {
         $stmtDel->bind_param('i', $id);
         $stmtDel->execute();
         $stmtDel->close();
+
+        tai_san_xoa_file_anh($taiSan['hinh_anh'] ?? null);
 
         return [
             'thanh_cong'  => true,

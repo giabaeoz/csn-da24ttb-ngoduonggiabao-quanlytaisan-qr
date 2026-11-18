@@ -66,8 +66,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <div class="card the-noi-dung mb-4">
     <div class="card-body p-3">
-        <form action="<?= url('kiem-ke/index.php') ?>" method="GET" class="row g-2 align-items-end">
-            <div class="col-12 col-md-3">
+        <form action="<?= url('kiem-ke/index.php') ?>" method="GET" class="row g-3 align-items-end">
+            <div class="col-12 col-lg-3">
                 <label class="form-label">Từ khóa tìm kiếm</label>
                 <div class="o-tim-kiem">
                     <?= icon('search', 'bieu-tuong-sm') ?>
@@ -76,11 +76,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <div class="col-6 col-md-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <label class="form-label">Phòng trực</label>
-                <select name="phong_truc_id" class="form-select" <?= ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) ? 'disabled' : '' ?>>
-                    <?php if ($nguoiDung['vai_tro'] !== VAI_TRO_NHAN_VIEN): ?>
-                        <option value="">Tất cả bàn trực</option>
+                <select name="phong_truc_id" class="form-select" <?= ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) ? 'disabled' : '' ?>>
+                    <?php if ($nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI): ?>
+                        <option value="">Tất cả phòng trực</option>
                     <?php endif; ?>
                     <?php foreach ($danhSachPhongTruc as $pt): ?>
                         <option value="<?= (int)$pt['id'] ?>" <?= ((int)$boLoc['phong_truc_id'] === (int)$pt['id']) ? 'selected' : '' ?>>
@@ -90,7 +90,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </select>
             </div>
 
-            <div class="col-6 col-md-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <label class="form-label">Trạng thái đợt</label>
                 <select name="trang_thai" class="form-select">
                     <option value="">Tất cả trạng thái</option>
@@ -100,7 +100,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </select>
             </div>
 
-            <div class="col-6 col-md-2">
+            <div class="col-6 col-md-3 col-lg-2">
                 <label class="form-label">Loại kiểm kê</label>
                 <select name="loai_kiem_ke" class="form-select">
                     <option value="">Tất cả loại</option>
@@ -110,17 +110,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </select>
             </div>
 
-            <div class="col-6 col-md-2">
-                <label class="form-label">Từ ngày</label>
-                <input type="date" name="tu_ngay" class="form-control" value="<?= e($boLoc['tu_ngay']) ?>">
-            </div>
-
-            <div class="col-12 col-md-1 d-flex gap-1">
-                <button type="submit" class="btn btn-phu w-100">
+            <div class="col-6 col-md-3 col-lg-3 d-flex gap-2 align-items-end">
+                <div class="flex-grow-1">
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date" name="tu_ngay" class="form-control" value="<?= e($boLoc['tu_ngay']) ?>">
+                </div>
+                <button type="submit" class="btn btn-chinh px-3">
                     <?= icon('filter', 'bieu-tuong-sm') ?>
                     <span>Lọc</span>
                 </button>
-                <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu" aria-label="Đặt lại" title="Đặt lại">✕</a>
+                <a href="<?= url('kiem-ke/index.php') ?>" class="btn btn-phu px-2" aria-label="Đặt lại" title="Đặt lại bộ lọc">
+                    <?= icon('rotate-ccw', 'bieu-tuong-sm') ?>
+                </a>
             </div>
         </form>
     </div>
@@ -156,16 +157,16 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <?php else: ?>
                     <?php foreach ($danhSachDotKiemKe as $item): ?>
                         <tr>
-                            <td class="ps-3">
-                                <span class="font-monospace fw-semibold text-primary">
+                            <td class="ps-3 text-nowrap">
+                                <span class="font-monospace fw-semibold text-primary text-nowrap">
                                     <?= e($item['ma_dot_kiem_ke']) ?>
                                 </span>
                             </td>
                             <td>
-                                <div class="fw-semibold"><?= e($item['ten_dot_kiem_ke']) ?></div>
-                                <div class="mo-ta-phu">Lập bởi: <?= e($item['ho_ten_nguoi_lap']) ?></div>
+                                <div class="fw-semibold text-nowrap"><?= e($item['ten_dot_kiem_ke']) ?></div>
+                                <div class="mo-ta-phu text-nowrap">Lập bởi: <?= e($item['ho_ten_nguoi_lap']) ?></div>
                             </td>
-                            <td>
+                            <td class="text-nowrap">
                                 <?php if ($item['loai_kiem_ke'] === LOAI_KIEM_KE_CUOI_BUOI): ?>
                                     <span class="huy-hieu huy-hieu-chinh">Cuối buổi</span>
                                 <?php elseif ($item['loai_kiem_ke'] === LOAI_KIEM_KE_DINH_KY): ?>
@@ -174,26 +175,26 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <span class="huy-hieu huy-hieu-canh-bao">Đột xuất</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="small">
+                            <td class="small text-nowrap">
                                 <?= e($item['ten_phong_truc']) ?>
                             </td>
-                            <td class="small mo-ta-phu">
+                            <td class="small mo-ta-phu text-nowrap">
                                 <div>Bắt đầu: <?= e(f_ngay_gio($item['thoi_gian_bat_dau'])) ?></div>
                                 <?php if (!empty($item['thoi_gian_ket_thuc'])): ?>
                                     <div>Kết thúc: <?= e(f_ngay_gio($item['thoi_gian_ket_thuc'])) ?></div>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <div class="small mb-1">
+                                <div class="small mb-1 text-nowrap">
                                     Tổng sổ sách: <strong><?= (int)$item['tong_tai_san_so_sach'] ?></strong>
                                 </div>
-                                <div class="d-flex gap-1 flex-wrap">
+                                <div class="d-flex gap-2 flex-wrap text-nowrap">
                                     <span class="huy-hieu huy-hieu-thanh-cong" title="Có mặt">Tìm thấy: <?= (int)$item['so_tim_thay'] ?></span>
                                     <span class="huy-hieu huy-hieu-nguy-hiem" title="Chưa tìm thấy">Chưa thấy: <?= (int)$item['so_chua_tim_thay'] ?></span>
                                     <span class="huy-hieu huy-hieu-canh-bao" title="Đang mượn">Mượn: <?= (int)$item['so_dang_muon'] ?></span>
                                 </div>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center text-nowrap">
                                 <?php if ($item['trang_thai'] === KIEM_KE_DANG_KIEM_KE): ?>
                                     <span class="huy-hieu huy-hieu-canh-bao">Đang kiểm</span>
                                 <?php elseif ($item['trang_thai'] === KIEM_KE_HOAN_TAT): ?>
@@ -202,7 +203,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <span class="huy-hieu huy-hieu-nguy-hiem">Đã hủy</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end pe-3">
+                            <td class="text-end pe-3 text-nowrap">
                                 <?php if ($item['trang_thai'] === KIEM_KE_DANG_KIEM_KE): ?>
                                     <a href="<?= url('kiem-ke/thuc-hien.php?id=' . (int)$item['id']) ?>" class="btn-vien-thuoc">
                                         <span>Kiểm tra</span>

@@ -57,9 +57,9 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
 <div class="row g-4 mb-4 luong-quet-qr">
     <div class="col-12 col-lg-6">
         <div class="card h-100">
-            <div class="card-body p-3">
+            <div class="card-body p-4">
                 <h2 class="tieu-de-khoi mb-3">Quét QR để đối chiếu thiết bị</h2>
-                <div class="row g-2 align-items-center">
+                <div class="row g-3 align-items-center">
                     <div class="col-12 col-sm-6">
                         <div class="khung-quet-camera" id="khungVideoContainer">
                             <video id="videoQuetCamera" playsinline class="d-none"></video>
@@ -70,14 +70,14 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 d-flex flex-column gap-2">
+                    <div class="col-12 col-sm-6 d-flex flex-column gap-3">
                         <select id="chonCamera" class="form-select form-select-sm">
                             <option value="">Chọn camera</option>
                         </select>
 
                         <div class="input-group input-group-sm">
                             <input type="text" class="form-control font-monospace" id="ma_quet_nhap"
-                                placeholder="Nhập mã (VD: MC-01, RMC-01...)" autocomplete="off">
+                                placeholder="Nhập mã TS (VD: MC-01)..." autocomplete="off">
                             <button type="button" class="btn btn-chinh" onclick="xuLyThemMaThietBi()">
                                 <?= icon('search', 'bieu-tuong-sm') ?>
                                 <span>Đối chiếu</span>
@@ -90,7 +90,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                         </button>
                     </div>
                 </div>
-                <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-2 d-none"></div>
+                <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-3 d-none"></div>
             </div>
         </div>
     </div>
@@ -103,7 +103,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                     <span class="huy-hieu huy-hieu-chinh">Đang thực hiện</span>
                 </div>
 
-                <div class="row g-2 mb-2">
+                <div class="row g-3 mb-3">
                     <div class="col-6">
                         <label class="form-label">Mã đợt</label>
                         <input type="text" class="form-control font-monospace" value="<?= e($dot['ma_dot_kiem_ke'] ?? '') ?>" readonly>
@@ -114,7 +114,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                     </div>
                 </div>
 
-                <div class="mb-2">
+                <div class="mb-3">
                     <label class="form-label">Phạm vi tài sản</label>
                     <input type="text" class="form-control" value="Thiết bị thuộc phòng <?= e($dot['ten_phong_truc'] ?? '') ?>" readonly>
                 </div>
@@ -130,38 +130,58 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
 
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('clipboard-check', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-xanh">
+            <div class="bieu-tuong-chinh">
+                <?= icon('clipboard-check') ?>
+            </div>
             <div>
                 <div class="so-lieu"><?= sprintf('%02d', $phaiKiemThucTe) ?></div>
                 <div class="nhan-so-lieu">Phải kiểm thực tế</div>
             </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('clipboard-check') ?>
+            </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-la">
+            <div class="bieu-tuong-chinh">
+                <?= icon('check-circle-2') ?>
+            </div>
             <div>
                 <div class="so-lieu"><?= sprintf('%02d', $daKiem) ?></div>
                 <div class="nhan-so-lieu">Đã kiểm</div>
             </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('alert-triangle', 'bieu-tuong-lg') ?></div>
-            <div>
-                <div class="so-lieu text-warning"><?= sprintf('%02d', $chuaKiem) ?></div>
-                <div class="nhan-so-lieu">Chưa kiểm</div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('check-circle-2') ?>
             </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('repeat', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-cam">
+            <div class="bieu-tuong-chinh">
+                <?= icon('alert-triangle') ?>
+            </div>
+            <div>
+                <div class="so-lieu"><?= sprintf('%02d', $chuaKiem) ?></div>
+                <div class="nhan-so-lieu">Chưa kiểm</div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('alert-triangle') ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="the-kpi-pha-mau the-kpi-do">
+            <div class="bieu-tuong-chinh">
+                <?= icon('repeat') ?>
+            </div>
             <div>
                 <div class="so-lieu"><?= sprintf('%02d', $dangMuon) ?></div>
                 <div class="nhan-so-lieu">Đang mượn theo phiếu</div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('repeat') ?>
             </div>
         </div>
     </div>
@@ -169,7 +189,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
 
 <div class="card mb-4">
     <div class="card-body p-3">
-        <form action="<?= url('kiem-ke/thuc-hien.php') ?>" method="GET" class="row g-2 align-items-end">
+        <form action="<?= url('kiem-ke/thuc-hien.php') ?>" method="GET" class="row g-3 align-items-end">
             <input type="hidden" name="id" value="<?= (int)$dot['id'] ?>">
             <div class="col-12 col-md-5">
                 <label class="form-label">Tìm thiết bị</label>

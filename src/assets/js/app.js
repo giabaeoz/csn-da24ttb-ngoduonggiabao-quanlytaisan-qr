@@ -8,21 +8,118 @@
     let nutGuiChoXacNhan = null;
 
     /**
-     * Khởi tạo tự động ẩn thông báo flash sau 5 giây.
+     * Thêm một bản ghi thông báo vào hộp danh sách thông báo gần đây trên thanh Topbar.
      */
-    function khoiTaoThongBaoFlash(root = document) {
-        const thongBao = root.getElementById ? root.getElementById('thong-bao-he-thong') : document.getElementById('thong-bao-he-thong');
-        if (thongBao && typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+    function themVaoHopChuongThongBao(noiDung, laThanhCong, thoiGian) {
+        const dsEl = document.getElementById('danhSachThongBaoGanDay');
+        const chamDo = document.getElementById('chamDoThongBao');
+        if (!dsEl || !noiDung) return;
+
+        const tbTrong = document.getElementById('tbTrong');
+        if (tbTrong) tbTrong.remove();
+
+        // Không thêm trùng lặp nếu mục đầu tiên đã có cùng nội dung
+        const mucDau = dsEl.querySelector('.muc-tb-gan-day:not([href])');
+        if (mucDau && (mucDau.textContent || '').includes(noiDung)) {
+            if (chamDo) chamDo.classList.remove('d-none');
+            return;
+        }
+
+        const item = document.createElement('div');
+        item.className = 'muc-tb-gan-day ' + (laThanhCong ? 'muc-tb-xanh' : 'muc-tb-do');
+        const bgIcon = laThanhCong ? 'bg-success' : 'bg-danger';
+        const iconSym = laThanhCong ? 'check-circle-2' : 'alert-circle';
+        const spriteHref = (document.querySelector('svg.bieu-tuong use')?.getAttribute('href') || '').split('#')[0] + '#' + iconSym;
+
+        item.innerHTML = `
+            <div class="icon-tb-tron ${bgIcon} text-white">
+                <svg class="bieu-tuong bieu-tuong-sm" aria-hidden="true" focusable="false"><use href="${spriteHref}"/></svg>
+            </div>
+            <div class="flex-grow-1">
+                <div class="text-dark small fw-medium"></div>
+                <div class="text-muted chu-nho-11 mt-1"></div>
+            </div>
+        `;
+        item.querySelector('.text-dark').textContent = noiDung;
+        item.querySelector('.text-muted').textContent = thoiGian || new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' • Hôm nay';
+
+        dsEl.insertBefore(item, dsEl.firstChild);
+        if (chamDo) chamDo.classList.remove('d-none');
+    }
+
+    /**
+     * Hiệu ứng thu nhỏ thông báo bay về nút chuông thông báo nhỏ trên Topbar sau 5 giây.
+     */
+    function thuVeNutChuong(el) {
+        if (!el || !document.body.contains(el) || el.dataset.daThuVe === '1') return;
+        el.dataset.daThuVe = '1';
+
+        const nutChuong = document.getElementById('nutChuongThongBao');
+        if (nutChuong) {
+            const rectEl = el.getBoundingClientRect();
+            const rectBell = nutChuong.getBoundingClientRect();
+            const dx = (rectBell.left + rectBell.width / 2) - (rectEl.left + rectEl.width / 2);
+            const dy = (rectBell.top + rectBell.height / 2) - (rectEl.top + rectEl.height / 2);
+
+            el.style.transition = 'transform 460ms cubic-bezier(0.4, 0, 0.2, 1), opacity 460ms ease';
+            el.style.transformOrigin = 'center center';
+            el.style.transform = `translate(${dx}px, ${dy}px) scale(0.12)`;
+            el.style.opacity = '0';
+            el.style.pointerEvents = 'none';
+
             setTimeout(function () {
-                if ( document.body.contains(thongBao) ) {
-                    const alertInstance = bootstrap.Alert.getOrCreateInstance(thongBao);
-                    if (alertInstance) {
-                        alertInstance.close();
-                    }
-                }
-            }, 5000);
+                nutChuong.classList.add('chuong-rung');
+                setTimeout(function () {
+                    nutChuong.classList.remove('chuong-rung');
+                }, 500);
+                if (el.parentNode) el.remove();
+            }, 460);
+        } else {
+            el.remove();
         }
     }
+
+    /**
+     * Khởi tạo thông báo dạng thả xuống và tự động thu về nút thông báo nhỏ sau 5 giây.
+     */
+    function khoiTaoThongBaoFlash(root = document) {
+        const cacAlert = (root.querySelectorAll ? root.querySelectorAll('.alert') : document.querySelectorAll('.alert'));
+        cacAlert.forEach(function (al) {
+            if (al.dataset.daKhoiTaoTb === '1') return;
+            al.dataset.daKhoiTaoTb = '1';
+
+            // Làm sạch thẻ HTML bị escape (như <strong>...</strong>) nếu có
+            al.querySelectorAll('div, span').forEach(function (node) {
+                if (node.children.length === 0 && node.textContent && /<\/?[a-z][\s\S]*>/i.test(node.textContent)) {
+                    node.textContent = node.textContent.replace(/<\/?[a-z][^>]*>/gi, '');
+                }
+            });
+
+            const laThanhCong = al.classList.contains('alert-success') || al.classList.contains('thong-bao-xanh');
+            const noiDungTxt = (al.textContent || '').trim();
+            if (noiDungTxt) {
+                themVaoHopChuongThongBao(noiDungTxt, laThanhCong, al.getAttribute('data-thoi-gian') || '');
+            }
+
+            setTimeout(function () {
+                thuVeNutChuong(al);
+            }, 5000);
+        });
+    }
+
+    window.xoaLichSuThongBao = function () {
+        const dsEl = document.getElementById('danhSachThongBaoGanDay');
+        const chamDo = document.getElementById('chamDoThongBao');
+        if (!dsEl) return;
+        const canhBaoQuaHan = dsEl.querySelector('a.muc-tb-gan-day');
+        dsEl.innerHTML = '';
+        if (canhBaoQuaHan) {
+            dsEl.appendChild(canhBaoQuaHan);
+        } else {
+            dsEl.innerHTML = '<div class="text-center py-4 text-muted small" id="tbTrong">Đã xóa lịch sử thông báo gần đây.</div>';
+            if (chamDo) chamDo.classList.add('d-none');
+        }
+    };
 
     /**
      * Chuyển đổi các biểu mẫu có onsubmit="return confirm('...')" sang thuộc tính data-xac-nhan
@@ -446,9 +543,125 @@
         inst.show();
     }
 
+    /**
+     * Tự động lọc và tìm kiếm tức thì cho các biểu mẫu GET trong vùng nội dung chính
+     * mà không cần người dùng nhấn nút Tìm / Lọc hay tải lại trang.
+     */
+    let boDemTuDongLoc = null;
+    let boDieuKhienLoc = null;
+
+    async function thucHienTuDongLoc(form) {
+        if (!form || !(form instanceof HTMLFormElement)) return;
+        const action = form.getAttribute('action') || window.location.pathname;
+        const params = new URLSearchParams(new FormData(form));
+        const sep = action.includes('?') ? '&' : '?';
+        const targetUrl = action + (params.toString() ? (sep + params.toString()) : '');
+
+        if (boDieuKhienLoc) {
+            try { boDieuKhienLoc.abort(); } catch (e) {}
+        }
+        boDieuKhienLoc = new AbortController();
+
+        try {
+            const res = await fetch(targetUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+                signal: boDieuKhienLoc.signal
+            });
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const mainMoi = doc.querySelector('main.noi-dung-chinh');
+            const mainHienTai = document.querySelector('main.noi-dung-chinh');
+            if (!mainMoi || !mainHienTai) return;
+
+            // Xác định khung cha trực tiếp chứa form (ví dụ main hoặc .khung-trang-tai-san-co-dinh)
+            const vungForm = form.closest('.card, .the-noi-dung') || form;
+            const chaHienTai = vungForm.parentElement;
+            let chaMoi = mainMoi;
+            if (chaHienTai !== mainHienTai && chaHienTai.className) {
+                const selectorCha = '.' + chaHienTai.className.trim().split(/\s+/).join('.');
+                chaMoi = mainMoi.querySelector(selectorCha) || mainMoi;
+            }
+
+            if (chaHienTai && chaMoi && chaHienTai.children.length === chaMoi.children.length) {
+                const idxForm = Array.from(chaHienTai.children).indexOf(vungForm);
+                Array.from(chaHienTai.children).forEach(function (child, idx) {
+                    if (idx !== idxForm && chaMoi.children[idx]) {
+                        child.replaceWith(chaMoi.children[idx].cloneNode(true));
+                    }
+                });
+            } else {
+                const activeEl = document.activeElement;
+                const activeName = activeEl && activeEl.name ? activeEl.name : '';
+                const selStart = activeEl && typeof activeEl.selectionStart === 'number' ? activeEl.selectionStart : null;
+                const selEnd = activeEl && typeof activeEl.selectionEnd === 'number' ? activeEl.selectionEnd : null;
+
+                mainHienTai.innerHTML = mainMoi.innerHTML;
+
+                if (activeName) {
+                    const elMoi = mainHienTai.querySelector(`[name="${CSS.escape(activeName)}"]`);
+                    if (elMoi) {
+                        elMoi.focus();
+                        if (selStart !== null && typeof elMoi.setSelectionRange === 'function') {
+                            try { elMoi.setSelectionRange(selStart, selEnd); } catch (e) {}
+                        }
+                    }
+                }
+            }
+
+            chuanHoaFormXacNhan(mainHienTai);
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, '', targetUrl);
+            }
+        } catch (err) {
+            if (err && err.name !== 'AbortError') {
+                console.error('Lỗi tự động lọc:', err);
+            }
+        }
+    }
+
+    function laFormLocTuDong(el) {
+        if (!el) return null;
+        const form = el.closest('form');
+        if (!form) return null;
+        if ((form.getAttribute('method') || 'GET').toUpperCase() !== 'GET') return null;
+        if (form.hasAttribute('data-khong-tu-dong-loc')) return null;
+        if (!form.closest('main.noi-dung-chinh')) return null;
+        if (form.closest('.modal')) return null;
+        if (el.hasAttribute('onchange') && /submit/i.test(el.getAttribute('onchange') || '')) return null;
+        return form;
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         khoiTaoThongBaoFlash(document);
         chuanHoaFormXacNhan(document);
+
+        // Tự động tìm kiếm khi người dùng gõ từ khóa trong form lọc GET
+        document.addEventListener('input', function (e) {
+            const target = e.target;
+            if (!(target instanceof HTMLInputElement)) return;
+            if (!['text', 'search'].includes((target.type || 'text').toLowerCase())) return;
+            const form = laFormLocTuDong(target);
+            if (!form) return;
+
+            clearTimeout(boDemTuDongLoc);
+            boDemTuDongLoc = setTimeout(function () {
+                thucHienTuDongLoc(form);
+            }, 300);
+        });
+
+        // Tự động lọc ngay khi người dùng chọn dropdown hoặc ngày tháng trong form lọc GET
+        document.addEventListener('change', function (e) {
+            const target = e.target;
+            if (!(target instanceof HTMLSelectElement) && !(target instanceof HTMLInputElement && target.type === 'date')) {
+                return;
+            }
+            const form = laFormLocTuDong(target);
+            if (!form) return;
+
+            clearTimeout(boDemTuDongLoc);
+            thucHienTuDongLoc(form);
+        });
 
         // Dừng camera nếu người dùng đóng modal tương tác
         const modalTuongTacEl = document.getElementById('modalTuongTac');
@@ -554,6 +767,90 @@
                 submitter.disabled = true;
             }, 0);
         });
+
+        // 4. Khởi tạo thanh tìm kiếm nhanh chức năng hệ thống trên Topbar
+        const inpTimChucNang = document.getElementById('inputTimChucNang');
+        const bangGoiYChucNang = document.getElementById('bangGoiYChucNang');
+        const hopTimChucNang = document.getElementById('hopTimKiemChucNang');
+        const khongTimThayEl = document.getElementById('khongTimThayChucNang');
+
+        if (inpTimChucNang && bangGoiYChucNang && hopTimChucNang) {
+            const cacMuc = Array.from(bangGoiYChucNang.querySelectorAll('.muc-goi-y-chuc-nang'));
+            let viTriDangChon = -1;
+
+            function boDauTiengViet(str) {
+                return (str || '')
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/đ/g, 'd')
+                    .trim();
+            }
+
+            function capNhatHighlight(cacMucHienThi) {
+                cacMuc.forEach(function (el) {
+                    el.classList.remove('dang-chon');
+                });
+                if (viTriDangChon >= 0 && viTriDangChon < cacMucHienThi.length) {
+                    const mucChon = cacMucHienThi[viTriDangChon];
+                    mucChon.classList.add('dang-chon');
+                    mucChon.scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            function locChucNang() {
+                const tuKhoa = boDauTiengViet(inpTimChucNang.value);
+                let demHienThi = 0;
+                cacMuc.forEach(function (el) {
+                    const duLieu = boDauTiengViet(el.getAttribute('data-search') || '');
+                    const khop = (tuKhoa === '' || duLieu.indexOf(tuKhoa) !== -1);
+                    el.classList.toggle('d-none', !khop);
+                    if (khop) demHienThi++;
+                });
+
+                if (khongTimThayEl) {
+                    khongTimThayEl.classList.toggle('d-none', demHienThi > 0);
+                }
+                viTriDangChon = demHienThi > 0 ? 0 : -1;
+                const cacMucHienThi = cacMuc.filter(function (el) { return !el.classList.contains('d-none'); });
+                capNhatHighlight(cacMucHienThi);
+                bangGoiYChucNang.classList.remove('d-none');
+            }
+
+            inpTimChucNang.addEventListener('focus', locChucNang);
+            inpTimChucNang.addEventListener('input', locChucNang);
+
+            inpTimChucNang.addEventListener('keydown', function (ev) {
+                const cacMucHienThi = cacMuc.filter(function (el) { return !el.classList.contains('d-none'); });
+                if (ev.key === 'ArrowDown') {
+                    ev.preventDefault();
+                    if (cacMucHienThi.length > 0) {
+                        viTriDangChon = (viTriDangChon + 1) % cacMucHienThi.length;
+                        capNhatHighlight(cacMucHienThi);
+                    }
+                } else if (ev.key === 'ArrowUp') {
+                    ev.preventDefault();
+                    if (cacMucHienThi.length > 0) {
+                        viTriDangChon = (viTriDangChon - 1 + cacMucHienThi.length) % cacMucHienThi.length;
+                        capNhatHighlight(cacMucHienThi);
+                    }
+                } else if (ev.key === 'Enter') {
+                    if (viTriDangChon >= 0 && viTriDangChon < cacMucHienThi.length) {
+                        ev.preventDefault();
+                        window.location.href = cacMucHienThi[viTriDangChon].href;
+                    }
+                } else if (ev.key === 'Escape') {
+                    bangGoiYChucNang.classList.add('d-none');
+                    inpTimChucNang.blur();
+                }
+            });
+
+            document.addEventListener('click', function (ev) {
+                if (!hopTimChucNang.contains(ev.target)) {
+                    bangGoiYChucNang.classList.add('d-none');
+                }
+            });
+        }
     });
 })();
 

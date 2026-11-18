@@ -1,5 +1,5 @@
 -- =====================================================================
--- HỆ THỐNG QUẢN LÝ MƯỢN – TRẢ VÀ KIỂM KÊ TÀI SẢN BẰNG MÃ QR (QLTS-QR)
+-- HỆ THỐNG QUẢN LÝ MƯỢN - TRẢ VÀ KIỂM KÊ TÀI SẢN BẰNG MÃ QR (QLTS-QR)
 -- TẬP TIN SCHEMA CƠ SỞ DỮ LIỆU CHUẨN DUY NHẤT (MySQL 8.0+)
 -- MÃ HÓA: utf8mb4 / utf8mb4_unicode_ci
 -- =====================================================================
@@ -207,6 +207,7 @@ CREATE TABLE `tai_san` (
     `phong_truc_id` INT UNSIGNED NOT NULL,
     `hang_san_xuat` VARCHAR(50) NULL COMMENT 'Hãng sản xuất (Daikin, Panasonic, Sony, Shure...)',
     `model` VARCHAR(50) NULL COMMENT 'Mã dòng máy / model kỹ thuật (PT-LB386, FTKB25W...)',
+    `hinh_anh` VARCHAR(255) NULL COMMENT 'Đường dẫn ảnh đại diện thiết bị phục vụ nhận diện trực quan',
     `phong_hoc_phu_hop_id` INT UNSIGNED NULL COMMENT 'Phòng học gợi ý dán nhãn trên tem để nhân viên tìm kiếm nhanh',
     `phong_hoc_hien_tai_id` INT UNSIGNED NULL COMMENT 'Vị trí phòng học hiện tại (NULL nếu ở phòng trực)',
     `tinh_trang` ENUM('TOT', 'HU_HONG', 'MAT') NOT NULL DEFAULT 'TOT',

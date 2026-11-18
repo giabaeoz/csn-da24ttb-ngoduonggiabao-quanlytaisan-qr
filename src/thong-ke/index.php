@@ -21,7 +21,7 @@ $nguoiDung = nguoi_dung_hien_tai();
 $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 
 $phongTrucFilter = null;
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) {
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) {
     $phongTrucFilter = $phongTrucId;
 } else {
     $reqPt = doc_so_nguyen('phong_truc_id', 0, $_GET);

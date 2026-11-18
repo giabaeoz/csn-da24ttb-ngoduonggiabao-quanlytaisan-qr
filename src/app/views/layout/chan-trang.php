@@ -51,6 +51,6 @@ if (!defined('APP_KHOI_DONG')) {
 </div>
 
 <script src="<?= url('assets/vendor/bootstrap/bootstrap.bundle.min.js') ?>"></script>
-<script src="<?= url('assets/js/app.js') ?>"></script>
+<script src="<?= url('assets/js/app.js?v=' . @filemtime(dirname(__DIR__, 3) . '/assets/js/app.js')) ?>"></script>
 </body>
 </html>

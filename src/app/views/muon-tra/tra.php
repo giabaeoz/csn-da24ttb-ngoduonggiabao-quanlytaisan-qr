@@ -71,7 +71,7 @@ if ($thietBiVuaQuet !== '') {
 <?php if ($dangBiKhoaKiemKe): ?>
     <div class="alert alert-danger mb-4" role="alert">
         <?= icon('alert-circle', 'bieu-tuong-md') ?>
-        <div class="flex-grow-1">Bàn trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.</div>
+        <div class="flex-grow-1">Phòng trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.</div>
     </div>
 <?php endif; ?>
 
@@ -90,12 +90,12 @@ if ($thietBiVuaQuet !== '') {
     <div class="row g-4">
         <div class="col-12 col-lg-5">
             <div class="card mb-4">
-                <div class="card-body p-3">
+                <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3 d-flex align-items-center gap-2">
                         <span class="text-primary"><?= icon('qr-code', 'bieu-tuong-md') ?></span>
                         <span>Quét QR thiết bị trả</span>
                     </h2>
-                    <div class="row g-2 align-items-center">
+                    <div class="row g-3 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
                                 <video id="videoQuetCamera" playsinline class="d-none"></video>
@@ -107,14 +107,14 @@ if ($thietBiVuaQuet !== '') {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 d-flex flex-column gap-2">
+                        <div class="col-12 col-sm-6 d-flex flex-column gap-3">
                             <select id="chonCamera" class="form-select form-select-sm">
                                 <option value="">Chọn camera</option>
                             </select>
 
                             <div class="input-group input-group-sm">
                                 <input type="text" class="form-control" id="ma_tra_cuu_nhap"
-                                    placeholder="Nhập mã thiết bị (VD: OCD-02, CAP-01)..."
+                                    placeholder="Nhập mã TS (VD: MC-01)..."
                                     value="<?= e($thietBiVuaQuet) ?>" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="thucHienTraCuu()">
                                     <?= icon('search', 'bieu-tuong-sm') ?>
@@ -128,7 +128,7 @@ if ($thietBiVuaQuet !== '') {
                             </button>
                         </div>
                     </div>
-                    <div id="thongBaoQuetKetQua" class="ket-qua-quet mt-2 <?= $thongBaoLoiTimKiem !== '' ? 'ket-qua-quet-loi' : 'd-none' ?>">
+                    <div id="thongBaoQuetKetQua" class="ket-qua-quet mt-3 <?= $thongBaoLoiTimKiem !== '' ? 'ket-qua-quet-loi' : 'd-none' ?>">
                         <?= icon('alert-circle', 'bieu-tuong-sm') ?>
                         <span id="noiDungThongBaoQuet"><?= e($thongBaoLoiTimKiem) ?></span>
                     </div>
@@ -142,7 +142,7 @@ if ($thietBiVuaQuet !== '') {
                         <span>Phiếu trả tài sản</span>
                     </h2>
                     <?php if ($phieuHienTai): ?>
-                        <div class="mb-3">
+                        <div class="mb-3 p-3 rounded-3 d-flex flex-column gap-1" style="background: #EFF8FF; border: 1px solid #BFDBFE;">
                             <div class="fw-semibold text-dark">
                                 <?= e($phieuHienTai['ho_ten_nguoi_muon'] ?? $phieuHienTai['ten_nguoi_muon'] ?? $phieuHienTai['ho_ten'] ?? '') ?> - <?= e($phieuHienTai['ma_so_nguoi_muon'] ?? $phieuHienTai['ma_so_truong'] ?? '') ?> - <?= e($phieuHienTai['lop_don_vi'] ?? '---') ?>
                             </div>
@@ -157,7 +157,7 @@ if ($thietBiVuaQuet !== '') {
                             </div>
                         </div>
 
-                        <div class="table-responsive mb-2">
+                        <div class="table-responsive mb-3">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
@@ -196,7 +196,7 @@ if ($thietBiVuaQuet !== '') {
                     </div>
 
                     <?php if ($phieuHienTai): ?>
-                        <div class="row g-2 mb-2">
+                        <div class="row g-3 mb-3">
                             <div class="col-12 col-sm-4">
                                 <label class="form-label">Mã số</label>
                                 <input type="text" class="form-control" value="<?= e($phieuHienTai['ma_so_nguoi_muon'] ?? $phieuHienTai['ma_so_truong'] ?? '') ?>" readonly>
@@ -211,7 +211,7 @@ if ($thietBiVuaQuet !== '') {
                             </div>
                         </div>
 
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <div class="col-12 col-sm-4">
                                 <label class="form-label">Lớp / đơn vị</label>
                                 <input type="text" class="form-control" value="<?= e($phieuHienTai['lop_don_vi'] ?? '---') ?>" readonly>
@@ -280,8 +280,8 @@ if ($thietBiVuaQuet !== '') {
                                     // Mặc định chọn: nếu có thiết bị vừa quét cụ thể thì chỉ tick thiết bị đó; nếu tra cứu chung thì tick tất cả chưa trả
                                     $macDinhChon = !$daTra && ($coThietBiKhop ? $laThietBiVuaQuet : true);
                                 ?>
-                                    <tr class="<?= $daTra ? 'opacity-50 bg-light' : ($laThietBiVuaQuet ? 'table-active' : '') ?>" id="hang_tb_<?= (int)$it['id'] ?>">
-                                        <td class="text-center">
+                                    <tr class="<?= $daTra ? 'bg-light text-muted' : ($laThietBiVuaQuet ? 'table-active' : '') ?>" id="hang_tb_<?= (int)$it['id'] ?>">
+                                        <td class="text-center text-nowrap">
                                             <?php if (!$daTra): ?>
                                                 <input type="checkbox" class="form-check-input check-nhan-tra"
                                                     name="chi_tiet_id[]" value="<?= (int)$it['id'] ?>"
@@ -294,19 +294,19 @@ if ($thietBiVuaQuet !== '') {
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <div class="fw-semibold text-dark"><?= e($it['ma_tai_san']) ?> - <?= e($it['ten_tai_san']) ?></div>
-                                            <div class="mo-ta-phu">Phòng: <?= e($phieuHienTai['ma_phong']) ?></div>
+                                            <div class="fw-semibold text-dark text-nowrap"><?= e($it['ma_tai_san']) ?> - <?= e($it['ten_tai_san']) ?></div>
+                                            <div class="mo-ta-phu text-nowrap">Phòng: <?= e($phieuHienTai['ma_phong']) ?></div>
                                         </td>
-                                        <td>
+                                        <td class="text-nowrap">
                                             <?php if ($daTra): ?>
-                                                <span class="huy-hieu huy-hieu-thanh-cong">Đã trả (<?= dinh_dang_ngay_gio($it['thoi_gian_tra']) ?>)</span>
+                                                <span class="huy-hieu huy-hieu-thanh-cong text-nowrap">Đã trả (<?= dinh_dang_ngay_gio($it['thoi_gian_tra']) ?>)</span>
                                             <?php elseif ($laThietBiVuaQuet): ?>
-                                                <span class="huy-hieu huy-hieu-chinh badge-trang-thai-tb">Thiết bị vừa quét</span>
+                                                <span class="huy-hieu huy-hieu-chinh badge-trang-thai-tb text-nowrap">Thiết bị vừa quét</span>
                                             <?php else: ?>
-                                                <span class="huy-hieu huy-hieu-xam badge-trang-thai-tb">Còn lại trong phiếu</span>
+                                                <span class="huy-hieu huy-hieu-xam badge-trang-thai-tb text-nowrap">Còn lại trong phiếu</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td>
+                                        <td class="text-nowrap">
                                             <?php if (!$daTra): ?>
                                                 <select name="tinh_trang[<?= (int)$it['id'] ?>]" class="form-select form-select-sm sel-tinh-trang"
                                                     data-id="<?= (int)$it['id'] ?>" onchange="capNhatPreviewTra()">
@@ -314,7 +314,7 @@ if ($thietBiVuaQuet !== '') {
                                                     <option value="HU_HONG">Hư hỏng</option>
                                                 </select>
                                             <?php else: ?>
-                                                <span class="text-phu small">Hoàn tất</span>
+                                                <span class="text-phu small text-nowrap">Hoàn tất</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -346,15 +346,25 @@ if ($thietBiVuaQuet !== '') {
 
 <script src="<?= url('assets/vendor/jsqr/jsQR.js') ?>"></script>
 <script>
+    let henGioTraCuuTra = null;
     function thucHienTraCuu() {
         const val = document.getElementById('ma_tra_cuu_nhap').value.trim();
         if (!val) return;
         xuLyQuetThietBi(val);
     }
 
+    document.getElementById('ma_tra_cuu_nhap')?.addEventListener('input', function() {
+        clearTimeout(henGioTraCuuTra);
+        const val = this.value.trim();
+        if (/^[A-Za-z0-9]+-\d{2,}$/.test(val)) {
+            henGioTraCuuTra = setTimeout(thucHienTraCuu, 350);
+        }
+    });
+
     document.getElementById('ma_tra_cuu_nhap')?.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
+            clearTimeout(henGioTraCuuTra);
             thucHienTraCuu();
         }
     });
@@ -463,30 +473,44 @@ if ($thietBiVuaQuet !== '') {
     const selCamera = document.getElementById('chonCamera');
 
     async function khoiTaoCamera() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        if (!navigator.mediaDevices) return;
         try {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter(d => d.kind === 'videoinput');
-            selCamera.innerHTML = '<option value="">Chọn camera</option>';
-            videoDevices.forEach((d, idx) => {
-                const opt = document.createElement('option');
-                opt.value = d.deviceId;
-                opt.textContent = d.label || `Camera ${idx + 1}`;
-                selCamera.appendChild(opt);
-            });
+            if (navigator.mediaDevices.enumerateDevices) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                selCamera.innerHTML = '<option value="">Chọn camera</option>';
+                videoDevices.forEach((d, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = d.deviceId;
+                    opt.textContent = d.label || `Camera ${idx + 1}`;
+                    selCamera.appendChild(opt);
+                });
+            }
         } catch (e) {}
+        <?php if (!$dangBiKhoaKiemKe): ?>
+        await batCamera(true);
+        <?php endif; ?>
     }
     khoiTaoCamera();
+
+    if (selCamera) {
+        selCamera.addEventListener('change', async function () {
+            if (dangQuet) {
+                dungCamera();
+            }
+            await batCamera(false);
+        });
+    }
 
     async function batTatCamera() {
         if (dangQuet) {
             dungCamera();
         } else {
-            await batCamera();
+            await batCamera(false);
         }
     }
 
-    async function batCamera() {
+    async function batCamera(tuDong = false) {
         const devId = selCamera.value;
         const constraints = {
             video: devId ? {
@@ -509,7 +533,9 @@ if ($thietBiVuaQuet !== '') {
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
-            alert('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            if (!tuDong) {
+                hienThongBaoQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.', 'loi');
+            }
         }
     }
 

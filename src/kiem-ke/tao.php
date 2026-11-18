@@ -15,7 +15,7 @@ yeu_cau_quyen('mo_dot_kiem_ke');
 $nguoiDung = nguoi_dung_hien_tai();
 $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 
-// Nếu là quản trị viên chưa gán bàn trực, cho phép chọn bàn trực
+// Nếu là quản trị viên chưa gán phòng trực, cho phép chọn phòng trực
 $danhSachPhongTruc = phong_truc_danh_sach(true);
 if ($phongTrucId <= 0 && $nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI) {
     $phongTrucId = doc_so_nguyen('phong_truc_id', (int)($danhSachPhongTruc[0]['id'] ?? 1), $_REQUEST);
@@ -47,7 +47,7 @@ if (la_post()) {
     } else {
         $ketQua = kiem_ke_mo_dot($_POST, (int)$nguoiDung['id'], $phongTrucId);
         if ($ketQua['thanh_cong']) {
-            dat_thong_bao('thanh_cong', "Mở đợt kiểm kê <strong>{$ketQua['ma_dot_kiem_ke']}</strong> thành công! Đã chụp sổ sách toàn bộ tài sản bàn trực.");
+            dat_thong_bao('thanh_cong', "Mở đợt kiểm kê <strong>{$ketQua['ma_dot_kiem_ke']}</strong> thành công! Đã chụp sổ sách toàn bộ tài sản phòng trực.");
             chuyen_huong('kiem-ke/thuc-hien.php?id=' . $ketQua['id']);
         } else {
             $loi = $ketQua['loi'];

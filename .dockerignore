@@ -1,0 +1,8 @@
+.git
+.vscode
+.idea
+progress-report
+thesis
+soft
+*.log
+docker/mysql/data

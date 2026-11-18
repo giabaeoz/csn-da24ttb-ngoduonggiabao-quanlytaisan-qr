@@ -16,7 +16,7 @@ $nguoiDung = nguoi_dung_hien_tai();
 $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 
 $id = doc_so_nguyen('id', 0, $_GET ?: $_POST);
-$suCo = su_co_tim_theo_id($id, ($phongTrucId > 0 && $nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN) ? $phongTrucId : null);
+$suCo = su_co_tim_theo_id($id, ($phongTrucId > 0 && $nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI) ? $phongTrucId : null);
 
 if ($suCo === null) {
     dat_thong_bao('nguy_hiem', 'Không tìm thấy thông tin sự cố theo yêu cầu.');

@@ -14,7 +14,19 @@ $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($httpCode !== 200) {
-    $baseUrl = 'http://127.0.0.1:8000';
+    // Kiểm tra cổng 8088 nếu chạy qua Docker
+    $ch8088 = curl_init('http://localhost:8088/login.php');
+    curl_setopt($ch8088, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch8088, CURLOPT_TIMEOUT, 2);
+    curl_exec($ch8088);
+    $code8088 = curl_getinfo($ch8088, CURLINFO_HTTP_CODE);
+    curl_close($ch8088);
+
+    if ($code8088 === 200) {
+        $baseUrl = 'http://localhost:8088';
+    } else {
+        $baseUrl = 'http://127.0.0.1:8000';
+    }
 }
 echo "Đang kiểm tra trên máy chủ: " . $baseUrl . "\n";
 

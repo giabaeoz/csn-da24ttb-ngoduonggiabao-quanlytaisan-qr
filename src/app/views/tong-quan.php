@@ -61,10 +61,13 @@ $ngayHienTaiStr = date('d/m/Y');
 </div>
 
 <div class="banner-tong-quan mb-4">
-    <img src="<?= url('assets/images/QR%20Asset%20Management%20Dashboard%20Banner.png') ?>" alt="Quản lý tài sản bằng mã QR" class="img-fluid w-100 rounded-3">
+    <img src="<?= url('assets/images/banner-chinh.jpg?v=' . @filemtime(dirname(__DIR__, 2) . '/assets/images/banner-chinh.jpg')) ?>" alt="Quản lý thiết bị theo QR" class="img-fluid w-100 rounded-3">
 </div>
 
-<?php $laAdmin = (($nguoiDung['vai_tro'] ?? '') === 'QUAN_TRI'); ?>
+<?php
+$laAdmin = (($nguoiDung['vai_tro'] ?? '') === 'QUAN_TRI');
+$laNhanVien = (($nguoiDung['vai_tro'] ?? '') === 'NHAN_VIEN');
+?>
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="the-kpi-pha-mau the-kpi-xanh">
@@ -126,6 +129,51 @@ $ngayHienTaiStr = date('d/m/Y');
                 </div>
             </div>
         </div>
+    <?php elseif ($laNhanVien): ?>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="the-kpi-pha-mau the-kpi-la">
+                <div class="bieu-tuong-chinh">
+                    <?= icon('users') ?>
+                </div>
+                <div>
+                    <div class="so-lieu"><?= sprintf('%02d', $soLieu['nguoi_dang_muon'] ?? 0) ?></div>
+                    <div class="nhan-so-lieu">Tổng người đang mượn tài sản</div>
+                </div>
+                <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                    <?= icon('users') ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="the-kpi-pha-mau the-kpi-cam">
+                <div class="bieu-tuong-chinh">
+                    <?= icon('wrench') ?>
+                </div>
+                <div>
+                    <div class="so-lieu"><?= sprintf('%02d', $soLieu['tai_san_su_co'] ?? 0) ?></div>
+                    <div class="nhan-so-lieu">Tài sản có sự cố</div>
+                </div>
+                <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                    <?= icon('wrench') ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="the-kpi-pha-mau the-kpi-do">
+                <div class="bieu-tuong-chinh">
+                    <?= icon('alert-triangle') ?>
+                </div>
+                <div>
+                    <div class="so-lieu"><?= sprintf('%02d', $soLieu['qua_han']) ?></div>
+                    <div class="nhan-so-lieu">Lượt mượn quá hạn</div>
+                </div>
+                <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                    <?= icon('alert-triangle') ?>
+                </div>
+            </div>
+        </div>
     <?php else: ?>
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="the-kpi-pha-mau the-kpi-la">
@@ -152,7 +200,7 @@ $ngayHienTaiStr = date('d/m/Y');
                     <div class="nhan-so-lieu">Tài sản đang mượn</div>
                 </div>
                 <div class="bieu-tuong-mo-bg" aria-hidden="true">
-                    <?= icon('package') ?>
+                    <?= icon('clock') ?>
                 </div>
             </div>
         </div>
@@ -167,7 +215,7 @@ $ngayHienTaiStr = date('d/m/Y');
                     <div class="nhan-so-lieu">Lượt mượn quá hạn</div>
                 </div>
                 <div class="bieu-tuong-mo-bg" aria-hidden="true">
-                    <?= icon('package') ?>
+                    <?= icon('alert-triangle') ?>
                 </div>
             </div>
         </div>
@@ -563,25 +611,25 @@ $ngayHienTaiStr = date('d/m/Y');
                 <?php else: ?>
                     <?php foreach ($canTheoDoi as $p): ?>
                         <tr>
-                            <td class="fw-semibold text-primary font-monospace">
+                            <td class="fw-semibold text-primary font-monospace text-nowrap">
                                 <?= e($p['ma_phieu_muon']) ?>
                             </td>
                             <?php if ($laAdmin): ?>
-                                <td>
+                                <td class="text-nowrap">
                                     <span class="huy-hieu-tt huy-hieu-tt-xam"><?= e($p['ma_phong_truc'] ?? '—') ?></span>
                                 </td>
                             <?php endif; ?>
-                            <td class="fw-medium text-dark"><?= e($p['ho_ten_nguoi_muon']) ?></td>
+                            <td class="fw-medium text-dark text-nowrap"><?= e($p['ho_ten_nguoi_muon']) ?></td>
                             <td><?= e($p['tai_san_hien_thi']) ?></td>
-                            <td class="<?= $p['trang_thai_theo_doi'] === 'QUA_HAN' ? 'text-danger fw-semibold' : '' ?>">
+                            <td class="text-nowrap <?= $p['trang_thai_theo_doi'] === 'QUA_HAN' ? 'text-danger fw-semibold' : '' ?>">
                                 <?= e($p['han_tra_dinh_dang']) ?>
                             </td>
-                            <td>
+                            <td class="text-nowrap">
                                 <span class="huy-hieu-tt <?= e($p['lop_huy_hieu']) ?>">
                                     <?= e($p['nhan_trang_thai']) ?>
                                 </span>
                             </td>
-                            <td class="text-end">
+                            <td class="text-end text-nowrap">
                                 <?php if ($coQuyenThaoTacNhanh && ($p['trang_thai_theo_doi'] === 'QUA_HAN' || $p['trang_thai_theo_doi'] === 'DEN_HAN_HOM_NAY')): ?>
                                     <a href="<?= url('muon-tra/tra.php?tu_khoa=' . urlencode($p['ma_thiet_bi_dau'] ?: $p['ma_phieu_muon'])) ?>" class="btn-vien-thuoc">
                                         <span>Nhận trả</span>

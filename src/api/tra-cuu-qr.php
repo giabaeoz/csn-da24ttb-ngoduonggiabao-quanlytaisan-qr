@@ -23,9 +23,33 @@ if ($maQr === '') {
 // 1. Kiểm tra xem có phải mã tài sản / tem QR thiết bị không
 $taiSan = tai_san_tim_theo_qr($maQr) ?? tai_san_tim_theo_ma($maQr);
 if ($taiSan !== null) {
+    $nguoiDungQr = nguoi_dung_hien_tai();
+    if ($nguoiDungQr && $nguoiDungQr['vai_tro'] !== VAI_TRO_QUAN_TRI && !empty($nguoiDungQr['phong_truc_id'])) {
+        if ((int)$taiSan['phong_truc_id'] !== (int)$nguoiDungQr['phong_truc_id']) {
+            $msg = "Thiết bị [{$taiSan['ma_tai_san']}] thuộc {$taiSan['ten_phong_truc']}, không thuộc thẩm quyền quản lý của phòng trực bạn.";
+            phan_hoi_json([
+                'thanh_cong' => false,
+                'loi'        => $msg,
+                'thong_diep' => $msg,
+                'du_lieu'    => $taiSan,
+            ], 403);
+        }
+    }
+
+    $taiSan['hinh_anh_url'] = tai_san_lay_url_anh($taiSan['hinh_anh'] ?? null);
     $coTheMuon = ($taiSan['trang_thai'] === TRANG_THAI_SAN_SANG && $taiSan['tinh_trang'] === TINH_TRANG_TOT);
-    if (($hanhDong === 'MUON' || $hanhDong === 'DIEU_CHUYEN') && !$coTheMuon) {
+    if ($hanhDong === 'MUON' && !$coTheMuon) {
         $msg = "Thiết bị [{$taiSan['ma_tai_san']}] hiện không ở trạng thái Sẵn sàng (Đang mượn hoặc Bảo trì).";
+        phan_hoi_json([
+            'thanh_cong' => false,
+            'loi'        => $msg,
+            'thong_diep' => $msg,
+            'du_lieu'    => $taiSan,
+        ], 422);
+    }
+
+    if ($hanhDong === 'DIEU_CHUYEN' && (!in_array($taiSan['trang_thai'], [TRANG_THAI_SAN_SANG, TRANG_THAI_DANG_MUON], true) || $taiSan['tinh_trang'] !== TINH_TRANG_TOT)) {
+        $msg = "Thiết bị [{$taiSan['ma_tai_san']}] hiện đang bảo trì hoặc hư hỏng, không thể điều chuyển.";
         phan_hoi_json([
             'thanh_cong' => false,
             'loi'        => $msg,

@@ -24,7 +24,17 @@ $loaiNmForm = trim((string)($_POST['moi_loai_nguoi_muon'] ?? ($nguoiMuonMacDinh[
 $lopForm = trim((string)($_POST['moi_lop_don_vi'] ?? ($nguoiMuonMacDinh['lop_don_vi'] ?? '')));
 $sdtForm = trim((string)($_POST['moi_so_dien_thoai'] ?? ($nguoiMuonMacDinh['so_dien_thoai'] ?? '')));
 $phongHocForm = (int)($_POST['phong_hoc_id'] ?? 0);
-$hanTraForm = trim((string)($_POST['han_tra'] ?? date('Y-m-d\TH:i', strtotime('+3 hours'))));
+$phongHocNhapForm = trim((string)($_POST['phong_hoc_nhap'] ?? ''));
+if ($phongHocNhapForm === '' && $phongHocForm > 0) {
+    foreach ($danhSachPhongHoc as $phItem) {
+        if ((int)$phItem['id'] === $phongHocForm) {
+            $phongHocNhapForm = (string)$phItem['ma_phong'];
+            break;
+        }
+    }
+}
+$hanTraMacDinh = muon_tinh_han_tra_mac_dinh();
+$hanTraForm = trim((string)($_POST['han_tra'] ?? date('Y-m-d\TH:i', strtotime($hanTraMacDinh))));
 $nguoiMuonIdForm = (int)($_POST['nguoi_muon_id'] ?? ($nguoiMuonMacDinh['id'] ?? 0));
 
 $tieuDeTrang = 'Mượn - trả';
@@ -50,7 +60,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <?php if ($dangBiKhoaKiemKe): ?>
     <div class="alert alert-danger mb-4" role="alert">
         <?= icon('alert-circle', 'bieu-tuong-md') ?>
-        <div class="flex-grow-1">Bàn trực hiện đang có đợt kiểm kê tài sản. Hoạt động mượn tạm thời bị khóa.</div>
+        <div class="flex-grow-1">Phòng trực hiện đang có đợt kiểm kê tài sản. Hoạt động mượn tạm thời bị khóa.</div>
     </div>
 <?php endif; ?>
 
@@ -71,12 +81,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div class="row g-4">
         <div class="col-12 col-lg-5">
             <div class="card mb-4">
-                <div class="card-body p-3">
+                <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3 d-flex align-items-center gap-2">
                         <span class="text-primary"><?= icon('qr-code', 'bieu-tuong-md') ?></span>
                         <span>Quét QR thiết bị</span>
                     </h2>
-                    <div class="row g-2 align-items-center">
+                    <div class="row g-3 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
                                 <video id="videoQuetCamera" playsinline class="d-none"></video>
@@ -88,14 +98,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 d-flex flex-column gap-2">
+                        <div class="col-12 col-sm-6 d-flex flex-column gap-3">
                             <select id="chonCamera" class="form-select form-select-sm">
                                 <option value="">Chọn camera</option>
                             </select>
 
                             <div class="input-group input-group-sm">
                                 <input type="text" class="form-control" id="ma_quet_nhap"
-                                    placeholder="Nhập mã khi không quét được" autocomplete="off">
+                                    placeholder="Nhập mã TS (VD: MC-01)" autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
                                     <?= icon('plus', 'bieu-tuong-sm') ?>
                                     <span>Thêm</span>
@@ -108,7 +118,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             </button>
                         </div>
                     </div>
-                    <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-2 d-none"></div>
+                    <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-3 d-none"></div>
                 </div>
             </div>
 
@@ -120,14 +130,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </h2>
                     <div class="mb-3 p-3 rounded-3 d-flex align-items-start gap-2" style="background: #EFF8FF; border: 1px solid #BFDBFE;">
                         <span class="text-primary mt-1"><?= icon('info', 'bieu-tuong-sm') ?></span>
-                        <div>
+                        <div class="d-flex flex-column gap-1">
                             <div class="fw-semibold text-dark" id="pvThongTinNguoi">Chưa chọn người mượn</div>
                             <div class="mo-ta-phu" id="pvThongTinPhong">SĐT: --- • Phòng cần mượn: ---</div>
                             <div class="mo-ta-phu" id="pvThongTinThoiGian">Thời gian mượn: <?= date('d/m/Y H:i') ?> • Hạn trả: ---</div>
                         </div>
                     </div>
 
-                    <div class="table-responsive mb-2">
+                    <div class="table-responsive mb-3">
                         <table class="table table-sm">
                             <thead>
                                 <tr>
@@ -153,9 +163,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         <div class="col-12 col-lg-7">
             <div class="card mb-4">
                 <div class="card-body p-4">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                         <div>
-                            <h2 class="tieu-de-khoi mb-1 d-flex align-items-center gap-2">
+                            <h2 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
                                 <span class="text-primary"><?= icon('users', 'bieu-tuong-md') ?></span>
                                 <span>Khai báo người mượn & phòng học</span>
                             </h2>
@@ -170,11 +180,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     </div>
 
                     <div class="mb-3 position-relative">
-                        <div class="input-group input-group-sm">
+                        <div class="input-group">
                             <span class="input-group-text bg-light text-phu">
                                 <?= icon('search', 'bieu-tuong-sm') ?>
                             </span>
-                            <input type="text" class="form-control" id="tu_khoa_nguoi_muon">
+                            <input type="text" class="form-control" id="tu_khoa_nguoi_muon" name="tu_khoa_nguoi_muon" placeholder="Tìm nhanh người mượn theo mã số, họ tên hoặc SĐT...">
                             <button type="button" class="btn btn-phu" id="btnTimNm" onclick="timNguoiMuon()">
                                 <span>Tìm nhanh</span>
                             </button>
@@ -182,7 +192,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <div id="goiYNguoiMuon" class="list-group position-absolute w-100 shadow-sm d-none mt-1 hop-goi-y-tim-kiem"></div>
                     </div>
 
-                    <div class="row g-2 mb-2">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-4">
                             <label class="form-label" for="inputMaSo">Mã số <span class="text-danger"></span></label>
                             <input type="text" class="form-control" id="inputMaSo" name="moi_ma_so_truong"
@@ -204,32 +214,39 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </div>
                     </div>
 
-                    <div class="row g-2">
-                        <div class="col-12 col-sm-3">
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-sm-6">
                             <label class="form-label" for="inputLop">Lớp / Đơn vị</label>
                             <input type="text" class="form-control" id="inputLop" name="moi_lop_don_vi"
                                 placeholder="VD: DI21V7A1, Khoa CNTT"
                                 value="<?= e($lopForm) ?>" oninput="capNhatPreview()">
                         </div>
-                        <div class="col-12 col-sm-3">
+                        <div class="col-12 col-sm-6">
                             <label class="form-label" for="inputSdt">Số điện thoại</label>
                             <input type="text" class="form-control" id="inputSdt" name="moi_so_dien_thoai"
-                                placeholder="SĐT liên hệ"
+                                placeholder="Nhập số điện thoại liên hệ"
                                 value="<?= e($sdtForm) ?>" oninput="capNhatPreview()">
                         </div>
-                        <div class="col-12 col-sm-3">
-                            <label class="form-label" for="phong_hoc_id">Phòng cần mượn <span class="text-danger"></span></label>
-                            <select class="form-select" id="phong_hoc_id" name="phong_hoc_id" onchange="doiPhongHoc(this)">
-                                <option value="">Chọn phòng học</option>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label" for="inputPhongHoc">Phòng cần mượn <span class="text-danger"></span></label>
+                            <input type="hidden" id="phong_hoc_id" name="phong_hoc_id" value="<?= $phongHocForm ?>">
+                            <input type="text" class="form-control" id="inputPhongHoc" name="phong_hoc_nhap"
+                                list="dsGoiYPhongHoc"
+                                placeholder="Nhập hoặc chọn phòng (VD: B31.101)"
+                                value="<?= e($phongHocNhapForm) ?>"
+                                autocomplete="off"
+                                oninput="xuLyNhapPhongHoc(this.value)">
+                            <datalist id="dsGoiYPhongHoc">
                                 <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                    <option value="<?= (int)$ph['id'] ?>" data-ma="<?= e($ph['ma_phong']) ?>" data-thiet-bi="<?= e($ph['thiet_bi_phong'] ?? '[]') ?>" <?= $phongHocForm === (int)$ph['id'] ? 'selected' : '' ?>>
-                                        <?= e($ph['ma_phong']) ?> (<?= e($ph['ten_phong']) ?>)
-                                    </option>
+                                    <option value="<?= e($ph['ma_phong']) ?>"><?= e($ph['ten_phong']) ?></option>
                                 <?php endforeach; ?>
-                            </select>
+                            </datalist>
                         </div>
-                        <div class="col-12 col-sm-3">
-                            <label class="form-label" for="han_tra">Hạn trả</label>
+                        <div class="col-12 col-sm-6">
+                            <label class="form-label" for="han_tra">Hạn trả dự kiến</label>
                             <input type="datetime-local" class="form-control" id="han_tra" name="han_tra"
                                 value="<?= e($hanTraForm) ?>" onchange="capNhatPreview()">
                         </div>
@@ -315,6 +332,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         }
     }
 
+    let henGioKiemTraMaSo = null;
+
     function xuLyNhapMaSo() {
         const maSoMoi = document.getElementById('inputMaSo').value.trim();
         if (maSoDaChon !== '' && maSoMoi.toUpperCase() !== maSoDaChon.toUpperCase()) {
@@ -327,6 +346,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         }
         capNhatTrangThaiNguoiMuon();
         capNhatPreview();
+
+        clearTimeout(henGioKiemTraMaSo);
+        if (maSoMoi.length >= 3) {
+            henGioKiemTraMaSo = setTimeout(tuDongKiemTraMaSo, 250);
+        }
     }
 
     function xuLySuaThongTinNm() {
@@ -468,22 +492,34 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         capNhatPreview();
     }
 
-    function doiPhongHoc(sel) {
-        const opt = sel.options[sel.selectedIndex];
-        if (!opt.value) {
+    const DS_PHONG_HOC = <?= json_encode(array_map(fn($p) => [
+                                'id' => (int)$p['id'],
+                                'ma_phong' => (string)$p['ma_phong'],
+                                'ten_phong' => (string)$p['ten_phong'],
+                            ], $danhSachPhongHoc), JSON_UNESCAPED_UNICODE) ?>;
+
+    function xuLyNhapPhongHoc(valRaw) {
+        const val = (valRaw || '').trim();
+        const hiddenId = document.getElementById('phong_hoc_id');
+        if (!val) {
             phongHocHienTai = null;
+            if (hiddenId) hiddenId.value = '0';
         } else {
-            let tb = [];
-            try {
-                tb = JSON.parse(opt.getAttribute('data-thiet-bi') || '[]');
-            } catch (e) {
-                tb = [];
+            const maTach = val.split(/[\(\-]/)[0].trim().toUpperCase();
+            const found = DS_PHONG_HOC.find(p => p.ma_phong.toUpperCase() === maTach || p.ten_phong.toUpperCase() === val.toUpperCase());
+            if (found) {
+                phongHocHienTai = {
+                    id: found.id,
+                    ma_phong: found.ma_phong
+                };
+                if (hiddenId) hiddenId.value = String(found.id);
+            } else {
+                phongHocHienTai = {
+                    id: 0,
+                    ma_phong: maTach || val.toUpperCase()
+                };
+                if (hiddenId) hiddenId.value = '0';
             }
-            phongHocHienTai = {
-                id: parseInt(opt.value, 10),
-                ma_phong: opt.getAttribute('data-ma'),
-                thiet_bi_phong: tb
-            };
         }
         capNhatBangThietBi();
         capNhatPreview();
@@ -494,11 +530,22 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     // ==========================================
     const inputMaQuet = document.getElementById('ma_quet_nhap');
     const thongBaoLoiQuet = document.getElementById('thongBaoQuetLoi');
+    let henGioQuetNhap = null;
 
     if (inputMaQuet) {
+        inputMaQuet.addEventListener('input', function() {
+            clearTimeout(henGioQuetNhap);
+            const ma = inputMaQuet.value.trim();
+            if (/^[A-Za-z0-9]+-\d{2,}$/.test(ma)) {
+                henGioQuetNhap = setTimeout(() => {
+                    xuLyThemMaThietBi();
+                }, 350);
+            }
+        });
         inputMaQuet.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                clearTimeout(henGioQuetNhap);
                 xuLyThemMaThietBi();
             }
         });
@@ -576,10 +623,10 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-            <td class="fw-semibold">${escapeHtml(ts.ma_tai_san)}</td>
+            <td class="fw-semibold text-nowrap">${escapeHtml(ts.ma_tai_san)}</td>
             <td>${escapeHtml(ts.ten_tai_san)}</td>
-            <td>${escapeHtml(maPhong)}</td>
-            <td class="text-end cot-thao-tac">
+            <td class="text-nowrap">${escapeHtml(maPhong)}</td>
+            <td class="text-end cot-thao-tac text-nowrap">
                 <button type="button" class="btn-vien-thuoc btn-vien-thuoc-nguy-hiem" onclick="xoaThietBi(${idx})">Bỏ</button>
             </td>
         `;
@@ -620,7 +667,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
         // Kiểm tra nút xác nhận
         const btnSubmit = document.getElementById('btnXacNhanMuon');
-        const coNguoi = (document.getElementById('nguoi_muon_id').value !== '0') || (maSo !== '---' && hoTen !== 'Chưa chọn người mượn');
+        const coNguoi = (document.getElementById('nguoi_muon_id').value !== '0') || (maSo !== '---') || (hoTen !== 'Chưa chọn người mượn') || (inputTuKhoa && inputTuKhoa.value.trim() !== '');
         const coPhong = (phongHocHienTai !== null);
         const coThietBi = (danhSachThietBi.length > 0);
         btnSubmit.disabled = !(coNguoi && coPhong && coThietBi);
@@ -638,30 +685,44 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     const selCamera = document.getElementById('chonCamera');
 
     async function khoiTaoCamera() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        if (!navigator.mediaDevices) return;
         try {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter(d => d.kind === 'videoinput');
-            selCamera.innerHTML = '<option value="">Chọn camera</option>';
-            videoDevices.forEach((d, idx) => {
-                const opt = document.createElement('option');
-                opt.value = d.deviceId;
-                opt.textContent = d.label || `Camera ${idx + 1}`;
-                selCamera.appendChild(opt);
-            });
+            if (navigator.mediaDevices.enumerateDevices) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                selCamera.innerHTML = '<option value="">Chọn camera</option>';
+                videoDevices.forEach((d, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = d.deviceId;
+                    opt.textContent = d.label || `Camera ${idx + 1}`;
+                    selCamera.appendChild(opt);
+                });
+            }
         } catch (e) {}
+        <?php if (!$dangBiKhoaKiemKe): ?>
+            await batCamera(true);
+        <?php endif; ?>
     }
     khoiTaoCamera();
+
+    if (selCamera) {
+        selCamera.addEventListener('change', async function() {
+            if (dangQuet) {
+                dungCamera();
+            }
+            await batCamera(false);
+        });
+    }
 
     async function batTatCamera() {
         if (dangQuet) {
             dungCamera();
         } else {
-            await batCamera();
+            await batCamera(false);
         }
     }
 
-    async function batCamera() {
+    async function batCamera(tuDong = false) {
         const devId = selCamera.value;
         const constraints = {
             video: devId ? {
@@ -684,7 +745,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
-            hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            if (!tuDong) {
+                hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            }
         }
     }
 
@@ -738,9 +801,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     }
 
     // Khởi chạy trạng thái ban đầu
-    const selPhongBanDau = document.getElementById('phong_hoc_id');
-    if (selPhongBanDau && selPhongBanDau.value) {
-        doiPhongHoc(selPhongBanDau);
+    const inpPhongBanDau = document.getElementById('inputPhongHoc');
+    if (inpPhongBanDau && inpPhongBanDau.value.trim() !== '') {
+        xuLyNhapPhongHoc(inpPhongBanDau.value);
     }
     capNhatTrangThaiNguoiMuon();
     capNhatPreview();

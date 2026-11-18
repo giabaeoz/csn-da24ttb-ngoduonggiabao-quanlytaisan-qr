@@ -280,9 +280,9 @@ function su_co_bao_cao(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = nu
             throw new RuntimeException("Thiết bị không tồn tại trong hệ thống.");
         }
 
-        // Kiểm tra quyền quản lý bàn trực
+        // Kiểm tra quyền quản lý phòng trực
         if ($phongTrucId !== null && $phongTrucId > 0 && (int)$taiSan['phong_truc_id'] !== $phongTrucId) {
-            throw new RuntimeException("Thiết bị này không thuộc quyền quản lý của bàn trực bạn phụ trách.");
+            throw new RuntimeException("Thiết bị này không thuộc quyền quản lý của phòng trực bạn phụ trách.");
         }
 
         // Sinh mã sự cố duy nhất: SC-YYYYMMDD-XXXXXXXX
@@ -356,7 +356,7 @@ function su_co_chuyen_dang_xu_ly(int $suCoId, int $nhanVienId, ?int $phongTrucId
         }
 
         if ($phongTrucId !== null && $phongTrucId > 0 && (int)$sc['phong_truc_id'] !== $phongTrucId) {
-            throw new RuntimeException("Bạn không có quyền xử lý sự cố của bàn trực này.");
+            throw new RuntimeException("Bạn không có quyền xử lý sự cố của phòng trực này.");
         }
 
         if ($sc['trang_thai'] === 'DA_XU_LY') {
@@ -432,7 +432,7 @@ function su_co_hoan_tat_xu_ly(int $suCoId, array $duLieu, int $nhanVienId, ?int 
         }
 
         if ($phongTrucId !== null && $phongTrucId > 0 && (int)$sc['phong_truc_id'] !== $phongTrucId) {
-            throw new RuntimeException("Bạn không có quyền xử lý sự cố của bàn trực này.");
+            throw new RuntimeException("Bạn không có quyền xử lý sự cố của phòng trực này.");
         }
 
         $taiSanId = (int)$sc['tai_san_id'];

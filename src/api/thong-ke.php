@@ -16,7 +16,7 @@ $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 
 // Nếu là quản trị viên/quản lý, cho phép lọc theo tham số phong_truc_id
 $phongTrucFilter = null;
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) {
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) {
     $phongTrucFilter = $phongTrucId;
 } else {
     $reqPt = doc_so_nguyen('phong_truc_id', 0, $_GET);

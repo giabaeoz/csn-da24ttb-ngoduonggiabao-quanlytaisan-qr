@@ -16,7 +16,7 @@ require_once __DIR__ . '/tai-san-service.php';
 require_once __DIR__ . '/danh-muc-service.php';
 
 /**
- * Kiểm tra xem bàn trực của nhân viên có đang bị khóa bởi đợt kiểm kê hay không.
+ * Kiểm tra xem phòng trực của nhân viên có đang bị khóa bởi đợt kiểm kê hay không.
  *
  * @param int $phongTrucId ID phòng trực cần kiểm tra
  * @return bool True nếu đang kiểm kê (bị khóa)
@@ -87,7 +87,7 @@ function dieu_chuyen_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTran
         $params[] = $phongDenId;
     }
 
-    // Lọc theo bàn trực (chỉ hiển thị phiếu có chứa tài sản do bàn trực này quản lý)
+    // Lọc theo phòng trực (chỉ hiển thị phiếu có chứa tài sản do phòng trực này quản lý)
     $phongTrucId = (int)($boLoc['phong_truc_id'] ?? 0);
     if ($phongTrucId > 0) {
         $where[] = "EXISTS (
@@ -134,11 +134,14 @@ function dieu_chuyen_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTran
     $tongTrang = (int)ceil($tongSo / $soMoiTrang);
 
     // 2. Lấy dữ liệu trang
-    $sqlData = "SELECT dc.id, dc.ma_dieu_chuyen, dc.thoi_gian_dieu_chuyen, dc.ly_do, dc.ghi_chu, dc.tao_luc,
+    $sqlData = "SELECT dc.id, dc.ma_dieu_chuyen,
+                       dc.thoi_gian_dieu_chuyen, dc.thoi_gian_dieu_chuyen AS thoi_gian_tao,
+                       dc.ly_do, dc.ghi_chu, dc.tao_luc,
                        pdi.id AS phong_di_id, pdi.ma_phong AS ma_phong_di, pdi.ten_phong AS ten_phong_di,
                        pden.id AS phong_den_id, pden.ma_phong AS ma_phong_den, pden.ten_phong AS ten_phong_den,
-                       nv.id AS nhan_vien_lap_id, nv.ho_ten AS ho_ten_nguoi_lap, nv.ma_nhan_vien AS ma_nhan_vien_lap,
-                       (SELECT COUNT(*) FROM chi_tiet_dieu_chuyen WHERE dieu_chuyen_id = dc.id) AS so_luong_tai_san
+                       nv.id AS nhan_vien_lap_id, nv.ho_ten AS ho_ten_nguoi_lap, nv.ho_ten AS ho_ten_can_bo, nv.ma_nhan_vien AS ma_nhan_vien_lap,
+                       (SELECT COUNT(*) FROM chi_tiet_dieu_chuyen WHERE dieu_chuyen_id = dc.id) AS so_luong_tai_san,
+                       (SELECT COUNT(*) FROM chi_tiet_dieu_chuyen WHERE dieu_chuyen_id = dc.id) AS tong_so_thiet_bi
                 FROM dieu_chuyen dc
                 JOIN phong_hoc pdi ON dc.phong_hoc_di_id = pdi.id
                 JOIN phong_hoc pden ON dc.phong_hoc_den_id = pden.id
@@ -169,7 +172,7 @@ function dieu_chuyen_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTran
  * Tìm phiếu điều chuyển chi tiết theo ID.
  *
  * @param int $id ID phiếu điều chuyển
- * @param int|null $phongTrucId Giới hạn phạm vi bàn trực (nếu có)
+ * @param int|null $phongTrucId Giới hạn phạm vi phòng trực (nếu có)
  * @return array|null Dữ liệu chi tiết phiếu kèm mảng chi tiết thiết bị
  */
 function dieu_chuyen_tim_theo_id(int $id, ?int $phongTrucId = null): ?array {
@@ -269,20 +272,17 @@ function dieu_chuyen_lay_tai_san_hop_le(int $phongHocDiId, int $phongTrucId): ar
     $db = db();
     $sql = "SELECT ts.id, ts.ma_tai_san, ts.ma_qr, ts.ten_tai_san, ts.hang_san_xuat, ts.model,
                    ts.tinh_trang, ts.trang_thai, ts.pham_vi_tuong_thich, ts.phong_tuong_thich,
+                   ts.phong_hoc_hien_tai_id, ts.phong_hoc_phu_hop_id,
                    lts.ten_loai AS ten_loai_tai_san
             FROM tai_san ts
             LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.id
-            WHERE ts.phong_hoc_hien_tai_id = ?
+            WHERE (ts.phong_hoc_hien_tai_id = ? OR (ts.phong_hoc_hien_tai_id IS NULL AND ts.phong_hoc_phu_hop_id = ?))
               AND ts.phong_truc_id = ?
-              AND ts.trang_thai = 'SAN_SANG'
+              AND ts.trang_thai IN ('SAN_SANG', 'DANG_MUON')
               AND ts.tinh_trang = 'TOT'
-              AND NOT EXISTS (
-                  SELECT 1 FROM chi_tiet_muon ctm 
-                  WHERE ctm.tai_san_id = ts.id AND ctm.thoi_gian_tra IS NULL
-              )
             ORDER BY ts.ma_tai_san ASC";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param('ii', $phongHocDiId, $phongTrucId);
+    $stmt->bind_param('iii', $phongHocDiId, $phongHocDiId, $phongTrucId);
     $stmt->execute();
     $danhSach = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
@@ -434,11 +434,11 @@ function dieu_chuyen_tao(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = 
         $phongTrucId = (int)($nvRow['phong_truc_id'] ?? 0);
     }
 
-    // Kiểm tra bàn trực có đang diễn ra kiểm kê không
+    // Kiểm tra phòng trực có đang diễn ra kiểm kê không
     if ($phongTrucId > 0 && dieu_chuyen_kiem_tra_khoa_kiem_ke($phongTrucId)) {
         return [
             'thanh_cong'    => false,
-            'loi'           => 'Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa cho đến khi chốt đợt kiểm kê.',
+            'loi'           => 'Phòng trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa cho đến khi chốt đợt kiểm kê.',
             'id'            => 0,
             'ma_dieu_chuyen'=> '',
         ];
@@ -470,10 +470,16 @@ function dieu_chuyen_tao(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = 
 
         // Kiểm tra từng tài sản với khóa dòng FOR UPDATE
         foreach ($assetIds as $aid) {
-            $stmtTs = $db->prepare("SELECT id, ma_tai_san, ma_qr, ten_tai_san, phong_truc_id, 
-                                           phong_hoc_hien_tai_id, pham_vi_tuong_thich, phong_tuong_thich, 
-                                           hang_san_xuat, model, tinh_trang, trang_thai 
-                                    FROM tai_san WHERE id = ? FOR UPDATE");
+            $stmtTs = $db->prepare("SELECT ts.id, ts.ma_tai_san, ts.ma_qr, ts.ten_tai_san, ts.phong_truc_id, 
+                                           ts.phong_hoc_hien_tai_id, ts.phong_hoc_phu_hop_id,
+                                           ts.pham_vi_tuong_thich, ts.phong_tuong_thich, 
+                                           ts.hang_san_xuat, ts.model, ts.tinh_trang, ts.trang_thai,
+                                           ph_ht.ma_phong AS ma_phong_hien_tai,
+                                           ph_ph.ma_phong AS ma_phong_phu_hop
+                                    FROM tai_san ts
+                                    LEFT JOIN phong_hoc ph_ht ON ts.phong_hoc_hien_tai_id = ph_ht.id
+                                    LEFT JOIN phong_hoc ph_ph ON ts.phong_hoc_phu_hop_id = ph_ph.id
+                                    WHERE ts.id = ? FOR UPDATE");
             $stmtTs->bind_param('i', $aid);
             $stmtTs->execute();
             $ts = $stmtTs->get_result()->fetch_assoc();
@@ -485,29 +491,41 @@ function dieu_chuyen_tao(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = 
 
             // Kiểm tra quyền sở hữu phòng trực
             if ($phongTrucId > 0 && (int)$ts['phong_truc_id'] !== $phongTrucId) {
-                throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] {$ts['ten_tai_san']} không thuộc thẩm quyền quản lý của bàn trực bạn.");
+                throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] {$ts['ten_tai_san']} không thuộc thẩm quyền quản lý của phòng trực bạn.");
             }
 
-            // Kiểm tra vị trí phòng nguồn
-            if ((int)$ts['phong_hoc_hien_tai_id'] !== $phongDiId) {
-                throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] hiện không ở phòng học nguồn đã chọn (Phòng {$roomDi['ma_phong']}).");
+            // Kiểm tra vị trí phòng nguồn:
+            // Chấp nhận nếu thiết bị đang ở phòng đi (phong_hoc_hien_tai_id == $phongDiId),
+            // hoặc có nhãn phòng kệ gắn với phòng đi (phong_hoc_phu_hop_id == $phongDiId khi chưa gán vị trí hiện tại),
+            // hoặc nằm trong danh sách phòng tương thích, hoặc chưa gắn cố định phòng nào.
+            $phongHienTaiId = (int)($ts['phong_hoc_hien_tai_id'] ?? 0);
+            $phongPhuHopId  = (int)($ts['phong_hoc_phu_hop_id'] ?? 0);
+
+            $dsPhongTuongThich = [];
+            if (!empty($ts['phong_tuong_thich'])) {
+                $decoded = is_string($ts['phong_tuong_thich']) ? json_decode($ts['phong_tuong_thich'], true) : $ts['phong_tuong_thich'];
+                if (is_array($decoded)) {
+                    $dsPhongTuongThich = array_map('strtoupper', array_map('trim', $decoded));
+                }
+            }
+            $khopPhongTuongThich = in_array(strtoupper((string)$roomDi['ma_phong']), $dsPhongTuongThich, true);
+
+            if ($phongHienTaiId > 0) {
+                if ($phongHienTaiId !== $phongDiId && $phongPhuHopId !== $phongDiId && !$khopPhongTuongThich) {
+                    $tenPhongDangO = $ts['ma_phong_hien_tai'] ?: ('ID #' . $phongHienTaiId);
+                    throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] hiện đang ở Phòng {$tenPhongDangO}, không phải phòng học nguồn đã chọn (Phòng {$roomDi['ma_phong']}).");
+                }
+            } elseif ($phongPhuHopId > 0) {
+                if ($phongPhuHopId !== $phongDiId && !$khopPhongTuongThich) {
+                    $tenPhongKe = $ts['ma_phong_phu_hop'] ?: ('ID #' . $phongPhuHopId);
+                    throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] thuộc kệ Phòng {$tenPhongKe}, không phải phòng học nguồn đã chọn (Phòng {$roomDi['ma_phong']}).");
+                }
             }
 
-            // Kiểm tra trạng thái và tình trạng
-            if ($ts['trang_thai'] !== 'SAN_SANG' || $ts['tinh_trang'] !== 'TOT') {
-                $tt = $ts['trang_thai'] === 'DANG_MUON' ? 'Đang mượn' : ($ts['trang_thai'] === 'BAO_TRI' ? 'Bảo trì/Sự cố' : $ts['trang_thai']);
-                throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] không ở tình trạng tốt hoặc không sẵn sàng (Hiện tại: $tt).");
-            }
-
-            // Kiểm tra xem có đang nằm trong phiếu mượn chưa trả không
-            $stmtMuon = $db->prepare("SELECT id FROM chi_tiet_muon WHERE tai_san_id = ? AND thoi_gian_tra IS NULL LIMIT 1");
-            $stmtMuon->bind_param('i', $aid);
-            $stmtMuon->execute();
-            $dangMuonRow = $stmtMuon->get_result()->fetch_assoc();
-            $stmtMuon->close();
-
-            if ($dangMuonRow) {
-                throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] hiện đang có phiếu mượn chưa được hoàn trả.");
+            // Kiểm tra trạng thái và tình trạng (cho phép cả thiết bị SAN_SANG lẫn thiết bị DANG_MUON tại phòng nguồn)
+            if (!in_array($ts['trang_thai'], ['SAN_SANG', 'DANG_MUON'], true) || $ts['tinh_trang'] !== 'TOT') {
+                $tt = $ts['trang_thai'] === 'BAO_TRI' ? 'Bảo trì/Sự cố' : $ts['trang_thai'];
+                throw new RuntimeException("Thiết bị [{$ts['ma_tai_san']}] không ở tình trạng tốt hoặc đang bảo trì (Hiện tại: $tt).");
             }
 
             // Kiểm tra tính tương thích với phòng học đích
@@ -531,11 +549,17 @@ function dieu_chuyen_tao(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = 
         $dieuChuyenId = (int)$db->insert_id;
         $stmtInsertDc->close();
 
-        // Ghi chi tiết điều chuyển và cập nhật vị trí thiết bị
+        // Ghi chi tiết điều chuyển và cập nhật vị trí thiết bị sang phòng đích
         $sqlInsertCt = "INSERT INTO chi_tiet_dieu_chuyen (dieu_chuyen_id, tai_san_id, ghi_chu) VALUES (?, ?, ?)";
         $stmtInsertCt = $db->prepare($sqlInsertCt);
 
-        $sqlUpdateTs = "UPDATE tai_san SET phong_hoc_hien_tai_id = ? WHERE id = ?";
+        $sqlUpdateTs = "UPDATE tai_san 
+                        SET phong_hoc_hien_tai_id = ?,
+                            phong_hoc_phu_hop_id = CASE 
+                                WHEN phong_hoc_phu_hop_id = ? OR phong_hoc_phu_hop_id IS NULL THEN ? 
+                                ELSE phong_hoc_phu_hop_id 
+                            END
+                        WHERE id = ?";
         $stmtUpdateTs = $db->prepare($sqlUpdateTs);
 
         foreach ($assetIds as $aid) {
@@ -543,7 +567,7 @@ function dieu_chuyen_tao(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = 
             $stmtInsertCt->bind_param('iis', $dieuChuyenId, $aid, $ghiChuCt);
             $stmtInsertCt->execute();
 
-            $stmtUpdateTs->bind_param('ii', $phongDenId, $aid);
+            $stmtUpdateTs->bind_param('iiii', $phongDenId, $phongDiId, $phongDenId, $aid);
             $stmtUpdateTs->execute();
         }
 

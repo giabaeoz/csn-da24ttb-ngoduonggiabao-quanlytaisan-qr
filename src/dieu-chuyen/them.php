@@ -16,7 +16,7 @@ yeu_cau_quyen('tao_dieu_chuyen');
 $nguoiDung = nguoi_dung_hien_tai();
 $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 
-// Kiểm tra đợt kiểm kê đang diễn ra tại bàn trực
+// Kiểm tra đợt kiểm kê đang diễn ra tại phòng trực
 $dangKiemKe = ($phongTrucId > 0 && dieu_chuyen_kiem_tra_khoa_kiem_ke($phongTrucId));
 
 $danhSachPhongHoc = phong_hoc_danh_sach_tat_ca();
@@ -38,7 +38,7 @@ if (la_post()) {
     kiem_tra_csrf();
 
     if ($dangKiemKe) {
-        dat_thong_bao('nguy_hiem', 'Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.');
+        dat_thong_bao('nguy_hiem', 'Phòng trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.');
         chuyen_huong('dieu-chuyen/index.php');
     }
 

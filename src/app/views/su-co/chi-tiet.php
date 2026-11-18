@@ -184,11 +184,11 @@ $coQuyenXuLy = co_quyen('xu_ly_su_co');
                     <div class="col-6 text-muted">Hãng / Model:</div>
                     <div class="col-6 fw-semibold text-end"><?= e(trim(($suCo['hang_san_xuat'] ?? '') . ' ' . ($suCo['model'] ?? ''))) ?: '-' ?></div>
 
-                    <div class="col-6 text-muted">Bàn trực quản lý:</div>
+                    <div class="col-6 text-muted">Phòng trực quản lý:</div>
                     <div class="col-6 fw-semibold text-end"><?= e($suCo['ten_phong_truc'] ?? 'Kho trực') ?></div>
 
                     <div class="col-6 text-muted">Vị trí phòng hiện tại:</div>
-                    <div class="col-6 fw-semibold text-end"><?= e($suCo['ma_phong_hien_tai'] ?? 'Kho trực bàn trực') ?></div>
+                    <div class="col-6 fw-semibold text-end"><?= e($suCo['ma_phong_hien_tai'] ?? 'Kho trực phòng trực') ?></div>
 
                     <div class="col-6 text-muted">Tình trạng máy:</div>
                     <div class="col-6 text-end">

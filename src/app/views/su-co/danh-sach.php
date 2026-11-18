@@ -44,41 +44,61 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('wrench', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-xanh">
+            <div class="bieu-tuong-chinh">
+                <?= icon('wrench') ?>
+            </div>
             <div>
-                <div class="nhan-so-lieu">Tổng sự cố</div>
                 <div class="so-lieu"><?= sprintf('%02d', (int)$thongKe['tong_so']) ?></div>
+                <div class="nhan-so-lieu">Tổng sự cố</div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('wrench') ?>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('alert-circle', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-do">
+            <div class="bieu-tuong-chinh">
+                <?= icon('alert-circle') ?>
+            </div>
             <div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)$thongKe['so_chua_xu_ly']) ?></div>
                 <div class="nhan-so-lieu">Chưa xử lý</div>
-                <div class="so-lieu chu-nguy-hiem"><?= sprintf('%02d', (int)$thongKe['so_chua_xu_ly']) ?></div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('alert-circle') ?>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('alert-triangle', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-cam">
+            <div class="bieu-tuong-chinh">
+                <?= icon('alert-triangle') ?>
+            </div>
             <div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)$thongKe['so_dang_xu_ly']) ?></div>
                 <div class="nhan-so-lieu">Đang xử lý / Bảo trì</div>
-                <div class="so-lieu chu-canh-bao"><?= sprintf('%02d', (int)$thongKe['so_dang_xu_ly']) ?></div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('alert-triangle') ?>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-la">
+            <div class="bieu-tuong-chinh">
+                <?= icon('check-circle-2') ?>
+            </div>
             <div>
+                <div class="so-lieu"><?= sprintf('%02d', (int)$thongKe['so_da_xu_ly']) ?></div>
                 <div class="nhan-so-lieu">Đã xử lý xong</div>
-                <div class="so-lieu chu-thanh-cong"><?= sprintf('%02d', (int)$thongKe['so_da_xu_ly']) ?></div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('check-circle-2') ?>
             </div>
         </div>
     </div>
@@ -117,9 +137,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
         <div class="col-12 col-sm-6 col-md-2">
             <label class="nhan-truong">Phòng trực quản lý</label>
-            <select name="phong_truc_id" class="o-nhap" <?= ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) ? 'disabled' : '' ?>>
-                <?php if ($nguoiDung['vai_tro'] !== VAI_TRO_NHAN_VIEN): ?>
-                    <option value="">Tất cả bàn trực</option>
+            <select name="phong_truc_id" class="o-nhap" <?= ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) ? 'disabled' : '' ?>>
+                <?php if ($nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI): ?>
+                    <option value="">Tất cả phòng trực</option>
                 <?php endif; ?>
                 <?php foreach ($danhSachPhongTruc as $pt): ?>
                     <option value="<?= (int)$pt['id'] ?>" <?= ((int)$boLoc['phong_truc_id'] === (int)$pt['id']) ? 'selected' : '' ?>>
@@ -156,7 +176,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <th class="cot-50">#</th>
                         <th class="cot-140">Mã sự cố</th>
                         <th>Thiết bị gặp sự cố</th>
-                        <th class="cot-150">Bàn trực / Vị trí</th>
+                        <th class="cot-150">Phòng trực / Vị trí</th>
                         <th class="cot-130">Phân loại</th>
                         <th class="cot-140">Nguồn phát sinh</th>
                         <th class="cot-130">Trạng thái</th>
@@ -174,25 +194,25 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     <?php else: ?>
                         <?php foreach ($danhSachSuCo as $idx => $sc): ?>
                             <tr>
-                                <td class="text-muted"><?= ($trangHienTai - 1) * $soMoiTrang + $idx + 1 ?></td>
-                                <td class="font-monospace fw-semibold text-primary">
+                                <td class="text-muted text-nowrap"><?= ($trangHienTai - 1) * $soMoiTrang + $idx + 1 ?></td>
+                                <td class="font-monospace fw-semibold text-primary text-nowrap">
                                     <a href="<?= url('su-co/chi-tiet.php?id=' . $sc['id']) ?>" class="text-primary text-decoration-none">
                                         <?= e($sc['ma_su_co']) ?>
                                     </a>
                                 </td>
                                 <td>
-                                    <div class="fw-medium text-dark"><?= e($sc['ten_tai_san']) ?></div>
-                                    <div class="text-muted small font-monospace">
+                                    <div class="fw-medium text-dark text-nowrap"><?= e($sc['ten_tai_san']) ?></div>
+                                    <div class="text-muted small font-monospace text-nowrap">
                                         <?= e($sc['ma_tai_san']) ?> &bull; <?= e($sc['ten_loai_tai_san'] ?? 'Thiết bị') ?>
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="fw-semibold small"><?= e($sc['ten_phong_truc'] ?? 'Kho trực') ?></div>
+                                <td class="text-nowrap">
+                                    <div class="fw-semibold small text-nowrap"><?= e($sc['ten_phong_truc'] ?? 'Kho trực') ?></div>
                                     <?php if ($sc['ma_phong_hien_tai']): ?>
-                                        <div class="text-muted small">Phòng <?= e($sc['ma_phong_hien_tai']) ?></div>
+                                        <div class="text-muted small text-nowrap">Phòng <?= e($sc['ma_phong_hien_tai']) ?></div>
                                     <?php endif; ?>
                                 </td>
-                                <td>
+                                <td class="text-nowrap">
                                     <?php if ($sc['loai_su_co'] === 'HU_HONG'): ?>
                                         <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Hư hỏng</span>
                                     <?php elseif ($sc['loai_su_co'] === 'MAT'): ?>
@@ -201,22 +221,22 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                         <span class="huy-hieu-tt huy-hieu-tt-canh-bao">Sai vị trí</span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
+                                <td class="text-nowrap">
                                     <?php if ($sc['ma_phieu_muon']): ?>
-                                        <span class="badge bg-light text-primary border">
+                                        <span class="badge bg-light text-primary border text-nowrap">
                                             <?= e($sc['ma_phieu_muon']) ?>
                                         </span>
                                     <?php elseif ($sc['ma_dot_kiem_ke']): ?>
-                                        <span class="badge bg-light text-warning-emphasis border">
+                                        <span class="badge bg-light text-warning-emphasis border text-nowrap">
                                             <?= e($sc['ma_dot_kiem_ke']) ?>
                                         </span>
                                     <?php else: ?>
-                                        <span class="badge bg-light text-secondary border">
+                                        <span class="badge bg-light text-secondary border text-nowrap">
                                             Báo cáo trực tiếp
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
+                                <td class="text-nowrap">
                                     <?php if ($sc['trang_thai'] === 'CHUA_XU_LY'): ?>
                                         <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">Chưa xử lý</span>
                                     <?php elseif ($sc['trang_thai'] === 'DANG_XU_LY'): ?>
@@ -225,13 +245,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                         <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">Đã xử lý</span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
-                                    <div class="small fw-semibold"><?= dinh_dang_ngay_gio($sc['thoi_gian_phat_hien']) ?></div>
+                                <td class="text-nowrap">
+                                    <div class="small fw-semibold text-nowrap"><?= dinh_dang_ngay_gio($sc['thoi_gian_phat_hien']) ?></div>
                                     <div class="text-muted small text-truncate cat-chu-140">
                                         bởi <?= e($sc['ho_ten_nguoi_lap']) ?>
                                     </div>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end text-nowrap">
                                     <a href="<?= url('su-co/chi-tiet.php?id=' . $sc['id']) ?>" class="btn-vien-thuoc">
                                         <span>Chi tiết</span>
                                     </a>

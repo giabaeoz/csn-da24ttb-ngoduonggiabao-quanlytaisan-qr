@@ -5,8 +5,28 @@
 
 ---
 
-## 1. YÊU CẦU MÔI TRƯỜNG
+## 1. PHƯƠNG ÁN 1: TRIỂN KHAI NHANH BẰNG DOCKER (KHUYÊN DÙNG)
 
+Chỉ cần máy tính đã cài đặt **Docker Desktop**, mở PowerShell tại thư mục dự án và chạy:
+
+```powershell
+docker compose up -d
+```
+
+- **Hệ thống Web:** [http://localhost:8088](http://localhost:8088)
+- **phpMyAdmin:** [http://localhost:8081](http://localhost:8081)
+- **Tài khoản đăng nhập có sẵn:**
+  - `admin` / `admin123` (Quản trị viên)
+  - `quanly01` / `quanly123` (Cán bộ Quản lý)
+  - `nhanvien01` / `nhanvien123` (Nhân viên trực phòng D6)
+
+*(Toàn bộ CSDL 13 bảng, dữ liệu mẫu thực tế và 3 tài khoản đã được nạp tự động hoàn toàn).*
+
+---
+
+## 2. PHƯƠNG ÁN 2: CÀI ĐẶT THỦ CÔNG QUA XAMPP (TRUYỀN THỐNG)
+
+### Yêu cầu môi trường
 - **Hệ điều hành:** Windows 10/11, Linux hoặc macOS.
 - **PHP:** Phiên bản **8.2 trở lên** (đã bật extension `mysqli`, `mbstring`, `json`, `curl`).
 - **MySQL / MariaDB:** Phiên bản **MySQL 8.0+** (hỗ trợ ràng buộc CHECK, Generated Columns STORED, InnoDB row-level locking `FOR UPDATE`).
@@ -14,9 +34,9 @@
 
 ---
 
-## 2. QUY TRÌNH CÀI ĐẶT TỪ ĐẦU (3 BƯỚC)
+### Quy trình cài đặt thủ công (3 Bước)
 
-### Bước 1: Khởi tạo Cơ sở dữ liệu và Dữ liệu mẫu
+#### Bước 1: Khởi tạo Cơ sở dữ liệu và Dữ liệu mẫu
 
 Mở Command Prompt hoặc PowerShell tại thư mục dự án và thực hiện import file schema và dữ liệu mẫu vào MySQL:
 

@@ -44,7 +44,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 </div>
 
 <div class="the-noi-dung p-3 mb-4">
-    <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="GET" class="row g-2 align-items-center">
+    <form action="<?= url('danh-muc/phong-hoc.php') ?>" method="GET" class="row g-3 align-items-center">
         <div class="col-12 col-md-5">
             <div class="o-tim-kiem">
                 <?= icon('search', 'bieu-tuong-sm') ?>
@@ -146,7 +146,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex justify-content-end gap-1">
+                                    <div class="d-flex justify-content-end gap-2">
                                         <?php
                                         $chiTietPh = [
                                             ['nhan' => 'Mã phòng học', 'gia_tri' => $ph['ma_phong'] ?? ''],

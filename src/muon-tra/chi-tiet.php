@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/core/khoi-dong.php';
 require_once dirname(__DIR__) . '/app/services/muon-tra-service.php';
+require_once dirname(__DIR__) . '/app/services/tai-san-service.php';
 
 yeu_cau_quyen('xem_lich_su_muon_tra');
 

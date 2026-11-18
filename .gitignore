@@ -2,6 +2,8 @@
 /src/config.local.php
 /src/app/config/config.local.php
 *.log
+/src/assets/uploads/tai-san/*
+!/src/assets/uploads/tai-san/.gitkeep
 .DS_Store
 Thumbs.db
 .idea/

@@ -47,7 +47,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 
 <div class="card the-noi-dung mb-4">
     <div class="card-body p-3">
-        <form action="<?= url('muon-tra/index.php') ?>" method="GET" class="row g-2 align-items-end">
+        <form action="<?= url('muon-tra/index.php') ?>" method="GET" class="row g-3 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Tìm kiếm</label>
                 <div class="o-tim-kiem">
@@ -68,9 +68,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             </div>
 
             <div class="col-6 col-md-2">
-                <label class="form-label">Bàn trực</label>
+                <label class="form-label">Phòng trực</label>
                 <select name="phong_truc_id" class="form-select">
-                    <option value="">Tất cả bàn trực</option>
+                    <option value="">Tất cả phòng trực</option>
                     <?php foreach ($danhSachPhongTruc as $pt): ?>
                     <option value="<?= (int)$pt['id'] ?>" <?= ((int)$phongTrucId === (int)$pt['id']) ? 'selected' : '' ?>>
                         <?= e($pt['ten_phong_truc']) ?>
@@ -110,7 +110,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     <th class="ps-3 cot-140">Mã phiếu</th>
                     <th>Người mượn</th>
                     <th>Phòng học</th>
-                    <th>Bàn trực</th>
+                    <th>Phòng trực</th>
                     <th>Thời gian mượn</th>
                     <th>Hạn trả dự kiến</th>
                     <th class="text-center">Thiết bị</th>
@@ -128,55 +128,55 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <?php else: ?>
                 <?php foreach ($danhSachPhieu as $pm): ?>
                 <tr>
-                    <td class="ps-3">
+                    <td class="ps-3 text-nowrap">
                         <a href="<?= url('muon-tra/chi-tiet.php?id=' . (int)$pm['id']) ?>" class="font-monospace fw-semibold text-primary">
                             <?= e($pm['ma_phieu']) ?>
                         </a>
                     </td>
                     <td>
-                        <div class="fw-semibold"><?= e($pm['ten_nguoi_muon']) ?></div>
-                        <div class="mo-ta-phu">MSSV: <?= e($pm['ma_so_truong']) ?></div>
+                        <div class="fw-semibold text-nowrap"><?= e($pm['ten_nguoi_muon']) ?></div>
+                        <div class="mo-ta-phu text-nowrap">MSSV: <?= e($pm['ma_so_truong']) ?></div>
                     </td>
-                    <td>
+                    <td class="text-nowrap">
                         <span class="huy-hieu huy-hieu-trung-tinh">
                             <?= e($pm['ma_phong']) ?>
                         </span>
                         <div class="mo-ta-phu text-truncate cat-chu-140"><?= e($pm['ten_phong']) ?></div>
                     </td>
-                    <td>
-                        <span class="mo-ta-phu">
+                    <td class="text-nowrap">
+                        <span class="mo-ta-phu text-nowrap">
                             <?= e($pm['ma_phong_truc']) ?>
                         </span>
                     </td>
-                    <td><?= dinh_dang_ngay_gio($pm['thoi_gian_muon']) ?></td>
-                    <td>
+                    <td class="text-nowrap"><?= dinh_dang_ngay_gio($pm['thoi_gian_muon']) ?></td>
+                    <td class="text-nowrap">
                         <?php
                             $quaHan = ($pm['trang_thai'] === 'DANG_MUON' && strtotime($pm['han_tra']) < time());
                         ?>
-                        <span class="<?= $quaHan ? 'text-danger fw-semibold' : '' ?>">
+                        <span class="<?= $quaHan ? 'text-danger fw-semibold' : '' ?> text-nowrap">
                             <?= dinh_dang_ngay_gio($pm['han_tra']) ?>
                             <?php if ($quaHan): ?>
                                 <span class="huy-hieu huy-hieu-nguy-hiem ms-1">Quá hạn</span>
                             <?php endif; ?>
                         </span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center text-nowrap">
                         <span class="huy-hieu huy-hieu-trung-tinh">
                             <?= (int)$pm['tong_so_thiet_bi'] ?> thiết bị
                         </span>
                         <?php if ((int)$pm['so_chua_tra'] > 0): ?>
-                            <div class="small text-danger fw-semibold mt-1">Còn giữ: <?= (int)$pm['so_chua_tra'] ?></div>
+                            <div class="small text-danger fw-semibold mt-1 text-nowrap">Còn giữ: <?= (int)$pm['so_chua_tra'] ?></div>
                         <?php endif; ?>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center text-nowrap">
                         <?php if ($pm['trang_thai'] === 'DA_TRA'): ?>
                             <span class="huy-hieu huy-hieu-thanh-cong">Đã trả đủ</span>
                         <?php else: ?>
                             <span class="huy-hieu huy-hieu-canh-bao">Đang mượn</span>
                         <?php endif; ?>
                     </td>
-                    <td class="text-end pe-3">
-                        <div class="d-inline-flex gap-1 align-items-center">
+                    <td class="text-end pe-3 text-nowrap">
+                        <div class="d-inline-flex gap-2 align-items-center text-nowrap">
                             <?php if ($pm['trang_thai'] === 'DANG_MUON' && co_quyen('nghiep_vu_muon_tra')): ?>
                                 <a href="<?= url('muon-tra/tra.php?ma_phieu=' . urlencode($pm['ma_phieu_muon'])) ?>" class="btn-vien-thuoc">
                                     <span>Nhận trả</span>

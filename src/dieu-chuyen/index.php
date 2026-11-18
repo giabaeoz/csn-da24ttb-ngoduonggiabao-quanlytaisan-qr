@@ -23,8 +23,8 @@ $boLoc = [
     'den_ngay'         => trim((string)($_GET['den_ngay'] ?? '')),
 ];
 
-// Nếu là nhân viên thông thường, giới hạn trong phạm vi bàn trực
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) {
+// Nếu không phải QUAN_TRI, giới hạn trong phạm vi phòng trực của mình
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) {
     $boLoc['phong_truc_id'] = $phongTrucId;
 }
 

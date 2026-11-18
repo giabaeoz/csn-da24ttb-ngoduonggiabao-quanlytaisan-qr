@@ -67,7 +67,7 @@ try {
         </div>
     <?php endif; ?>
 
-    <form action="<?= $laThemMoi ? url('tai-san/them.php') : url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" method="POST">
+    <form action="<?= $laThemMoi ? url('tai-san/them.php') : url('tai-san/sua.php?id=' . (int)$taiSan['id']) ?>" method="POST" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div class="the-noi-dung p-0 mb-4">
@@ -106,17 +106,28 @@ try {
                             </div>
 
                             <div class="col-12 col-sm-6">
-                                <label for="loai_tai_san_id" class="nhan-truong">
-                                    Nhóm tài sản <span class="text-danger">*</span>
+                                <?php
+                                $tenLoaiHienTai = '';
+                                foreach ($danhSachLoai as $loaiItem) {
+                                    if ((int)($taiSan['loai_tai_san_id'] ?? 0) === (int)$loaiItem['id']) {
+                                        $tenLoaiHienTai = (string)$loaiItem['ten_loai'];
+                                        break;
+                                    }
+                                }
+                                ?>
+                                <label for="loai_tai_san_nhap" class="nhan-truong">
+                                    Nhóm / Loại tài sản <span class="text-danger">*</span>
                                 </label>
-                                <select class="o-nhap" id="loai_tai_san_id" name="loai_tai_san_id" required>
-                                    <option value="">-- Chọn nhóm tài sản --</option>
+                                <input type="text" class="o-nhap" id="loai_tai_san_nhap" name="loai_tai_san_nhap"
+                                    list="dsGoiYLoaiTaiSan"
+                                    value="<?= e($tenLoaiHienTai) ?>"
+                                    placeholder="Nhập hoặc chọn loại tài sản..."
+                                    autocomplete="off" required>
+                                <datalist id="dsGoiYLoaiTaiSan">
                                     <?php foreach ($danhSachLoai as $loai): ?>
-                                        <option value="<?= (int)$loai['id'] ?>" <?= ((int)($taiSan['loai_tai_san_id'] ?? 0) === (int)$loai['id']) ? 'selected' : '' ?>>
-                                            <?= e($loai['ten_loai']) ?> (<?= e($loai['ma_loai']) ?>)
-                                        </option>
+                                        <option value="<?= e($loai['ten_loai']) ?>"><?= e($loai['ma_loai']) ?></option>
                                     <?php endforeach; ?>
-                                </select>
+                                </datalist>
                             </div>
                         </div>
                     </div>
@@ -141,14 +152,25 @@ try {
                         <label for="phong_truc_id" class="nhan-truong">
                             Phòng trực quản lý <span class="text-danger">*</span>
                         </label>
-                        <select class="o-nhap" id="phong_truc_id" name="phong_truc_id" required>
-                            <option value="">-- Chọn bàn trực --</option>
+                        <?php
+                        $nguoiDungForm = nguoi_dung_hien_tai();
+                        $khoaPhongTruc = ($nguoiDungForm && $nguoiDungForm['vai_tro'] !== VAI_TRO_QUAN_TRI && !empty($nguoiDungForm['phong_truc_id']));
+                        ?>
+                        <select class="o-nhap" id="phong_truc_id" name="phong_truc_id" required <?= $khoaPhongTruc ? 'disabled' : '' ?>>
+                            <?php if (!$khoaPhongTruc): ?>
+                                <option value="">-- Chọn phòng trực --</option>
+                            <?php endif; ?>
                             <?php foreach ($danhSachPhongTruc as $pt): ?>
-                                <option value="<?= (int)$pt['id'] ?>" <?= ((int)($taiSan['phong_truc_id'] ?? 0) === (int)$pt['id']) ? 'selected' : '' ?>>
-                                    <?= e($pt['ten_phong_truc']) ?> (<?= e($pt['ma_phong_truc']) ?>)
-                                </option>
+                                <?php if (!$khoaPhongTruc || (int)$pt['id'] === (int)$nguoiDungForm['phong_truc_id']): ?>
+                                    <option value="<?= (int)$pt['id'] ?>" <?= ((int)($taiSan['phong_truc_id'] ?? 0) === (int)$pt['id']) ? 'selected' : '' ?>>
+                                        <?= e($pt['ten_phong_truc']) ?> (<?= e($pt['ma_phong_truc']) ?>)
+                                    </option>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </select>
+                        <?php if ($khoaPhongTruc): ?>
+                            <input type="hidden" name="phong_truc_id" value="<?= (int)$nguoiDungForm['phong_truc_id'] ?>">
+                        <?php endif; ?>
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -157,6 +179,52 @@ try {
                         </label>
                         <input type="date" class="o-nhap" id="ngay_dua_vao_su_dung" name="ngay_dua_vao_su_dung"
                             value="<?= e($taiSan['ngay_dua_vao_su_dung'] ?? date('Y-m-d')) ?>">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <?php $urlAnhHienTai = !empty($taiSan['hinh_anh']) ? tai_san_lay_url_anh($taiSan['hinh_anh']) : null; ?>
+        <div class="the-noi-dung p-0 mb-4">
+            <div class="the-noi-dung-dau d-flex align-items-center gap-2">
+                <div class="hop-icon-dau">
+                    <?= icon('image', 'bieu-tuong-sm') ?>
+                </div>
+                <h3 class="tieu-de-khoi mb-0">Hình ảnh nhận diện thiết bị</h3>
+            </div>
+            <div class="the-noi-dung-than p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-12 col-sm-auto">
+                        <div id="khung_preview_anh" class="border rounded bg-light d-flex align-items-center justify-content-center overflow-hidden position-relative" style="width: 140px; height: 140px; background-color: #f8fafc;">
+                            <?php if ($urlAnhHienTai): ?>
+                                <img id="img_preview" src="<?= e($urlAnhHienTai) ?>" alt="Ảnh thiết bị" class="w-100 h-100 object-fit-cover">
+                                <div id="placeholder_anh" class="text-center text-muted p-2 d-none">
+                                    <div class="fs-2 text-secondary mb-1"><?= icon('camera', 'bieu-tuong-lg') ?></div>
+                                    <div class="small">Chưa có ảnh</div>
+                                </div>
+                            <?php else: ?>
+                                <div id="placeholder_anh" class="text-center text-muted p-2">
+                                    <div class="fs-2 text-secondary mb-1"><?= icon('camera', 'bieu-tuong-lg') ?></div>
+                                    <div class="small">Chưa có ảnh</div>
+                                </div>
+                                <img id="img_preview" src="" alt="Xem trước ảnh" class="w-100 h-100 object-fit-cover d-none">
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm">
+                        <label for="hinh_anh" class="nhan-truong mb-1">Tải ảnh chụp / hình minh họa</label>
+                        <input type="file" class="form-control mb-2" id="hinh_anh" name="hinh_anh" accept="image/png, image/jpeg, image/webp, image/gif" onchange="xemTruocAnh(this)">
+                        <div class="text-muted chu-nho-11">
+                            Hỗ trợ định dạng JPG, PNG, WEBP. Dung lượng tối đa 5MB. Ảnh giúp nhân viên dễ dàng đối chiếu hình thức thiết bị thực tế khi bàn giao hoặc thu hồi.
+                        </div>
+                        <?php if (!$laThemMoi && $urlAnhHienTai): ?>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="xoa_hinh_anh" id="xoa_hinh_anh" value="1" onchange="doiTrangThaiXoaAnh(this)">
+                                <label class="form-check-label text-danger small fw-semibold" for="xoa_hinh_anh">
+                                    Xóa ảnh hiện tại (chuyển về không có ảnh)
+                                </label>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -210,17 +278,28 @@ try {
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <label for="phong_hoc_phu_hop_id" class="nhan-truong">
+                        <?php
+                        $maPhongPhuHopHienTai = '';
+                        foreach ($danhSachPhongHoc as $phItem) {
+                            if ((int)($taiSan['phong_hoc_phu_hop_id'] ?? 0) === (int)$phItem['id']) {
+                                $maPhongPhuHopHienTai = (string)$phItem['ma_phong'];
+                                break;
+                            }
+                        }
+                        ?>
+                        <label for="phong_hoc_phu_hop_nhap" class="nhan-truong">
                             Nhãn phòng học gợi ý trên kệ
                         </label>
-                        <select class="o-nhap bg-white" id="phong_hoc_phu_hop_id" name="phong_hoc_phu_hop_id">
-                            <option value="">-- Không gán nhãn cụ thể (Linh hoạt) --</option>
+                        <input type="text" class="o-nhap bg-white" id="phong_hoc_phu_hop_nhap" name="phong_hoc_phu_hop_nhap"
+                            list="dsGoiYPhongHocKe"
+                            value="<?= e($maPhongPhuHopHienTai) ?>"
+                            placeholder="Nhập hoặc chọn phòng (để trống nếu linh hoạt)..."
+                            autocomplete="off">
+                        <datalist id="dsGoiYPhongHocKe">
                             <?php foreach ($danhSachPhongHoc as $ph): ?>
-                                <option value="<?= (int)$ph['id'] ?>" <?= ((int)($taiSan['phong_hoc_phu_hop_id'] ?? 0) === (int)$ph['id']) ? 'selected' : '' ?>>
-                                    <?= e($ph['ma_phong']) ?> - <?= e($ph['ten_phong']) ?>
-                                </option>
+                                <option value="<?= e($ph['ma_phong']) ?>"><?= e($ph['ten_phong']) ?></option>
                             <?php endforeach; ?>
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -369,6 +448,49 @@ try {
         } else {
             textQr.textContent = '---';
             boxQr.innerHTML = '<span class="text-muted small chu-nho-10">Chưa có mã</span>';
+        }
+    }
+
+    // Xem trước ảnh khi người dùng chọn file
+    function xemTruocAnh(input) {
+        const img = document.getElementById('img_preview');
+        const placeholder = document.getElementById('placeholder_anh');
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh khác.');
+                input.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (img) {
+                    img.src = e.target.result;
+                    img.classList.remove('d-none');
+                    img.classList.remove('opacity-50');
+                }
+                if (placeholder) {
+                    placeholder.classList.add('d-none');
+                }
+                const cbXoa = document.getElementById('xoa_hinh_anh');
+                if (cbXoa) {
+                    cbXoa.checked = false;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function doiTrangThaiXoaAnh(cb) {
+        const img = document.getElementById('img_preview');
+        const placeholder = document.getElementById('placeholder_anh');
+        const fileInput = document.getElementById('hinh_anh');
+        if (cb.checked) {
+            if (img) img.classList.add('opacity-50');
+            if (fileInput) fileInput.disabled = true;
+        } else {
+            if (img) img.classList.remove('opacity-50');
+            if (fileInput) fileInput.disabled = false;
         }
     }
 

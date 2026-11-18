@@ -29,17 +29,16 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
 });
 ?>
 
-<div class="container-fluid py-3">
 <div class="thanh-cong-cu-trang no-print">
     <div>
         <h1 class="tieu-de-trang mb-1">Biên bản kiểm kê: <?= e($dot['ma_dot_kiem_ke']) ?></h1>
         <div class="mo-ta-phu">
             <?php if ($laHoanTat): ?>
-                <span class="huy-hieu huy-hieu-thanh-cong">Đã hoàn tất</span>
+                <span class="huy-hieu huy-hieu-thanh-cong"><?= icon('check-circle-2', 'bieu-tuong-sm') ?> Đã hoàn tất</span>
             <?php elseif ($laDaHuy): ?>
-                <span class="huy-hieu huy-hieu-nguy-hiem">Đã hủy</span>
+                <span class="huy-hieu huy-hieu-nguy-hiem"><?= icon('alert-circle', 'bieu-tuong-sm') ?> Đã hủy</span>
             <?php else: ?>
-                <span class="huy-hieu huy-hieu-canh-bao">Đang kiểm kê</span>
+                <span class="huy-hieu huy-hieu-canh-bao"><?= icon('clock', 'bieu-tuong-sm') ?> Đang kiểm kê</span>
             <?php endif; ?>
         </div>
     </div>
@@ -61,7 +60,7 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
     </div>
 </div>
 
-    <div class="card border-0 shadow-sm p-4 bg-white" id="khungBienBanIn">
+    <div class="the-noi-dung p-4 mb-4 bg-white" id="khungBienBanIn">
         <div class="row align-items-start pb-3 border-bottom mb-4">
             <div class="col-6 text-center">
                 <div class="text-uppercase fw-bold text-secondary small">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ</div>
@@ -89,7 +88,7 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
                     <strong>Tên đợt kiểm kê:</strong> <?= e($dot['ten_dot_kiem_ke']) ?>
                 </div>
                 <div class="col-md-6">
-                    <strong>Bàn trực phụ trách:</strong> <?= e($dot['ten_phong_truc']) ?>
+                    <strong>Phòng trực phụ trách:</strong> <?= e($dot['ten_phong_truc']) ?>
                 </div>
                 <div class="col-md-6">
                     <strong>Cán bộ lập đợt:</strong> <?= e($dot['ho_ten_nguoi_lap']) ?> (<?= e($dot['ma_nhan_vien_lap']) ?>)
@@ -242,36 +241,36 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
                 <tbody>
                     <?php foreach ($danhSachChiTiet as $idx => $ct): ?>
                         <tr>
-                            <td class="text-center text-muted"><?= $idx + 1 ?></td>
-                            <td class="font-monospace fw-bold"><?= e($ct['ma_tai_san']) ?></td>
+                            <td class="text-center text-muted text-nowrap"><?= $idx + 1 ?></td>
+                            <td class="font-monospace fw-bold text-primary text-nowrap"><?= e($ct['ma_tai_san']) ?></td>
                             <td><?= e($ct['ten_tai_san']) ?></td>
-                            <td><?= e($ct['ma_phong_so_sach'] ?? 'Kho trực') ?></td>
-                            <td>
+                            <td class="text-nowrap"><?= e($ct['ma_phong_so_sach'] ?? 'Kho trực') ?></td>
+                            <td class="text-nowrap">
                                 <?php if ($ct['trang_thai_so_sach'] === 'DANG_MUON'): ?>
-                                    <span class="text-info">Đang mượn</span>
+                                    <span class="text-primary fw-semibold">Đang mượn</span>
                                 <?php elseif ($ct['ket_qua'] === 'CHUA_TIM_THAY'): ?>
-                                    <span class="text-danger">Không thấy</span>
+                                    <span class="text-danger fw-semibold">Không thấy</span>
                                 <?php else: ?>
                                     <?= e($ct['ma_phong_thuc_te'] ?? 'Kho trực') ?>
                                 <?php endif; ?>
                             </td>
-                            <td><?= e($ct['tinh_trang_so_sach']) ?></td>
-                            <td>
+                            <td class="text-nowrap"><?= e(nhan_tinh_trang_tai_san($ct['tinh_trang_so_sach'])) ?></td>
+                            <td class="text-nowrap">
                                 <?php if ($ct['trang_thai_so_sach'] === 'DANG_MUON'): ?>
-                                    <span class="badge bg-info text-dark">Đang mượn</span>
+                                    <span class="huy-hieu huy-hieu-chinh">Đang mượn</span>
                                 <?php elseif ($ct['ket_qua'] === 'TIM_THAY'): ?>
                                     <?php if ($ct['tinh_trang_thuc_te'] === 'TOT'): ?>
-                                        <span class="badge bg-success">Có mặt (Tốt)</span>
+                                        <span class="huy-hieu huy-hieu-thanh-cong">Có mặt (Tốt)</span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger">Có mặt (Hỏng)</span>
+                                        <span class="huy-hieu huy-hieu-nguy-hiem">Có mặt (Hỏng)</span>
                                     <?php endif; ?>
                                 <?php elseif ($ct['ket_qua'] === 'CHUA_TIM_THAY'): ?>
-                                    <span class="badge bg-danger">Chưa tìm thấy</span>
+                                    <span class="huy-hieu huy-hieu-nguy-hiem">Chưa tìm thấy</span>
                                 <?php else: ?>
-                                    <span class="badge bg-secondary">Chưa kiểm</span>
+                                    <span class="huy-hieu huy-hieu-xam">Chưa kiểm</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-muted"><?= $ct['thoi_gian_kiem_tra'] ? dinh_dang_ngay_gio($ct['thoi_gian_kiem_tra']) : '--' ?></td>
+                            <td class="text-muted text-nowrap"><?= $ct['thoi_gian_kiem_tra'] ? dinh_dang_ngay_gio($ct['thoi_gian_kiem_tra']) : '--' ?></td>
                             <td class="text-muted small"><?= e($ct['ghi_chu'] ?? '') ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -297,6 +296,5 @@ $dsChenhLech = array_filter($danhSachChiTiet, function($item) {
             </div>
         </div>
     </div>
-</div>
 
 <?php require dirname(__DIR__) . '/layout/chan-trang.php'; ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Thành phần hiển thị biểu tượng SVG dùng chung từ sprite (src/assets/icons/sprite.svg).
  * Mọi biểu tượng trên giao diện chỉ được chèn qua hàm icon().
@@ -19,7 +20,8 @@ if (!function_exists('icon')) {
      * @param string $lop Lớp CSS bổ sung (ví dụ: 'bieu-tuong-sm', 'bieu-tuong-lg')
      * @return string Chuỗi HTML thẻ <svg>
      */
-    function icon(string $ten, string $lop = ''): string {
+    function icon(string $ten, string $lop = ''): string
+    {
         $tenAnToan = preg_replace('/[^a-z0-9\-]/i', '', $ten) ?? '';
         $lopDayDu = trim('bieu-tuong ' . $lop);
         return sprintf(
@@ -35,7 +37,8 @@ if (!function_exists('minh_hoa_hop_trong')) {
     /**
      * Hiển thị hình minh họa chiếc hộp mở nắp phát sáng kèm dòng thông báo khi bảng/khối trống.
      */
-    function minh_hoa_hop_trong(string $thongDiep = 'Không có dữ liệu.'): string {
+    function minh_hoa_hop_trong(string $thongDiep = 'Không có dữ liệu.'): string
+    {
         return '<div class="empty-state-hop">'
             . '<svg viewBox="0 0 80 68" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
             . '<ellipse cx="40" cy="60" rx="26" ry="5" fill="#E0EDFD"/>'
@@ -51,5 +54,3 @@ if (!function_exists('minh_hoa_hop_trong')) {
             . '</div>';
     }
 }
-
-

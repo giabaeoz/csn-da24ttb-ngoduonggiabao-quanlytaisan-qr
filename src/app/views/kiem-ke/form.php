@@ -29,7 +29,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </div>
         <div>
             <h1 class="tieu-de-trang mb-1">Mở đợt kiểm kê tài sản</h1>
-            <div class="mo-ta-phu">Chụp dữ liệu sổ sách tài sản của bàn trực và thiết lập bàn làm việc đối chiếu thực tế.</div>
+            <div class="mo-ta-phu">Chụp dữ liệu sổ sách tài sản của phòng trực và thiết lập bàn làm việc đối chiếu thực tế.</div>
         </div>
     </div>
     <div>
@@ -63,7 +63,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                     <input type="hidden" name="csrf_token" value="<?= e(tao_csrf_token()) ?>">
 
                     <div class="mb-3">
-                        <label class="form-label">Bàn trực áp dụng kiểm kê <span class="text-danger">*</span></label>
+                        <label class="form-label">Phòng trực áp dụng kiểm kê <span class="text-danger">*</span></label>
                         <?php if ($nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI): ?>
                             <select name="phong_truc_id" class="form-select" required>
                                 <?php foreach ($danhSachPhongTruc as $pt): ?>
@@ -72,12 +72,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <div class="form-text">Quản trị viên có thể chọn bàn trực muốn tổ chức đợt kiểm kê.</div>
+                            <div class="form-text">Quản trị viên có thể chọn phòng trực muốn tổ chức đợt kiểm kê.</div>
                         <?php else: ?>
                             <input type="hidden" name="phong_truc_id" value="<?= $phongTrucId ?>">
                             <input type="text" class="form-control bg-light" readonly 
                                    value="<?= e($nguoiDung['ten_phong_truc'] ?? ('Phòng trực #' . $phongTrucId)) ?>">
-                            <div class="form-text">Đợt kiểm kê sẽ được mở tự động cho bàn trực bạn đang phụ trách.</div>
+                            <div class="form-text">Đợt kiểm kê sẽ được mở tự động cho phòng trực bạn đang phụ trách.</div>
                         <?php endif; ?>
                     </div>
 
@@ -180,7 +180,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </div>
                         <div>
                             <div class="fw-semibold text-dark mb-1">Chụp sổ sách tức thời (Snapshot)</div>
-                            <div class="mo-ta-phu">Hệ thống sẽ ghi nhận trạng thái tại thời điểm mở đợt của tất cả tài sản thuộc bàn trực vào sổ kiểm kê.</div>
+                            <div class="mo-ta-phu">Hệ thống sẽ ghi nhận trạng thái tại thời điểm mở đợt của tất cả tài sản thuộc phòng trực vào sổ kiểm kê.</div>
                         </div>
                     </div>
 
@@ -191,7 +191,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         </div>
                         <div>
                             <div class="fw-semibold text-dark mb-1">Khóa tạm thời chức năng Mượn & Chuyển</div>
-                            <div class="mo-ta-phu">Trong thời gian đợt kiểm kê đang diễn ra, bàn trực tạm ngừng lập phiếu mượn mới và điều chuyển thiết bị để đảm bảo tính toàn vẹn số liệu. Hoạt động thu hồi trả thiết bị vẫn diễn ra bình thường.</div>
+                            <div class="mo-ta-phu">Trong thời gian đợt kiểm kê đang diễn ra, phòng trực tạm ngừng lập phiếu mượn mới và điều chuyển thiết bị để đảm bảo tính toàn vẹn số liệu. Hoạt động thu hồi trả thiết bị vẫn diễn ra bình thường.</div>
                         </div>
                     </div>
 
@@ -228,7 +228,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <div>
                     <div class="fw-semibold text-dark mb-1">Quy tắc độc quyền đợt kiểm kê</div>
                     <div class="mo-ta-phu">
-                        Mỗi bàn trực tại một thời điểm chỉ được phép có duy nhất 01 đợt kiểm kê đang diễn ra. Sau khi kết thúc hoặc hủy đợt này thì mới có thể bắt đầu đợt mới.
+                        Mỗi phòng trực tại một thời điểm chỉ được phép có duy nhất 01 đợt kiểm kê đang diễn ra. Sau khi kết thúc hoặc hủy đợt này thì mới có thể bắt đầu đợt mới.
                     </div>
                 </div>
             </div>

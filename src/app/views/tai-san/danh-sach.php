@@ -37,6 +37,7 @@ $viTriBatDau = ($trang - 1) * 15 + (count($danhSachTaiSan) > 0 ? 1 : 0);
 $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
 ?>
 
+<div class="khung-trang-tai-san-co-dinh">
 <div class="thanh-cong-cu-trang">
     <div>
         <h1 class="tieu-de-trang">Tài sản</h1>
@@ -55,48 +56,68 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
     </div>
 </div>
 
-<div class="row g-3 mb-3">
+<div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('package', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-xanh">
+            <div class="bieu-tuong-chinh">
+                <?= icon('package') ?>
+            </div>
             <div>
                 <div class="so-lieu"><?= sprintf('%02d', $tongTs) ?></div>
                 <div class="nhan-so-lieu">Tổng tài sản</div>
             </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('package') ?>
+            </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu thanh-cong">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('check-circle-2', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-la">
+            <div class="bieu-tuong-chinh">
+                <?= icon('check-circle-2') ?>
+            </div>
             <div>
                 <div class="so-lieu"><?= sprintf('%02d', $coTheMuon) ?></div>
                 <div class="nhan-so-lieu">Có thể mượn</div>
             </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('repeat', 'bieu-tuong-lg') ?></div>
-            <div>
-                <div class="so-lieu"><?= sprintf('%02d', $dangMuon) ?></div>
-                <div class="nhan-so-lieu">Đang mượn</div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('check-circle-2') ?>
             </div>
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="the-so-lieu canh-bao">
-            <div class="o-bieu-tuong-thong-ke"><?= icon('wrench', 'bieu-tuong-lg') ?></div>
+        <div class="the-kpi-pha-mau the-kpi-cam">
+            <div class="bieu-tuong-chinh">
+                <?= icon('repeat') ?>
+            </div>
+            <div>
+                <div class="so-lieu"><?= sprintf('%02d', $dangMuon) ?></div>
+                <div class="nhan-so-lieu">Đang mượn</div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('repeat') ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="the-kpi-pha-mau the-kpi-do">
+            <div class="bieu-tuong-chinh">
+                <?= icon('wrench') ?>
+            </div>
             <div>
                 <div class="so-lieu"><?= sprintf('%02d', $trangThaiKhac) ?></div>
                 <div class="nhan-so-lieu">Bảo trì / Khác</div>
+            </div>
+            <div class="bieu-tuong-mo-bg" aria-hidden="true">
+                <?= icon('wrench') ?>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card mb-3">
-    <div class="card-body py-2 px-3">
-        <form action="<?= url('tai-san/index.php') ?>" method="GET" class="row g-2 align-items-center">
+<div class="card mb-4">
+    <div class="card-body p-3">
+        <form action="<?= url('tai-san/index.php') ?>" method="GET" class="row g-3 align-items-center">
             <div class="col-12 col-lg-4">
                 <div class="o-tim-kiem">
                     <?= icon('search', 'bieu-tuong-sm') ?>
@@ -128,14 +149,21 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
             </div>
 
             <div class="col-12 col-md-4 col-lg-2">
-                <select name="phong_truc_id" class="form-select">
-                    <option value="">Tất cả bàn trực</option>
+                <select name="phong_truc_id" class="form-select" <?= ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && !empty($nguoiDung['phong_truc_id'])) ? 'disabled' : '' ?>>
+                    <?php if ($nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI): ?>
+                        <option value="">Tất cả phòng trực</option>
+                    <?php endif; ?>
                     <?php foreach ($danhSachPhongTruc as $pt): ?>
-                        <option value="<?= (int)$pt['id'] ?>" <?= ((int)$phongTrucId === (int)$pt['id']) ? 'selected' : '' ?>>
-                            <?= e($pt['ten_phong_truc']) ?>
-                        </option>
+                        <?php if ($nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI || (int)$pt['id'] === (int)$nguoiDung['phong_truc_id']): ?>
+                            <option value="<?= (int)$pt['id'] ?>" <?= ((int)$phongTrucId === (int)$pt['id']) ? 'selected' : '' ?>>
+                                <?= e($pt['ten_phong_truc']) ?>
+                            </option>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
+                <?php if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && !empty($nguoiDung['phong_truc_id'])): ?>
+                    <input type="hidden" name="phong_truc_id" value="<?= (int)$nguoiDung['phong_truc_id'] ?>">
+                <?php endif; ?>
             </div>
 
             <div class="col-12 col-lg-2 d-flex gap-2 justify-content-end">
@@ -151,7 +179,7 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
     </div>
 </div>
 
-<div class="card mb-4">
+<div class="card the-danh-sach-tai-san-cuon mb-0">
     <div class="card-header d-flex justify-content-between align-items-center py-3">
         <div class="d-flex align-items-center gap-2">
             <h2 class="tieu-de-khoi mb-0">Danh sách tài sản</h2>
@@ -161,12 +189,12 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
             Đã chọn <strong id="soLuongChon">0</strong> thiết bị để in QR
         </div>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive vung-cuon-bang-tai-san">
         <table class="table align-middle mb-0">
             <thead>
                 <tr>
-                    <th class="cot-36">
-                        <input type="checkbox" class="form-check-input" id="checkAll" onclick="chonTatCa(this)">
+                    <th class="cot-40 text-center">
+                        <input type="checkbox" class="form-check-input o-chon-tai-san" id="checkAll" onclick="chonTatCa(this)" title="Chọn tất cả tài sản">
                     </th>
                     <th>Mã tài sản (QR)</th>
                     <th>Tên tài sản</th>
@@ -186,11 +214,11 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
                 <?php else: ?>
                     <?php foreach ($danhSachTaiSan as $ts): ?>
                         <tr>
-                            <td>
-                                <input type="checkbox" class="form-check-input check-item" value="<?= (int)$ts['id'] ?>" onchange="capNhatDemChon()">
+                            <td class="text-center text-nowrap">
+                                <input type="checkbox" class="form-check-input o-chon-tai-san check-item" value="<?= (int)$ts['id'] ?>" onchange="capNhatDemChon()" title="Chọn tài sản <?= e($ts['ma_tai_san']) ?>">
                             </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-phu font-monospace fw-bold py-1 px-2"
+                            <td class="text-nowrap">
+                                <button type="button" class="btn btn-sm btn-phu font-monospace fw-bold py-1 px-2 text-nowrap"
                                     title="Bấm để xem mã QR của <?= e($ts['ma_tai_san']) ?>"
                                     onclick="xemQrModal('<?= e($ts['ma_tai_san']) ?>', '<?= e($ts['ten_tai_san']) ?>', '<?= url('tai-san/in-qr.php?id=' . (int)$ts['id']) ?>')">
                                     <?= icon('qr-code', 'bieu-tuong-sm') ?>
@@ -198,24 +226,40 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
                                 </button>
                             </td>
                             <td>
-                                <div class="fw-semibold text-dark"><?= e($ts['ten_tai_san']) ?></div>
-                                <?php if (!empty($ts['hang_san_xuat']) || !empty($ts['model'])): ?>
-                                    <div class="mo-ta-phu">
-                                        <?= e(trim(($ts['hang_san_xuat'] ?? '') . (!empty($ts['model']) ? ' · ' . $ts['model'] : ''))) ?>
+                                <div class="d-flex align-items-center gap-3">
+                                    <?php $urlAnhRow = !empty($ts['hinh_anh']) ? tai_san_lay_url_anh($ts['hinh_anh']) : null; ?>
+                                    <?php if ($urlAnhRow): ?>
+                                        <a href="<?= e($urlAnhRow) ?>" target="_blank" title="Bấm xem ảnh phóng to" class="flex-shrink-0 d-block border rounded overflow-hidden shadow-sm" style="width: 42px; height: 42px; background-color: #f8fafc;">
+                                            <img src="<?= e($urlAnhRow) ?>" alt="<?= e($ts['ten_tai_san']) ?>" class="w-100 h-100 object-fit-cover">
+                                        </a>
+                                    <?php else: ?>
+                                        <div class="flex-shrink-0 d-flex align-items-center justify-content-center border rounded bg-light text-muted" style="width: 42px; height: 42px; background-color: #f8fafc;" title="Chưa có ảnh nhận diện">
+                                            <?= icon('package', 'bieu-tuong-sm text-secondary') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div>
+                                        <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$ts['id']) ?>" class="fw-semibold text-dark text-decoration-none">
+                                            <?= e($ts['ten_tai_san']) ?>
+                                        </a>
+                                        <?php if (!empty($ts['hang_san_xuat']) || !empty($ts['model'])): ?>
+                                            <div class="mo-ta-phu text-nowrap">
+                                                <?= e(trim(($ts['hang_san_xuat'] ?? '') . (!empty($ts['model']) ? ' · ' . $ts['model'] : ''))) ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </td>
-                            <td>
+                            <td class="text-nowrap">
                                 <span class="text-secondary"><?= e($ts['ten_loai']) ?></span>
                             </td>
-                            <td>
+                            <td class="text-nowrap">
                                 <?php if (!empty($ts['ma_phong_hien_tai'])): ?>
                                     <span class="huy-hieu huy-hieu-chinh">P. <?= e($ts['ma_phong_hien_tai']) ?></span>
                                 <?php else: ?>
-                                    <span class="text-secondary">Bàn trực <?= e($ts['ma_phong_truc'] ?? '') ?></span>
+                                    <span class="text-secondary">Phòng trực <?= e($ts['ma_phong_truc'] ?? '') ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td class="text-nowrap">
                                 <?php if ($ts['trang_thai'] === 'SAN_SANG'): ?>
                                     <?php $ma = 'SAN_SANG';
                                     $nhan = 'Có thể mượn';
@@ -234,8 +278,8 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
                                     require dirname(__DIR__) . '/partials/huy-hieu-trang-thai.php'; ?>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end">
-                                <div class="d-inline-flex gap-1 align-items-center">
+                            <td class="text-end text-nowrap">
+                                <div class="d-inline-flex gap-2 align-items-center">
                                     <button type="button" class="btn-bieu-tuong" title="Xem mã QR" aria-label="Xem mã QR"
                                         onclick="xemQrModal('<?= e($ts['ma_tai_san']) ?>', '<?= e($ts['ten_tai_san']) ?>', '<?= url('tai-san/in-qr.php?id=' . (int)$ts['id']) ?>')">
                                         <?= icon('qr-code', 'bieu-tuong-sm') ?>
@@ -266,31 +310,7 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
             </tbody>
         </table>
     </div>
-
-    <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
-        <div class="mo-ta-phu">
-            Hiển thị <?= $viTriBatDau ?>-<?= $viTriKetThuc ?> trong tổng số <?= $tongSo ?> tài sản
-        </div>
-        <div>
-            <ul class="pagination pagination-sm mb-0">
-                <li class="page-item <?= ($trang <= 1) ? 'disabled' : '' ?>">
-                    <a class="page-link" href="<?= url('tai-san/index.php?' . http_build_query(array_merge($_GET, ['trang' => max(1, $trang - 1)]))) ?>">Trước</a>
-                </li>
-                <?php for ($i = 1; $i <= $tongSoTrang; $i++): ?>
-                    <?php if ($i == 1 || $i == $tongSoTrang || abs($i - $trang) <= 1): ?>
-                        <li class="page-item <?= ($i === $trang) ? 'active' : '' ?>">
-                            <a class="page-link" href="<?= url('tai-san/index.php?' . http_build_query(array_merge($_GET, ['trang' => $i]))) ?>"><?= $i ?></a>
-                        </li>
-                    <?php elseif ($i == 2 || $i == $tongSoTrang - 1): ?>
-                        <li class="page-item disabled"><span class="page-link">…</span></li>
-                    <?php endif; ?>
-                <?php endfor; ?>
-                <li class="page-item <?= ($trang >= $tongSoTrang) ? 'disabled' : '' ?>">
-                    <a class="page-link" href="<?= url('tai-san/index.php?' . http_build_query(array_merge($_GET, ['trang' => min($tongSoTrang, $trang + 1)]))) ?>">Sau</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+</div>
 </div>
 
 <div class="modal fade" id="modalXemQr" tabindex="-1" aria-hidden="true">

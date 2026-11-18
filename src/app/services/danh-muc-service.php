@@ -349,6 +349,71 @@ function phong_hoc_doi_trang_thai(int $id): bool {
     return $ok;
 }
 
+/**
+ * Tìm phòng học theo ID/mã/tên hoặc tự động tạo mới lưu vào hệ thống nếu chưa tồn tại.
+ *
+ * @param string $nhap Chuỗi người dùng nhập hoặc chọn (ví dụ: "B31.101", "C71.102 (Phòng học)", "D6.302")
+ * @return int ID phòng học trong CSDL (0 nếu chuỗi rỗng)
+ */
+function phong_hoc_tim_hoac_tao_nhanh(string $nhap): int {
+    $db = db();
+    $nhap = trim($nhap);
+    if ($nhap === '') {
+        return 0;
+    }
+
+    // 1. Nếu là số nguyên ID có sẵn
+    if (ctype_digit($nhap)) {
+        $idSo = (int)$nhap;
+        $ph = phong_hoc_tim_theo_id($idSo);
+        if ($ph !== null) {
+            if ((int)$ph['dang_hoat_dong'] !== 1) {
+                $db->query("UPDATE phong_hoc SET dang_hoat_dong = 1 WHERE id = " . $idSo);
+            }
+            return $idSo;
+        }
+    }
+
+    // Tách mã phòng nếu chuỗi có dạng "B31.101 (Phòng học...)" hoặc "B31.101 - Phòng học..."
+    $maThuan = trim(preg_split('/[\(\-]/', $nhap)[0] ?? $nhap);
+    $maChuan = strtoupper($maThuan !== '' ? $maThuan : $nhap);
+
+    // 2. Tìm theo mã phòng hoặc tên phòng
+    $stmt = $db->prepare("SELECT id, dang_hoat_dong FROM phong_hoc WHERE UPPER(ma_phong) = ? OR UPPER(ten_phong) = ? LIMIT 1");
+    $nhapUpper = strtoupper($nhap);
+    $stmt->bind_param('ss', $maChuan, $nhapUpper);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if ($row) {
+        $idTim = (int)$row['id'];
+        if ((int)$row['dang_hoat_dong'] !== 1) {
+            $db->query("UPDATE phong_hoc SET dang_hoat_dong = 1 WHERE id = " . $idTim);
+        }
+        return $idTim;
+    }
+
+    // 3. Chưa có trong hệ thống -> Tự động tạo mới và lưu vào bảng phong_hoc
+    $toaNha = 'Khu học tập';
+    $tang = '1';
+    if (preg_match('/^([A-Z0-9]+)[\.\-](\d)(\d{2})$/i', $maChuan, $m)) {
+        $toaNha = strtoupper($m[1]);
+        $tang = $m[2];
+    } elseif (preg_match('/^([A-Z]+\d*)/i', $maChuan, $m)) {
+        $toaNha = strtoupper($m[1]);
+    }
+
+    $tenPhongMoi = (stripos($nhap, 'phòng') !== false) ? $nhap : ('Phòng học ' . $maChuan);
+    $stmtIns = $db->prepare("INSERT INTO phong_hoc (ma_phong, ten_phong, toa_nha, tang, dang_hoat_dong) VALUES (?, ?, ?, ?, 1)");
+    $stmtIns->bind_param('ssss', $maChuan, $tenPhongMoi, $toaNha, $tang);
+    $stmtIns->execute();
+    $moiId = (int)$db->insert_id;
+    $stmtIns->close();
+
+    return $moiId;
+}
+
 
 // =====================================================================
 // 3. NGHIỆP VỤ LOẠI TÀI SẢN (loai_tai_san)
@@ -466,4 +531,66 @@ function loai_tai_san_doi_trang_thai(int $id): bool {
     $ok = $stmt->execute();
     $stmt->close();
     return $ok;
+}
+
+/**
+ * Tìm nhóm/loại tài sản theo ID/mã/tên hoặc tự động tạo mới lưu vào hệ thống nếu chưa tồn tại.
+ *
+ * @param string $nhap Chuỗi người dùng nhập hoặc chọn
+ * @return int ID loại tài sản trong CSDL (0 nếu chuỗi rỗng)
+ */
+function loai_tai_san_tim_hoac_tao_nhanh(string $nhap): int {
+    $db = db();
+    $nhap = trim($nhap);
+    if ($nhap === '') {
+        return 0;
+    }
+
+    if (ctype_digit($nhap)) {
+        $idSo = (int)$nhap;
+        $loai = loai_tai_san_tim_theo_id($idSo);
+        if ($loai !== null) {
+            return $idSo;
+        }
+    }
+
+    // Nếu chuỗi có dạng "Máy chiếu di động (MC)" -> tách tên và mã
+    $tenThuan = trim(preg_replace('/\s*\([^)]*\)\s*$/', '', $nhap) ?? $nhap);
+    $maTrongNgoac = '';
+    if (preg_match('/\(([^)]+)\)\s*$/', $nhap, $m)) {
+        $maTrongNgoac = strtoupper(trim($m[1]));
+    }
+
+    $stmt = $db->prepare("SELECT id FROM loai_tai_san WHERE UPPER(ma_loai) = ? OR UPPER(ten_loai) = ? OR UPPER(ma_loai) = ? LIMIT 1");
+    $nhapUpper = strtoupper($nhap);
+    $tenUpper = strtoupper($tenThuan);
+    $maTim = $maTrongNgoac !== '' ? $maTrongNgoac : $nhapUpper;
+    $stmt->bind_param('sss', $maTim, $tenUpper, $nhapUpper);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if ($row) {
+        return (int)$row['id'];
+    }
+
+    // Chưa có -> Tự sinh mã loại viết tắt và thêm mới vào bảng loai_tai_san
+    $maMoi = $maTrongNgoac !== '' ? $maTrongNgoac : (function_exists('tai_san_viet_tat_ten') ? tai_san_viet_tat_ten($tenThuan) : 'LTS');
+    $checkMa = $db->prepare("SELECT id FROM loai_tai_san WHERE ma_loai = ? LIMIT 1");
+    $checkMa->bind_param('s', $maMoi);
+    $checkMa->execute();
+    if ($checkMa->get_result()->num_rows > 0) {
+        $maMoi .= rand(10, 99);
+    }
+    $checkMa->close();
+
+    $tenLuu = $tenThuan !== '' ? $tenThuan : $nhap;
+    $moTaLuu = 'Nhóm thiết bị ' . $tenLuu;
+    $stmtIns = $db->prepare("INSERT INTO loai_tai_san (ma_loai, ten_loai, mo_ta, dang_hoat_dong) VALUES (?, ?, ?, 1)");
+    $stmtIns->bind_param('sss', $maMoi, $tenLuu, $moTaLuu);
+    $stmtIns->execute();
+    $moiId = (int)$db->insert_id;
+    $stmtIns->close();
+
+    return $moiId;
 }

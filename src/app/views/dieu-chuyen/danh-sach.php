@@ -49,7 +49,7 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
             <span class="text-primary"><?= icon('filter', 'bieu-tuong-sm') ?></span>
             <span>Bộ lọc tra cứu</span>
         </div>
-        <form action="<?= url('dieu-chuyen/index.php') ?>" method="GET" class="row g-2 align-items-end">
+        <form action="<?= url('dieu-chuyen/index.php') ?>" method="GET" class="row g-3 align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label">Từ khóa</label>
                 <div class="o-tim-kiem">
@@ -138,15 +138,17 @@ $viTriKetThuc = ($trangHienTai - 1) * $soMoiTrang + count($danhSachDieuChuyen);
                 <?php else: ?>
                     <?php foreach ($danhSachDieuChuyen as $dc): ?>
                         <tr>
-                            <td class="fw-semibold text-primary">
-                                <?= e($dc['ma_dieu_chuyen']) ?>
+                            <td class="fw-semibold text-primary font-monospace text-nowrap">
+                                <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="text-primary text-decoration-none">
+                                    <?= e($dc['ma_dieu_chuyen']) ?>
+                                </a>
                             </td>
-                            <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
-                            <td><?= e($dc['ma_phong_di']) ?></td>
-                            <td><?= e($dc['ma_phong_den']) ?></td>
-                            <td><?= (int)$dc['tong_so_thiet_bi'] ?> thiết bị</td>
-                            <td><?= e($dc['ho_ten_can_bo']) ?></td>
-                            <td class="text-end">
+                            <td class="text-nowrap"><?= dinh_dang_ngay_gio($dc['thoi_gian_dieu_chuyen'] ?? $dc['thoi_gian_tao'] ?? '') ?></td>
+                            <td class="text-nowrap"><?= e($dc['ma_phong_di'] ?? '') ?></td>
+                            <td class="text-nowrap"><?= e($dc['ma_phong_den'] ?? '') ?></td>
+                            <td class="text-nowrap"><?= (int)($dc['so_luong_tai_san'] ?? $dc['tong_so_thiet_bi'] ?? 0) ?> thiết bị</td>
+                            <td class="text-nowrap"><?= e($dc['ho_ten_nguoi_lap'] ?? $dc['ho_ten_can_bo'] ?? '---') ?></td>
+                            <td class="text-end text-nowrap">
                                 <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-bieu-tuong" title="Chi tiết">
                                     <?= icon('eye') ?>
                                 </a>

@@ -35,6 +35,8 @@ if ($taiSan === null) {
     ], 404);
 }
 
+$taiSan['hinh_anh_url'] = tai_san_lay_url_anh($taiSan['hinh_anh'] ?? null);
+
 // Kiểm tra xem tài sản có đang trong phiếu mượn chưa trả không
 $db = db();
 $stmtM = $db->prepare("SELECT id FROM chi_tiet_muon WHERE tai_san_id = ? AND thoi_gian_tra IS NULL LIMIT 1");

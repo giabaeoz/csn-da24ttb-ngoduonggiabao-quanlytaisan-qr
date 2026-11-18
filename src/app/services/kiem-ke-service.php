@@ -134,9 +134,9 @@ function kiem_ke_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTrang = 
 }
 
 /**
- * Tìm đợt kiểm kê đang diễn ra (DANG_KIEM_KE) của một bàn trực.
+ * Tìm đợt kiểm kê đang diễn ra (DANG_KIEM_KE) của một phòng trực.
  *
- * @param int $phongTrucId ID bàn trực
+ * @param int $phongTrucId ID phòng trực
  * @return array|null
  */
 function kiem_ke_tim_dot_dang_mo(int $phongTrucId): ?array {
@@ -160,7 +160,7 @@ function kiem_ke_tim_dot_dang_mo(int $phongTrucId): ?array {
  * Tìm đợt kiểm kê chi tiết theo ID.
  *
  * @param int $id
- * @param int|null $phongTrucId Giới hạn quyền theo bàn trực nếu có
+ * @param int|null $phongTrucId Giới hạn quyền theo phòng trực nếu có
  * @return array|null
  */
 function kiem_ke_tim_theo_id(int $id, ?int $phongTrucId = null): ?array {
@@ -301,8 +301,8 @@ function kiem_ke_lay_chi_tiet_dot(int $dotKiemKeId, array $boLoc = []): array {
 }
 
 /**
- * Mở đợt kiểm kê tài sản mới cho bàn trực.
- * Chụp snapshot sổ sách của toàn bộ tài sản đang hoạt động thuộc bàn trực.
+ * Mở đợt kiểm kê tài sản mới cho phòng trực.
+ * Chụp snapshot sổ sách của toàn bộ tài sản đang hoạt động thuộc phòng trực.
  *
  * @param array $duLieu
  * @param int $nhanVienLapId
@@ -345,7 +345,7 @@ function kiem_ke_mo_dot(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = n
 
     $db->begin_transaction();
     try {
-        // Kiểm tra bàn trực có đợt đang mở không
+        // Kiểm tra phòng trực có đợt đang mở không
         $stmtCheck = $db->prepare("SELECT id, ma_dot_kiem_ke FROM dot_kiem_ke WHERE phong_truc_id = ? AND trang_thai = 'DANG_KIEM_KE' LIMIT 1 FOR UPDATE");
         $stmtCheck->bind_param('i', $phongTrucId);
         $stmtCheck->execute();
@@ -353,7 +353,7 @@ function kiem_ke_mo_dot(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = n
         $stmtCheck->close();
 
         if ($dangMo) {
-            throw new RuntimeException("Bàn trực hiện đã có đợt kiểm kê [{$dangMo['ma_dot_kiem_ke']}] đang diễn ra. Vui lòng hoàn tất hoặc hủy đợt trước.");
+            throw new RuntimeException("Phòng trực hiện đã có đợt kiểm kê [{$dangMo['ma_dot_kiem_ke']}] đang diễn ra. Vui lòng hoàn tất hoặc hủy đợt trước.");
         }
 
         // Lấy danh sách tài sản đang sử dụng của phòng trực
@@ -367,7 +367,7 @@ function kiem_ke_mo_dot(array $duLieu, int $nhanVienLapId, ?int $phongTrucId = n
         $stmtTs->close();
 
         if (empty($dsTaiSan)) {
-            throw new RuntimeException("Bàn trực này chưa có tài sản đang sử dụng để kiểm kê.");
+            throw new RuntimeException("Phòng trực này chưa có tài sản đang sử dụng để kiểm kê.");
         }
 
         // Kiểm tra xem thiết bị nào đang trong phiếu mượn chưa trả

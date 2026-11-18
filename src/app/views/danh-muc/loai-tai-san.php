@@ -96,7 +96,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex justify-content-end gap-1">
+                                    <div class="d-flex justify-content-end gap-2">
                                         <?php
                                         $chiTietLoai = [
                                             ['nhan' => 'Mã loại tài sản', 'gia_tri' => $loai['ma_loai'] ?? ''],

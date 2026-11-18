@@ -34,7 +34,7 @@ if (la_post()) {
         $loi = 'Phiên làm việc bảo mật đã hết hạn. Vui lòng thử lại.';
         dat_thong_bao('nguy_hiem', $loi);
     } else {
-        $limitPt = ($phongTrucId > 0 && $nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN) ? $phongTrucId : null;
+        $limitPt = ($phongTrucId > 0 && $nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI) ? $phongTrucId : null;
         $ketQua = su_co_bao_cao($_POST, (int)$nguoiDung['id'], $limitPt);
 
         if ($ketQua['thanh_cong']) {
@@ -47,9 +47,9 @@ if (la_post()) {
     }
 }
 
-// Lấy danh sách thiết bị thuộc bàn trực để chọn nhanh nếu cần
+// Lấy danh sách thiết bị thuộc phòng trực để chọn nhanh nếu cần
 $danhSachTaiSan = [];
-if ($phongTrucId > 0 && $nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN) {
+if ($phongTrucId > 0 && $nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI) {
     $danhSachTaiSan = tai_san_danh_sach(['phong_truc_id' => $phongTrucId, 'trang_thai' => 'SAN_SANG'], 1, 100)['danh_sach'] ?? [];
 } else {
     $danhSachTaiSan = tai_san_danh_sach(['trang_thai' => 'SAN_SANG'], 1, 100)['danh_sach'] ?? [];

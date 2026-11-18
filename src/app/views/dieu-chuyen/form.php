@@ -32,7 +32,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <?php if ($dangKiemKe): ?>
     <div class="alert alert-danger mb-4" role="alert">
         <?= icon('alert-circle', 'bieu-tuong-md') ?>
-        <div class="flex-grow-1">Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.</div>
+        <div class="flex-grow-1">Phòng trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động điều chuyển tạm thời bị khóa.</div>
     </div>
 <?php endif; ?>
 
@@ -51,9 +51,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     <div class="row g-4 mb-4">
         <div class="col-12 col-lg-5">
             <div class="card mb-4">
-                <div class="card-body p-3">
+                <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Quét QR thiết bị điều chuyển</h2>
-                    <div class="row g-2 align-items-center">
+                    <div class="row g-3 align-items-center">
                         <div class="col-12 col-sm-6">
                             <div class="khung-quet-camera" id="khungVideoContainer">
                                 <video id="videoQuetCamera" playsinline class="d-none"></video>
@@ -64,14 +64,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 d-flex flex-column gap-2">
+                        <div class="col-12 col-sm-6 d-flex flex-column gap-3">
                             <select id="chonCamera" class="form-select form-select-sm">
                                 <option value="">Chọn camera</option>
                             </select>
 
                             <div class="input-group input-group-sm">
                                 <input type="text" class="form-control" id="ma_quet_nhap"
-                                    placeholder="Nhập mã khi không quét được" autocomplete="off">
+                                    placeholder="Nhập mã TS (VD: MC-01)..." autocomplete="off">
                                 <button type="button" class="btn btn-phu" onclick="xuLyThemMaThietBi()">
                                     <?= icon('plus', 'bieu-tuong-sm') ?>
                                     <span>Thêm</span>
@@ -84,20 +84,20 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             </button>
                         </div>
                     </div>
-                    <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-2 d-none"></div>
+                    <div id="thongBaoQuetLoi" class="ket-qua-quet ket-qua-quet-loi mt-3 d-none"></div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Phiếu điều chuyển</h2>
-                    <div class="mb-3">
+                    <div class="mb-3 p-3 rounded-3 d-flex flex-column gap-1" style="background: #EFF8FF; border: 1px solid #BFDBFE;">
                         <div class="fw-semibold text-dark" id="pvLoTrinh">Phòng đi: --- → Phòng đến: ---</div>
                         <div class="mo-ta-phu" id="pvLyDo">Lý do: ---</div>
                         <div class="mo-ta-phu" id="pvThoiGian">Thời gian: <?= date('d/m/Y H:i') ?> (minh họa)</div>
                     </div>
 
-                    <div class="table-responsive mb-2">
+                    <div class="table-responsive mb-3">
                         <table class="table table-sm">
                             <thead>
                                 <tr>
@@ -124,7 +124,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             <div class="card mb-4">
                 <div class="card-body p-4">
                     <h2 class="tieu-de-khoi mb-3">Thông tin điều chuyển</h2>
-                    <div class="row g-2 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
                             <label class="form-label">Phòng đi</label>
                             <select id="phong_hoc_di_id" name="phong_hoc_di_id" class="form-select" onchange="doiPhongDi(this)">
@@ -233,11 +233,11 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 <?php else: ?>
                     <?php foreach ($dieuChuyenGanDay as $dc): ?>
                         <tr>
-                            <td class="fw-semibold text-primary"><?= e($dc['ma_dieu_chuyen']) ?></td>
-                            <td><?= dinh_dang_ngay_gio($dc['thoi_gian_tao']) ?></td>
-                            <td><?= e($dc['ma_phong_di']) ?></td>
-                            <td><?= e($dc['ma_phong_den']) ?></td>
-                            <td><?= (int)$dc['tong_so_thiet_bi'] ?></td>
+                            <td class="fw-semibold text-primary font-monospace"><?= e($dc['ma_dieu_chuyen']) ?></td>
+                            <td><?= dinh_dang_ngay_gio($dc['thoi_gian_dieu_chuyen'] ?? $dc['thoi_gian_tao'] ?? '') ?></td>
+                            <td><?= e($dc['ma_phong_di'] ?? '') ?></td>
+                            <td><?= e($dc['ma_phong_den'] ?? '') ?></td>
+                            <td><?= (int)($dc['so_luong_tai_san'] ?? $dc['tong_so_thiet_bi'] ?? 0) ?> thiết bị</td>
                             <td class="text-end cot-thao-tac">
                                 <a href="<?= url('dieu-chuyen/chi-tiet.php?id=' . (int)$dc['id']) ?>" class="btn-vien-thuoc btn-vien-thuoc-phu">Chi tiết</a>
                             </td>
@@ -297,6 +297,13 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 return;
             }
 
+            // Tự động chọn Phòng đi nếu chưa chọn và thiết bị đã có phòng hiện tại hoặc phòng kệ
+            const selDi = document.getElementById('phong_hoc_di_id');
+            const phongGoiYId = parseInt(ts.phong_hoc_hien_tai_id || ts.phong_hoc_phu_hop_id || '0', 10);
+            if (selDi && !selDi.value && phongGoiYId > 0) {
+                selDi.value = String(phongGoiYId);
+            }
+
             danhSachThietBi.push(ts);
             inputMaQuet.value = '';
             capNhatBangThietBi();
@@ -337,7 +344,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             inp.value = ts.id;
             hiddenContainer.appendChild(inp);
 
-            const phongHt = ts.phong_hoc_hien_tai_ma ? `Phòng hiện tại: ${ts.phong_hoc_hien_tai_ma}` : 'Phòng trực';
+            const maPhongTs = ts.ma_phong_hien_tai || ts.ma_phong_phu_hop || '';
+            const phongHt = maPhongTs ? `Phòng hiện tại: ${maPhongTs}` : 'Phòng trực (Linh hoạt)';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `

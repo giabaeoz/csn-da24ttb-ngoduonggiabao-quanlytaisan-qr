@@ -305,6 +305,7 @@ h3,
   text-decoration: none;
   border-radius: var(--bo-nut);
   margin-bottom: 3px;
+  white-space: nowrap;
   transition: background-color 150ms ease, color 150ms ease;
 }
 
@@ -429,6 +430,122 @@ h3,
   flex-shrink: 0;
 }
 
+.avatar-tron-lg {
+  width: 46px;
+  height: 46px;
+  font-size: 15px;
+}
+
+.hop-dropdown-thong-bao {
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.danh-sach-tb-gan-day {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.muc-tb-gan-day {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--vien);
+  transition: background-color 150ms ease;
+}
+
+.muc-tb-gan-day:last-child {
+  border-bottom: none;
+}
+
+.muc-tb-gan-day:hover {
+  background-color: #F8FAFC;
+}
+
+.icon-tb-tron {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hop-dropdown-nguoi-dung {
+  width: 310px;
+  max-width: calc(100vw - 24px);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Thanh tìm kiếm chức năng trên Topbar */
+.o-tim-kiem-topbar {
+  width: 250px;
+}
+
+.o-nhap-tim-chuc-nang {
+  height: 36px !important;
+  min-height: 36px !important;
+  font-size: 13px !important;
+  border-radius: var(--bo-vien-thuoc) !important;
+  background-color: #F8FAFC !important;
+  border: 1px solid var(--vien) !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.o-nhap-tim-chuc-nang:focus {
+  background-color: #FFFFFF !important;
+  border-color: var(--mau-chinh) !important;
+}
+
+.bang-goi-y-chuc-nang {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  background-color: #FFFFFF;
+  z-index: 1060;
+  border: 1px solid var(--vien) !important;
+}
+
+.danh-sach-goi-y-chuc-nang {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.muc-goi-y-chuc-nang {
+  border-bottom: 1px solid #F1F5F9;
+  transition: background-color 120ms ease;
+}
+
+.muc-goi-y-chuc-nang:last-child {
+  border-bottom: none;
+}
+
+.muc-goi-y-chuc-nang:hover,
+.muc-goi-y-chuc-nang.dang-chon {
+  background-color: var(--the-xanh);
+}
+
+@keyframes hieuUngChuong {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(-14deg); }
+  50% { transform: scale(1.2) rotate(14deg); }
+  75% { transform: scale(1.1) rotate(-8deg); }
+}
+
+.nut-chuong-tb.chuong-rung {
+  animation: hieuUngChuong 450ms ease-in-out;
+  background-color: #EBF3FF !important;
+}
+
 .user-info {
   line-height: 1.2;
 }
@@ -442,6 +559,7 @@ h3,
   font-size: 14px;
   font-weight: 600;
   color: var(--mau-navy);
+  white-space: nowrap;
 }
 
 .noi-dung-chinh {
@@ -454,8 +572,12 @@ h3,
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--kc-3);
+  gap: var(--kc-4);
   margin-bottom: var(--kc-5);
+}
+
+.thanh-cong-cu-trang .mo-ta-phu {
+  margin-top: 6px;
 }
 
 /* Trang đăng nhập */
@@ -493,6 +615,8 @@ h3,
   align-items: center;
   justify-content: center;
   gap: var(--kc-2);
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
 }
 
@@ -712,6 +836,45 @@ textarea:focus-visible {
   color: var(--hh-do-chu) !important;
 }
 
+/* Ô tích chọn tài sản (Checkbox) rõ nét, nổi bật dễ nhìn */
+.form-check-input,
+.o-chon-tai-san {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #2563EB !important;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(23, 104, 216, 0.18);
+  transition: all 150ms ease;
+}
+
+.form-check-input:hover,
+.o-chon-tai-san:hover {
+  border-color: var(--mau-chinh) !important;
+  background-color: #EFF6FF;
+  transform: scale(1.06);
+}
+
+.form-check-input:checked,
+.o-chon-tai-san:checked {
+  background-color: var(--mau-chinh) !important;
+  border-color: var(--mau-chinh) !important;
+  box-shadow: 0 0 0 3px rgba(23, 104, 216, 0.22);
+}
+
+/* Khung trang Tài sản: đảm bảo khoảng cách thoáng giữa các khối, không ép cứng chiều cao màn hình nhỏ */
+.khung-trang-tai-san-co-dinh {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vung-cuon-bang-tai-san {
+  max-height: 68vh;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
 
 /* ==========================================================================
    4. BIỂU MẪU (Forms, Ô nhập cao 40px, Ô tìm kiếm có biểu tượng)
@@ -729,7 +892,7 @@ textarea:focus-visible {
   font-size: 14px;
   font-weight: 600;
   color: var(--chu-chinh);
-  margin-bottom: var(--kc-1);
+  margin-bottom: 6px;
 }
 
 .form-control,
@@ -740,10 +903,25 @@ textarea:focus-visible {
   color: var(--chu-chinh);
   background-color: var(--nen-the);
   border: 1px solid var(--vien);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px 12px;
   min-height: 40px;
   transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.input-group > .form-control,
+.input-group > .form-select,
+.input-group > .o-nhap {
+  width: 1%;
+  flex: 1 1 auto;
+}
+
+.input-group-sm > .form-control,
+.input-group-sm > .form-select,
+.input-group-sm > .btn,
+.input-group-sm > .input-group-text {
+  min-height: 36px;
+  font-size: 13.5px;
 }
 
 textarea.form-control,
@@ -763,7 +941,7 @@ textarea.o-nhap {
 .o-nhap::placeholder {
   color: var(--chu-phu);
   opacity: 0.75;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 /* Ô tìm kiếm có biểu tượng kính lúp bên trái */
@@ -782,13 +960,13 @@ textarea.o-nhap {
 
 .o-tim-kiem .form-control,
 .o-tim-kiem .o-nhap {
-  padding-left: 36px;
+  padding-left: 38px;
 }
 
 .loi-truong {
   font-size: 13px;
   color: var(--nguy-hiem);
-  margin-top: var(--kc-1);
+  margin-top: 6px;
 }
 
 
@@ -829,16 +1007,22 @@ textarea.o-nhap {
   font-size: 13px;
   font-weight: 600;
   border-bottom: 2px solid var(--mau-chinh);
-  padding: 12px 16px;
+  padding: 13px 16px;
   white-space: nowrap;
 }
 
 .table tbody td,
 .bang-du-lieu tbody td {
-  padding: 10px 16px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--vien);
   vertical-align: middle;
-  height: 48px;
+  height: 52px;
+}
+
+.table-sm thead th,
+.table-sm tbody td {
+  padding: 10px 14px;
+  height: 44px;
 }
 
 .table tbody tr:last-child td,
@@ -1504,50 +1688,69 @@ textarea.o-nhap {
 @keyframes flashTruotVao {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-20px) scale(0.97);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .alert {
-  border-radius: 6px;
-  border: 1px solid var(--vien);
-  border-left: 3px solid transparent;
-  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  padding: 13px 18px;
   font-size: 14px;
+  font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--kc-3);
-  animation: flashTruotVao 180ms ease-out;
+  animation: flashTruotVao 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(15, 39, 71, 0.16);
 }
 
-.alert-success {
-  background-color: var(--thanh-cong-nhat);
-  border-left-color: var(--thanh-cong);
-  color: var(--thanh-cong);
+.alert .btn-close {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
 }
 
-.alert-warning {
-  background-color: var(--canh-bao-nhat);
-  border-left-color: var(--canh-bao);
-  color: var(--canh-bao);
+.alert-success,
+.thong-bao-xanh {
+  background: linear-gradient(135deg, #12B76A 0%, #099250 100%) !important;
+  color: #FFFFFF !important;
 }
 
-.alert-danger {
-  background-color: var(--nguy-hiem-nhat);
-  border-left-color: var(--nguy-hiem);
-  color: var(--nguy-hiem);
+.alert-danger,
+.alert-warning,
+.thong-bao-do {
+  background: linear-gradient(135deg, #F04438 0%, #D92D20 100%) !important;
+  color: #FFFFFF !important;
+}
+
+.alert-success *,
+.alert-danger *,
+.alert-warning *,
+.thong-bao-xanh *,
+.thong-bao-do * {
+  color: #FFFFFF !important;
 }
 
 .alert-primary,
 .alert-info {
-  background-color: var(--mau-chinh-nhat);
-  border-left-color: var(--mau-chinh);
-  color: var(--mau-chinh);
+  background: linear-gradient(135deg, var(--mau-chinh) 0%, #0E56BD 100%) !important;
+  color: #FFFFFF !important;
+}
+
+.thong-bao-tha-xuong {
+  position: fixed;
+  top: 72px;
+  right: 24px;
+  z-index: 1080;
+  min-width: 340px;
+  max-width: min(560px, calc(100vw - 32px));
+  transition: transform 480ms cubic-bezier(0.4, 0, 0.2, 1), opacity 480ms ease;
 }
 
 
@@ -1753,4 +1956,98 @@ textarea.o-nhap {
     border: none !important;
     box-shadow: none !important;
   }
+}
+
+/* ==========================================================================
+   HỆ THỐNG QUY TẮC CHỐNG RỚT CHỮ & NGẮT DÒNG BẤT HỢP LÝ TOÀN DIỆN
+   ========================================================================== */
+
+/* 1. Nút bấm, Huy hiệu, Thẻ nhãn tuyệt đối không rớt chữ */
+.btn,
+.btn-sm,
+.btn-chinh,
+.btn-phu,
+.btn-tab-xanh,
+.btn-vien-thuoc,
+.btn-bieu-tuong,
+.btn-nhanh,
+.huy-hieu,
+.huy-hieu-tt,
+.badge {
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+/* 2. Tiêu đề bảng & Cột cố định không ngắt dòng */
+.bang-du-lieu thead th,
+.table thead th {
+  white-space: nowrap !important;
+}
+
+/* 3. Cột số thứ tự, mã số, ngày giờ, thao tác trong bảng */
+.cot-stt,
+.cot-ma,
+.cot-thao-tac,
+.cot-ngay-gio,
+.o-ngay-gio,
+.font-monospace,
+.text-nowrap,
+.bang-du-lieu td.text-nowrap,
+.bang-du-lieu td.text-end,
+.table td.text-nowrap,
+.table td.text-end {
+  white-space: nowrap !important;
+}
+
+.bang-du-lieu td.text-end,
+.table td.text-end {
+  min-width: 110px;
+}
+
+/* 4. Nhãn thông tin (Label) trong thẻ chi tiết không bị co ép rớt dòng */
+.nhan-thong-tin,
+.nhan-truong,
+.the-noi-dung-than .d-flex.justify-content-between > span:first-child,
+.the-noi-dung-than .d-flex.justify-content-between > div:first-child {
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+/* 5. Breadcrumb thanh điều hướng giữ thẳng hàng */
+.breadcrumb {
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+.breadcrumb-item {
+  white-space: nowrap !important;
+}
+
+/* 6. Tiện ích đường kẻ phân cách theo breakpoint & khoảng cách bổ trợ */
+@media (min-width: 768px) {
+  .border-start-md {
+    border-left: 1px solid var(--vien) !important;
+  }
+
+  .border-end-md {
+    border-right: 1px solid var(--vien) !important;
+  }
+}
+
+.gap-2\.5 {
+  gap: 0.625rem !important;
+}
+
+.gap-1\.5 {
+  gap: 0.375rem !important;
+}
+
+.px-2\.5 {
+  padding-left: 0.625rem !important;
+  padding-right: 0.625rem !important;
+}
+
+.py-1\.5 {
+  padding-top: 0.375rem !important;
+  padding-bottom: 0.375rem !important;
 }

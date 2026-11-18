@@ -122,6 +122,40 @@ kiem_thu(
 $resXoa = tai_san_xoa_hoac_ngung_su_dung($idTsTest);
 kiem_thu('Xóa tài sản an toàn khi chưa phát sinh giao dịch mượn/chuyển/kiểm kê', $resXoa['thanh_cong'] === true && $resXoa['da_xoa_cung'] === true);
 
+// 11. KIỂM THỬ TÍNH NĂNG HÌNH ẢNH TÀI SẢN
+$maTsAnh = 'TEST_IMG_' . rand(1000, 9999);
+$resThemAnh = tai_san_luu([
+    'ma_tai_san'      => $maTsAnh,
+    'ten_tai_san'     => 'Thiết Bị Kiểm Thử Hình Ảnh',
+    'loai_tai_san_id' => 1,
+    'phong_truc_id'   => 1,
+    'hinh_anh'        => 'assets/uploads/tai-san/test_demo.jpg',
+]);
+kiem_thu('Thêm mới tài sản kèm đường dẫn hình ảnh', $resThemAnh['thanh_cong'] === true);
+
+$tsCoAnh = tai_san_tim_theo_id($resThemAnh['id']);
+kiem_thu(
+    'Cột hinh_anh được lưu chính xác trong CSDL',
+    $tsCoAnh !== null && $tsCoAnh['hinh_anh'] === 'assets/uploads/tai-san/test_demo.jpg'
+);
+
+// Sửa tài sản và tick chọn xóa hình ảnh
+$resXoaAnh = tai_san_luu([
+    'ma_tai_san'      => $maTsAnh,
+    'ten_tai_san'     => 'Thiết Bị Đã Xóa Ảnh',
+    'loai_tai_san_id' => 1,
+    'phong_truc_id'   => 1,
+    'xoa_hinh_anh'    => 1,
+], $resThemAnh['id']);
+$tsSauXoaAnh = tai_san_tim_theo_id($resThemAnh['id']);
+kiem_thu(
+    'Hỗ trợ xóa ảnh đại diện khi cập nhật',
+    $resXoaAnh['thanh_cong'] === true && $tsSauXoaAnh['hinh_anh'] === null
+);
+
+// Dọn dẹp tài sản test ảnh
+tai_san_xoa_hoac_ngung_su_dung($resThemAnh['id']);
+
 // Tổng kết
 tong_ket_kiem_thu('Quản lý Tài sản (G4)');
 

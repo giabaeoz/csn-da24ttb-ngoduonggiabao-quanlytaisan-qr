@@ -126,6 +126,28 @@ function cau_hinh(string $khoa, mixed $macDinh = null): mixed {
         } elseif (is_file($tepMau)) {
             $duLieuCauHinh = require $tepMau;
         }
+
+        // Ưu tiên nạp thông tin kết nối từ biến môi trường (Environment Variables) khi chạy Docker
+        $envDbHost = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? null);
+        if ($envDbHost) {
+            $duLieuCauHinh['csdl']['host'] = (string)$envDbHost;
+        }
+        $envDbPort = getenv('DB_PORT') ?: ($_ENV['DB_PORT'] ?? null);
+        if ($envDbPort) {
+            $duLieuCauHinh['csdl']['port'] = (int)$envDbPort;
+        }
+        $envDbUser = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? null);
+        if ($envDbUser) {
+            $duLieuCauHinh['csdl']['user'] = (string)$envDbUser;
+        }
+        $envDbPass = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : ($_ENV['DB_PASSWORD'] ?? null);
+        if ($envDbPass !== null) {
+            $duLieuCauHinh['csdl']['password'] = (string)$envDbPass;
+        }
+        $envDbName = getenv('DB_DATABASE') ?: ($_ENV['DB_DATABASE'] ?? null);
+        if ($envDbName) {
+            $duLieuCauHinh['csdl']['database'] = (string)$envDbName;
+        }
     }
 
     $cacDoan = explode('.', $khoa);

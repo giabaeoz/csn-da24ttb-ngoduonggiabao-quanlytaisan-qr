@@ -63,6 +63,14 @@ if ($nvD6) {
         $soLieuNv['tong_tai_san'] === $tongNvKiemTra,
         "Quy tắc bảo toàn tại phòng trực: Tổng ({$soLieuNv['tong_tai_san']}) = {$soLieuNv['co_the_muon']} + {$soLieuNv['dang_muon']} + {$soLieuNv['khac']}"
     );
+    kt_assert(
+        isset($soLieuNv['nguoi_dang_muon']) && is_int($soLieuNv['nguoi_dang_muon']) && $soLieuNv['nguoi_dang_muon'] >= 0,
+        "Thẻ KPI Nhân viên: Tổng người đang mượn tài sản ({$soLieuNv['nguoi_dang_muon']})"
+    );
+    kt_assert(
+        isset($soLieuNv['tai_san_su_co']) && is_int($soLieuNv['tai_san_su_co']) && $soLieuNv['tai_san_su_co'] >= 0,
+        "Thẻ KPI Nhân viên: Tài sản có sự cố ({$soLieuNv['tai_san_su_co']})"
+    );
 } else {
     kt_assert(true, "Bỏ qua test nhân viên vì chưa có nhân viên mẫu");
     kt_assert(true, "Bỏ qua test bảo toàn nhân viên");

@@ -51,23 +51,23 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 </div>
             </div>
 
-            <div class="row g-2 mt-2 pt-2 border-top small">
-                <div class="col-sm-4 d-flex align-items-center gap-1">
+            <div class="row g-3 mt-3 pt-3 border-top small">
+                <div class="col-sm-4 d-flex align-items-center gap-2">
                     <span class="text-primary"><?= icon('users', 'bieu-tuong-sm') ?></span>
                     <span class="text-muted">Đối tượng:</span>
-                    <strong class="text-primary ms-1">
+                    <strong class="text-primary">
                         <?= $nguoiMuon['loai_nguoi_muon'] === 'GIANG_VIEN' ? 'Giảng viên' : 'Sinh viên' ?>
                     </strong>
                 </div>
-                <div class="col-sm-4 d-flex align-items-center gap-1">
+                <div class="col-sm-4 d-flex align-items-center gap-2">
                     <span class="text-primary"><?= icon('home', 'bieu-tuong-sm') ?></span>
                     <span class="text-muted">Lớp / Khoa:</span>
-                    <strong class="text-dark ms-1"><?= e($nguoiMuon['lop_don_vi'] ?: '-') ?></strong>
+                    <strong class="text-dark"><?= e($nguoiMuon['lop_don_vi'] ?: '-') ?></strong>
                 </div>
-                <div class="col-sm-4 d-flex align-items-center gap-1">
-                    <span class="text-primary"><?= icon('info', 'bieu-tuong-sm') ?></span>
+                <div class="col-sm-4 d-flex align-items-center gap-2">
+                    <span class="text-primary"><?= icon('phone', 'bieu-tuong-sm') ?></span>
                     <span class="text-muted">Số điện thoại:</span>
-                    <strong class="text-dark ms-1"><?= e($nguoiMuon['so_dien_thoai'] ?: '-') ?></strong>
+                    <strong class="text-dark"><?= e($nguoiMuon['so_dien_thoai'] ?: '-') ?></strong>
                 </div>
             </div>
         </div>
@@ -129,7 +129,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                             <?= e($pm['ten_phong'] ?? '') ?> (<?= e($pm['ma_phong'] ?? '') ?>)
                                         </span>
                                         <span class="text-muted small ms-2">
-                                            &bull; Bàn trực: <?= e($pm['ten_phong_truc'] ?? '') ?>
+                                            &bull; Phòng trực: <?= e($pm['ten_phong_truc'] ?? '') ?>
                                         </span>
                                     </div>
                                     <div class="small d-flex align-items-center gap-2">

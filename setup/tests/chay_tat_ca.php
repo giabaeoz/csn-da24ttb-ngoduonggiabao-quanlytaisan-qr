@@ -36,7 +36,8 @@ if ($canResetDb) {
 foreach ($teps as $tep) {
     $tenTep = basename($tep);
     echo "\n>>> ĐANG CHẠY BỘ TEST: {$tenTep} ...\n";
-    $cmd = 'C:\\xampp\\php\\php.exe ' . escapeshellarg($tep);
+    $phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'C:\\xampp\\php\\php.exe';
+    $cmd = escapeshellarg($phpBin) . ' ' . escapeshellarg($tep);
     passthru($cmd, $exitCode);
     if ($exitCode !== 0) {
         $tongLoi++;

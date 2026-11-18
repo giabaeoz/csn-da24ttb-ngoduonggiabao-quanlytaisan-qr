@@ -44,9 +44,10 @@ $tinhTrang = trim((string)($_GET['tinh_trang'] ?? ''));
 $trangThai = trim((string)($_GET['trang_thai'] ?? ''));
 $trang = doc_so_nguyen('trang', 1, $_GET);
 
-// Nếu là nhân viên trực và chưa chọn phòng trực, ưu tiên mặc định xem phòng trực được phân công
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && empty($_GET['phong_truc_id']) && !isset($_GET['tat_ca_phong'])) {
-    $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
+// Nếu không phải Quản trị viên (QUAN_TRI) và tài khoản được phân công phòng trực cụ thể (QUAN_LY hoặc NHAN_VIEN),
+// cố định xem theo phạm vi phòng trực của mình
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && !empty($nguoiDung['phong_truc_id'])) {
+    $phongTrucId = (int)$nguoiDung['phong_truc_id'];
 }
 
 $boLoc = [
@@ -57,10 +58,10 @@ $boLoc = [
     'trang_thai'      => $trangThai !== '' ? $trangThai : null,
 ];
 
-$ketQua = tai_san_danh_sach($boLoc, $trang, 15);
+$ketQua = tai_san_danh_sach($boLoc, 1, 5000);
 $danhSachTaiSan = $ketQua['danh_sach'];
 $tongSo = $ketQua['tong_so'];
-$tongSoTrang = $ketQua['tong_so_trang'];
+$tongSoTrang = 1;
 
 // Lấy danh mục cho dropdown bộ lọc
 $danhSachLoai = loai_tai_san_danh_sach(true);

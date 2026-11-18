@@ -30,8 +30,8 @@ $boLoc = [
     'den_ngay'     => trim((string)($_GET['den_ngay'] ?? '')),
 ];
 
-// Nếu là nhân viên, cố định bàn trực của nhân viên
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) {
+// Nếu không phải Quản trị viên và có phòng trực, cố định phòng trực
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) {
     $boLoc['phong_truc_id'] = $phongTrucId;
 }
 

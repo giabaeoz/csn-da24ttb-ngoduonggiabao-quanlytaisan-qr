@@ -51,8 +51,8 @@ const BANG_QUYEN = [
     'ghi_nhan_su_co'      => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY, VAI_TRO_NHAN_VIEN],
     'xu_ly_su_co'         => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY],
 
-    // 9. Báo cáo thống kê & Biểu đồ Chart.js
-    'xem_thong_ke'        => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY],
+    // 9. Báo cáo thống kê & Tra cứu dữ liệu
+    'xem_thong_ke'        => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY, VAI_TRO_NHAN_VIEN],
 
     // 10. Bảng điều khiển Tổng quan (Dashboard)
     'xem_tong_quan'       => [VAI_TRO_QUAN_TRI, VAI_TRO_QUAN_LY, VAI_TRO_NHAN_VIEN],

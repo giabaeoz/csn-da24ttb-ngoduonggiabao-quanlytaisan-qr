@@ -46,10 +46,34 @@ function phien_khoi_dong(): void {
  */
 function dat_thong_bao(string $loai, string $noiDung): void {
     phien_khoi_dong();
-    $_SESSION['__thong_bao'] = [
-        'loai'    => $loai,
-        'noi_dung' => $noiDung,
+    $noiDungSach = trim(strip_tags($noiDung));
+    $banGhi = [
+        'loai'      => $loai,
+        'noi_dung'  => $noiDungSach,
+        'thoi_gian' => date('H:i • d/m/Y'),
     ];
+    $_SESSION['__thong_bao'] = $banGhi;
+
+    if (!isset($_SESSION['__lich_su_thong_bao']) || !is_array($_SESSION['__lich_su_thong_bao'])) {
+        $_SESSION['__lich_su_thong_bao'] = [];
+    }
+    array_unshift($_SESSION['__lich_su_thong_bao'], $banGhi);
+    if (count($_SESSION['__lich_su_thong_bao']) > 15) {
+        $_SESSION['__lich_su_thong_bao'] = array_slice($_SESSION['__lich_su_thong_bao'], 0, 15);
+    }
+}
+
+/**
+ * Lấy danh sách các thông báo gần đây trong phiên làm việc.
+ *
+ * @return array Danh sách thông báo gần đây
+ */
+function lay_lich_su_thong_bao(): array {
+    phien_khoi_dong();
+    if (!isset($_SESSION['__lich_su_thong_bao']) || !is_array($_SESSION['__lich_su_thong_bao'])) {
+        return [];
+    }
+    return $_SESSION['__lich_su_thong_bao'];
 }
 
 /**

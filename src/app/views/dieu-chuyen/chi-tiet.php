@@ -165,8 +165,8 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                                 <?php $stt = 1;
                                 foreach ($dsChiTiet as $item): ?>
                                     <tr>
-                                        <td class="text-center text-muted small"><?= $stt++ ?></td>
-                                        <td>
+                                        <td class="text-center text-muted small text-nowrap"><?= $stt++ ?></td>
+                                        <td class="text-nowrap">
                                             <a href="<?= url('tai-san/chi-tiet.php?id=' . (int)$item['tai_san_id']) ?>"
                                                 class="font-monospace fw-semibold text-primary text-decoration-none">
                                                 <?= e($item['ma_tai_san']) ?>
@@ -174,17 +174,17 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                                         </td>
                                         <td>
                                             <div class="fw-medium text-dark"><?= e($item['ten_tai_san']) ?></div>
-                                            <div class="small text-muted"><?= e($item['ten_loai_tai_san']) ?></div>
+                                            <div class="small text-muted text-nowrap"><?= e($item['ten_loai_tai_san']) ?></div>
                                         </td>
-                                        <td class="small text-muted">
+                                        <td class="small text-muted text-nowrap">
                                             <?= e((string)($item['hang_san_xuat'] ?? '') . ($item['model'] ? ' / ' . $item['model'] : '')) ?: '-' ?>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center text-nowrap">
                                             <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">
                                                 Tốt
                                             </span>
                                         </td>
-                                        <td class="text-center font-monospace fw-semibold text-success">
+                                        <td class="text-center font-monospace fw-semibold text-success text-nowrap">
                                             <?= e($phieu['ma_phong_den']) ?>
                                         </td>
                                     </tr>
@@ -238,7 +238,7 @@ $idsTaiSan = array_column($dsChiTiet, 'tai_san_id');
                     &bull; Vị trí của <strong><?= $tongThietBi ?></strong> thiết bị đã cập nhật sang <strong>Phòng <?= e($phieu['ma_phong_den']) ?></strong>.
                 </li>
                 <li class="mb-2">
-                    &bull; Bàn trực quản lý tài sản được bảo toàn nguyên vẹn.
+                    &bull; Phòng trực quản lý tài sản được bảo toàn nguyên vẹn.
                 </li>
                 <li>
                     &bull; Biên bản bàn giao sẵn sàng để in lưu trữ hồ sơ cơ sở vật chất.

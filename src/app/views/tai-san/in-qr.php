@@ -697,7 +697,7 @@ function renderTrangIn(coTem) {
                 hangModel = ts.ten_loai;
             }
 
-            // Bàn trực
+            // Phòng trực
             const phongTruc = ts.ma_phong_truc ? String(ts.ma_phong_truc).trim() : 'QLTS';
 
             html += '    <article class="khung-tem' + classVien + '">';
@@ -720,7 +720,7 @@ function renderTrangIn(coTem) {
             // Tên thiết bị hiển thị đầy đủ, không cắt dấu ba chấm
             html += '        <div class="tem-ten-thiet-bi" title="' + escapeHtml(ts.ten_tai_san || '') + '">' + escapeHtml(ts.ten_tai_san || '') + '</div>';
             
-            // Dòng phụ trợ: Bàn trực & Model
+            // Dòng phụ trợ: Phòng trực & Model
             html += '        <div class="tem-dong-phu">';
             html += '          <span class="fw-bold">' + escapeHtml(phongTruc) + '</span>';
             if (hangModel) {

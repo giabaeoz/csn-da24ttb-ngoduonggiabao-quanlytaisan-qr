@@ -15,7 +15,7 @@ yeu_cau_quyen('nghiep_vu_muon_tra');
 
 $nguoiDung = nguoi_dung_hien_tai();
 
-// Xác định bàn trực đang thao tác
+// Xác định phòng trực đang thao tác
 $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
 if ($phongTrucId <= 0 && $nguoiDung['vai_tro'] === VAI_TRO_QUAN_TRI) {
     // Nếu là Quản trị viên chưa gán phòng trực thì cho phép chọn hoặc mặc định bàn 1 (D6)
@@ -29,7 +29,7 @@ if ($phongTrucId <= 0) {
 
 $thongBaoLoi = '';
 
-// Kiểm tra xem bàn trực có đang bị khóa bởi đợt kiểm kê không
+// Kiểm tra xem phòng trực có đang bị khóa bởi đợt kiểm kê không
 $dangBiKhoaKiemKe = muon_kiem_tra_khoa_kiem_ke($phongTrucId);
 
 // Xử lý gửi biểu mẫu tạo phiếu mượn
@@ -37,43 +37,46 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!csrf_kiem_tra()) {
         $thongBaoLoi = 'Phiên làm việc bảo mật đã hết hạn. Vui lòng thử lại.';
     } elseif ($dangBiKhoaKiemKe) {
-        $thongBaoLoi = 'Bàn trực hiện đang có đợt kiểm kê tài sản. Không thể lập phiếu mượn lúc này.';
+        $thongBaoLoi = 'Phòng trực hiện đang có đợt kiểm kê tài sản. Không thể lập phiếu mượn lúc này.';
     } else {
         $nguoiMuonId = doc_so_nguyen('nguoi_muon_id', 0, $_POST);
         $phongHocId = doc_so_nguyen('phong_hoc_id', 0, $_POST);
+        $phongHocNhap = trim((string)($_POST['phong_hoc_nhap'] ?? ''));
+        if ($phongHocNhap !== '') {
+            $phongHocId = phong_hoc_tim_hoac_tao_nhanh($phongHocNhap);
+        }
         $hanTra = (string)($_POST['han_tra'] ?? '');
         $mucDich = (string)($_POST['muc_dich_su_dung'] ?? '');
         $dsTsRaw = $_POST['tai_san_ids'] ?? [];
 
         // Tự động nhận diện hoặc tạo mới người mượn trực tiếp từ thông tin khai báo trên trang mượn
+        $tuKhoaNmNhap = trim((string)($_POST['tu_khoa_nguoi_muon'] ?? ''));
         $maSoNhap = trim((string)($_POST['moi_ma_so_truong'] ?? ''));
         $hoTenNhap = trim((string)($_POST['moi_ho_ten'] ?? ''));
         $loaiNhap = trim((string)($_POST['moi_loai_nguoi_muon'] ?? 'SINH_VIEN'));
         $lopNhap = trim((string)($_POST['moi_lop_don_vi'] ?? ''));
         $sdtNhap = trim((string)($_POST['moi_so_dien_thoai'] ?? ''));
 
+        if ($maSoNhap === '' && $hoTenNhap === '' && $tuKhoaNmNhap !== '') {
+            if (preg_match('/^[A-Za-z0-9_-]+$/', $tuKhoaNmNhap)) {
+                $maSoNhap = $tuKhoaNmNhap;
+            } else {
+                $hoTenNhap = $tuKhoaNmNhap;
+            }
+        }
+
         $dangKyNhanh = null;
         if ($maSoNhap !== '' || $hoTenNhap !== '') {
-            // Kiểm tra nếu mã số trường đã có trong CSDL thì dùng luôn hồ sơ đó (cập nhật thông tin mới nếu có thay đổi)
-            if ($maSoNhap !== '') {
-                $nmTonTai = nguoi_muon_tim_theo_ma_so_truong($maSoNhap);
-                if ($nmTonTai !== null) {
-                    $nguoiMuonId = (int)$nmTonTai['id'];
-                    // Cập nhật bổ sung thông tin nếu người dùng có nhập trên form
-                    nguoi_muon_luu([
-                        'ma_nguoi_muon'   => $nmTonTai['ma_nguoi_muon'],
-                        'ma_so_truong'    => $maSoNhap,
-                        'ho_ten'          => $hoTenNhap !== '' ? $hoTenNhap : $nmTonTai['ho_ten'],
-                        'loai_nguoi_muon' => in_array($loaiNhap, ['SINH_VIEN', 'GIANG_VIEN'], true) ? $loaiNhap : $nmTonTai['loai_nguoi_muon'],
-                        'lop_don_vi'      => $lopNhap !== '' ? $lopNhap : (string)($nmTonTai['lop_don_vi'] ?? ''),
-                        'so_dien_thoai'   => $sdtNhap !== '' ? $sdtNhap : (string)($nmTonTai['so_dien_thoai'] ?? ''),
-                    ], $nguoiMuonId);
-                } else {
-                    // Mã số mới hoàn toàn -> Đặt lại nguoiMuonId = 0 để tạo hồ sơ người mượn mới
-                    $nguoiMuonId = 0;
-                }
-            }
-            if ($nguoiMuonId <= 0) {
+            $resLuuNm = nguoi_muon_luu_khi_muon([
+                'ma_so_truong'    => $maSoNhap,
+                'ho_ten'          => $hoTenNhap,
+                'loai_nguoi_muon' => $loaiNhap,
+                'lop_don_vi'      => $lopNhap,
+                'so_dien_thoai'   => $sdtNhap,
+            ]);
+            if ($resLuuNm['thanh_cong'] && $resLuuNm['id'] > 0) {
+                $nguoiMuonId = (int)$resLuuNm['id'];
+            } else {
                 $dangKyNhanh = [
                     'ma_so_truong'    => $maSoNhap,
                     'ho_ten'          => $hoTenNhap,

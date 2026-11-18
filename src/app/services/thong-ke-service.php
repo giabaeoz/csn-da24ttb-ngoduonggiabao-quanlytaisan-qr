@@ -15,7 +15,7 @@ if (!defined('APP_KHOI_DONG')) {
 require_once __DIR__ . '/danh-muc-service.php';
 
 /**
- * Thống kê các chỉ số tổng quan (KPIs) của hệ thống hoặc theo bàn trực.
+ * Thống kê các chỉ số tổng quan (KPIs) của hệ thống hoặc theo phòng trực.
  *
  * @param int|null $phongTrucId
  * @return array
@@ -503,8 +503,8 @@ function thong_ke_hoat_dong_gan_day(int $limit = 8, ?int $phongTrucId = null): a
  */
 function tong_quan_lay_phong_truc_id(mysqli $db, array $nguoiDung): ?int {
     $vaiTro = (string)($nguoiDung['vai_tro'] ?? '');
-    if ($vaiTro !== 'NHAN_VIEN') {
-        return null; // QUAN_LY và QUAN_TRI xem toàn hệ thống
+    if ($vaiTro === 'QUAN_TRI') {
+        return null; // Chỉ Quản trị viên (QUAN_TRI) mới xem số liệu toàn hệ thống
     }
 
     $nvId = (int)($nguoiDung['id'] ?? 0);
@@ -518,7 +518,7 @@ function tong_quan_lay_phong_truc_id(mysqli $db, array $nguoiDung): ?int {
     $stmt->close();
 
     if (!$nv || empty($nv['phong_truc_id'])) {
-        return -1; // Không tồn tại hoặc chưa phân bàn trực -> không có quyền xem tài sản bàn khác
+        return -1; // Không tồn tại hoặc chưa phân phòng trực -> không có quyền xem tài sản bàn khác
     }
     return (int)$nv['phong_truc_id'];
 }
@@ -565,6 +565,25 @@ function tong_quan_so_lieu(mysqli $db, array $nguoiDung): array {
     $rowQh = $db->query($sqlQh)->fetch_assoc();
     $quaHan = (int)($rowQh['so_qua_han'] ?? 0);
 
+    // Đếm tổng số người đang mượn tài sản (còn thiết bị chưa trả tại phòng trực)
+    $sqlNmDm = "SELECT COUNT(DISTINCT pm.nguoi_muon_id) AS so_nguoi_dang_muon
+                FROM phieu_muon pm
+                JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
+                WHERE pm.trang_thai = 'DANG_MUON'
+                  AND ctm.thoi_gian_tra IS NULL
+                  AND $wherePm";
+    $rowNmDm = $db->query($sqlNmDm)->fetch_assoc();
+    $nguoiDangMuon = (int)($rowNmDm['so_nguoi_dang_muon'] ?? 0);
+
+    // Đếm số tài sản có sự cố (hư hỏng, mất, bảo trì, ngừng sử dụng hoặc có sự cố chưa xử lý xong)
+    $sqlTsSc = "SELECT COUNT(DISTINCT ts.id) AS so_tai_san_su_co
+                FROM tai_san ts
+                LEFT JOIN su_co_tai_san sc ON sc.tai_san_id = ts.id AND sc.trang_thai IN ('CHUA_XU_LY', 'DANG_XU_LY')
+                WHERE ($whereTs)
+                  AND (ts.tinh_trang IN ('HU_HONG', 'MAT') OR ts.trang_thai IN ('BAO_TRI', 'NGUNG_SU_DUNG') OR sc.id IS NOT NULL)";
+    $rowTsSc = $db->query($sqlTsSc)->fetch_assoc();
+    $taiSanSuCo = (int)($rowTsSc['so_tai_san_su_co'] ?? 0);
+
     // Số liệu dành cho phân quyền Quản trị viên (Admin)
     $rowTk = $db->query("SELECT COUNT(*) AS tong_tai_khoan FROM nhan_vien")->fetch_assoc();
     $tongTaiKhoan = (int)($rowTk['tong_tai_khoan'] ?? 0);
@@ -581,6 +600,8 @@ function tong_quan_so_lieu(mysqli $db, array $nguoiDung): array {
         'dang_muon'                => $dangMuon,
         'khac'                     => $khac,
         'qua_han'                  => $quaHan,
+        'nguoi_dang_muon'          => $nguoiDangMuon,
+        'tai_san_su_co'            => $taiSanSuCo,
         'tong_tai_khoan'           => $tongTaiKhoan,
         'tong_phong_truc_hoat_dong'=> $tongPhongTrucHd,
         'tong_nguoi_muon'          => $tongNguoiMuon,

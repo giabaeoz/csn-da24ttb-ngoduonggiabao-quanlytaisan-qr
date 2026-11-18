@@ -48,6 +48,51 @@ function nguoi_muon_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTrang
         $types .= 'sssss';
     }
 
+    // 3. Lọc theo phòng học đang sử dụng (nếu có)
+    if (!empty($boLoc['phong']) && trim((string)$boLoc['phong']) !== '') {
+        $phongKw = '%' . trim((string)$boLoc['phong']) . '%';
+        $where .= " AND EXISTS (
+            SELECT 1 FROM phieu_muon pm_ph
+            JOIN phong_hoc ph_f ON pm_ph.phong_hoc_id = ph_f.id
+            WHERE pm_ph.nguoi_muon_id = nm.id
+              AND (ph_f.ma_phong LIKE ? OR ph_f.ten_phong LIKE ?)
+        )";
+        $params[] = $phongKw;
+        $params[] = $phongKw;
+        $types .= 'ss';
+    }
+
+    // 4. Lọc theo phòng trực (nếu tài khoản gắn với phòng trực cụ thể, chỉ hiển thị người mượn có giao dịch tại phòng trực này)
+    $phongTrucId = !empty($boLoc['phong_truc_id']) ? (int)$boLoc['phong_truc_id'] : null;
+    $ptSubWhere = "";
+    if ($phongTrucId !== null && $phongTrucId > 0) {
+        $where .= " AND EXISTS (
+            SELECT 1 FROM phieu_muon pm_pt
+            WHERE pm_pt.nguoi_muon_id = nm.id AND pm_pt.phong_truc_id = ?
+        )";
+        $params[] = $phongTrucId;
+        $types .= 'i';
+        $ptSubWhere = " AND pm.phong_truc_id = " . $phongTrucId;
+    }
+
+    // 5. Lọc theo tab trạng thái mượn (dang_muon / qua_han / tat_ca)
+    $tab = trim((string)($boLoc['tab'] ?? ''));
+    if ($tab === 'dang_muon') {
+        $where .= " AND EXISTS (
+            SELECT 1 FROM phieu_muon pm_dm
+            JOIN chi_tiet_muon ctm_dm ON pm_dm.id = ctm_dm.phieu_muon_id
+            WHERE pm_dm.nguoi_muon_id = nm.id AND ctm_dm.thoi_gian_tra IS NULL" . ($phongTrucId ? " AND pm_dm.phong_truc_id = " . (int)$phongTrucId : "") . "
+        )";
+    } elseif ($tab === 'qua_han') {
+        $where .= " AND EXISTS (
+            SELECT 1 FROM phieu_muon pm_qh
+            JOIN chi_tiet_muon ctm_qh ON pm_qh.id = ctm_qh.phieu_muon_id
+            WHERE pm_qh.nguoi_muon_id = nm.id
+              AND ctm_qh.thoi_gian_tra IS NULL
+              AND pm_qh.han_tra < NOW()" . ($phongTrucId ? " AND pm_qh.phong_truc_id = " . (int)$phongTrucId : "") . "
+        )";
+    }
+
     // Đếm tổng số bản ghi
     $sqlDem = "SELECT COUNT(*) FROM nguoi_muon nm $where";
     if (!empty($params)) {
@@ -62,20 +107,53 @@ function nguoi_muon_danh_sach(array $boLoc = [], int $trang = 1, int $soMoiTrang
 
     $tongSoTrang = (int)ceil($tongSo / $soMoiTrang);
 
-    // Lấy danh sách kèm số thiết bị đang mượn (chưa trả)
+    // Lấy danh sách kèm số thiết bị đang mượn, phòng học gần nhất và hạn trả gần nhất
     $sql = "SELECT nm.*,
                    (SELECT COUNT(*) 
                     FROM phieu_muon pm 
                     JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id 
-                    WHERE pm.nguoi_muon_id = nm.id AND ctm.thoi_gian_tra IS NULL
+                    WHERE pm.nguoi_muon_id = nm.id AND ctm.thoi_gian_tra IS NULL $ptSubWhere
                    ) AS so_thiet_bi_dang_muon,
                    (SELECT COUNT(*) 
                     FROM phieu_muon pm 
+                    JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id 
+                    WHERE pm.nguoi_muon_id = nm.id AND ctm.thoi_gian_tra IS NULL $ptSubWhere
+                   ) AS so_thiet_bi_chua_tra,
+                   (SELECT COUNT(*) 
+                    FROM phieu_muon pm 
+                    WHERE pm.nguoi_muon_id = nm.id $ptSubWhere
+                   ) AS tong_so_luot_muon,
+                   (SELECT ph_sub.ma_phong
+                    FROM phieu_muon pm
+                    JOIN phong_hoc ph_sub ON pm.phong_hoc_id = ph_sub.id
+                    WHERE pm.nguoi_muon_id = nm.id $ptSubWhere
+                    ORDER BY (pm.trang_thai = 'DANG_MUON') DESC, pm.id DESC
+                    LIMIT 1
+                   ) AS phong_hoc_gan_nhat,
+                   (SELECT pm.han_tra
+                    FROM phieu_muon pm
+                    WHERE pm.nguoi_muon_id = nm.id $ptSubWhere
+                    ORDER BY (pm.trang_thai = 'DANG_MUON') DESC, pm.id DESC
+                    LIMIT 1
+                   ) AS han_tra_gan_nhat,
+                   (SELECT pm.thoi_gian_muon
+                    FROM phieu_muon pm
+                    WHERE pm.nguoi_muon_id = nm.id $ptSubWhere
+                    ORDER BY pm.id DESC
+                    LIMIT 1
+                   ) AS thoi_gian_muon_gan_nhat,
+                   (SELECT COUNT(*)
+                    FROM phieu_muon pm
+                    JOIN chi_tiet_muon ctm ON pm.id = ctm.phieu_muon_id
                     WHERE pm.nguoi_muon_id = nm.id
-                   ) AS tong_so_luot_muon
+                      AND ctm.thoi_gian_tra IS NULL
+                      AND pm.han_tra < NOW() $ptSubWhere
+                   ) AS so_thiet_bi_qua_han
             FROM nguoi_muon nm
             $where
-            ORDER BY nm.id DESC
+            ORDER BY (so_thiet_bi_dang_muon > 0) DESC,
+                     COALESCE(thoi_gian_muon_gan_nhat, nm.tao_luc) DESC,
+                     nm.id DESC
             LIMIT ?, ?";
 
     $paramsLay = $params;
@@ -286,36 +364,135 @@ function nguoi_muon_luu(array $duLieu, ?int $id = null): array {
 }
 
 /**
- * Xóa người mượn nếu chưa từng phát sinh giao dịch mượn tài sản.
+ * Lưu hoặc cập nhật hồ sơ người mượn trực tiếp khi thực hiện giao dịch mượn:
+ * Đảm bảo mọi thông tin người mượn khai báo tại quầy luôn được lưu vào bảng nguoi_muon.
+ *
+ * @param array $duLieu ['ma_so_truong', 'ho_ten', 'loai_nguoi_muon', 'lop_don_vi', 'so_dien_thoai']
+ * @return array ['thanh_cong' => bool, 'loi' => string, 'id' => int]
+ */
+function nguoi_muon_luu_khi_muon(array $duLieu): array {
+    $db = db();
+    $maSoTruong = strtoupper(trim((string)($duLieu['ma_so_truong'] ?? '')));
+    $hoTen = trim((string)($duLieu['ho_ten'] ?? ''));
+    $loai = in_array($duLieu['loai_nguoi_muon'] ?? '', ['SINH_VIEN', 'GIANG_VIEN'], true)
+        ? (string)$duLieu['loai_nguoi_muon']
+        : 'SINH_VIEN';
+    $lopDonVi = trim((string)($duLieu['lop_don_vi'] ?? ''));
+    $sdt = trim((string)($duLieu['so_dien_thoai'] ?? ''));
+
+    // Nếu nhân viên chỉ nhập mã số hoặc chỉ nhập họ tên, bổ sung giá trị hợp lệ để lưu hồ sơ
+    if ($maSoTruong === '' && $hoTen === '') {
+        return ['thanh_cong' => false, 'loi' => 'Vui lòng nhập Mã số hoặc Họ tên người mượn.', 'id' => 0];
+    }
+    if ($maSoTruong === '') {
+        $maSoTruong = ($sdt !== '') ? ('NM' . preg_replace('/\D+/', '', $sdt)) : ('NM' . date('ymdHis'));
+    }
+    if ($hoTen === '') {
+        $hoTen = 'Người mượn ' . $maSoTruong;
+    }
+
+    // 1. Kiểm tra xem mã số trường đã có trong bảng nguoi_muon chưa
+    $nmTonTai = nguoi_muon_tim_theo_ma_so_truong($maSoTruong);
+    if ($nmTonTai !== null) {
+        $nmId = (int)$nmTonTai['id'];
+        $hoTenCapNhat = ($hoTen !== '' && $hoTen !== ('Người mượn ' . $maSoTruong)) ? $hoTen : (string)$nmTonTai['ho_ten'];
+        $lopCapNhat = $lopDonVi !== '' ? $lopDonVi : (string)($nmTonTai['lop_don_vi'] ?? '');
+        $sdtCapNhat = $sdt !== '' ? $sdt : (string)($nmTonTai['so_dien_thoai'] ?? '');
+        $sdtDb = $sdtCapNhat !== '' ? $sdtCapNhat : null;
+
+        $stmtUp = $db->prepare("UPDATE nguoi_muon SET ho_ten = ?, loai_nguoi_muon = ?, lop_don_vi = ?, so_dien_thoai = ? WHERE id = ?");
+        $stmtUp->bind_param('ssssi', $hoTenCapNhat, $loai, $lopCapNhat, $sdtDb, $nmId);
+        $stmtUp->execute();
+        $stmtUp->close();
+
+        return ['thanh_cong' => true, 'loi' => '', 'id' => $nmId];
+    }
+
+    // 2. Tạo mới hồ sơ người mượn trong bảng nguoi_muon
+    $maNguoiMuon = 'NM-' . $maSoTruong;
+    $checkMa = $db->prepare("SELECT id FROM nguoi_muon WHERE ma_nguoi_muon = ? LIMIT 1");
+    $checkMa->bind_param('s', $maNguoiMuon);
+    $checkMa->execute();
+    if ($checkMa->get_result()->num_rows > 0) {
+        $maNguoiMuon = 'NM-' . $maSoTruong . '-' . rand(10, 99);
+    }
+    $checkMa->close();
+
+    $sdtDb = $sdt !== '' ? $sdt : null;
+    $stmtIns = $db->prepare("INSERT INTO nguoi_muon (ma_nguoi_muon, ma_so_truong, ho_ten, loai_nguoi_muon, lop_don_vi, so_dien_thoai) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmtIns->bind_param('ssssss', $maNguoiMuon, $maSoTruong, $hoTen, $loai, $lopDonVi, $sdtDb);
+    $stmtIns->execute();
+    $moiId = (int)$db->insert_id;
+    $stmtIns->close();
+
+    return ['thanh_cong' => $moiId > 0, 'loi' => '', 'id' => $moiId];
+}
+
+/**
+ * Xóa hồ sơ người mượn (tự động giải phóng thiết bị đang mượn nếu có và dọn lịch sử phiếu mượn liên kết).
  */
 function nguoi_muon_xoa(int $id): array {
     $db = db();
-
-    $check = $db->prepare("SELECT COUNT(*) FROM phieu_muon WHERE nguoi_muon_id = ?");
-    $check->bind_param('i', $id);
-    $check->execute();
-    $soPm = (int)$check->get_result()->fetch_row()[0];
-    $check->close();
-
-    if ($soPm > 0) {
-        return ['thanh_cong' => false, 'loi' => "Không thể xóa người mượn này vì đã có $soPm giao dịch mượn tài sản trong lịch sử hệ thống."];
+    if ($id <= 0) {
+        return ['thanh_cong' => false, 'loi' => 'ID người mượn không hợp lệ.'];
     }
 
-    $stmt = $db->prepare("DELETE FROM nguoi_muon WHERE id = ?");
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    $stmt->close();
-    return ['thanh_cong' => true, 'loi' => ''];
+    $db->begin_transaction();
+    try {
+        // 1. Hoàn trả trạng thái SAN_SANG cho các thiết bị người này đang mượn chưa trả (nếu có)
+        $sqlTs = "UPDATE tai_san ts
+                  JOIN chi_tiet_muon ctm ON ctm.tai_san_id = ts.id
+                  JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                  SET ts.trang_thai = 'SAN_SANG', ts.phong_hoc_hien_tai_id = NULL
+                  WHERE pm.nguoi_muon_id = ? AND ctm.thoi_gian_tra IS NULL";
+        $stmtTs = $db->prepare($sqlTs);
+        $stmtTs->bind_param('i', $id);
+        $stmtTs->execute();
+        $stmtTs->close();
+
+        // 2. Xóa chi tiết mượn thuộc các phiếu mượn của người này
+        $sqlCtm = "DELETE ctm FROM chi_tiet_muon ctm
+                   JOIN phieu_muon pm ON ctm.phieu_muon_id = pm.id
+                   WHERE pm.nguoi_muon_id = ?";
+        $stmtCtm = $db->prepare($sqlCtm);
+        $stmtCtm->bind_param('i', $id);
+        $stmtCtm->execute();
+        $stmtCtm->close();
+
+        // 3. Xóa các phiếu mượn của người này
+        $stmtPm = $db->prepare("DELETE FROM phieu_muon WHERE nguoi_muon_id = ?");
+        $stmtPm->bind_param('i', $id);
+        $stmtPm->execute();
+        $stmtPm->close();
+
+        // 4. Xóa hồ sơ người mượn
+        $stmt = $db->prepare("DELETE FROM nguoi_muon WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $stmt->close();
+
+        $db->commit();
+        return ['thanh_cong' => true, 'loi' => ''];
+    } catch (Throwable $e) {
+        $db->rollback();
+        return ['thanh_cong' => false, 'loi' => 'Không thể xóa hồ sơ người mượn: ' . $e->getMessage()];
+    }
 }
 
 /**
  * Lấy toàn bộ lịch sử các phiếu mượn và danh sách thiết bị của một người mượn.
  *
  * @param int $nguoiMuonId
+ * @param int|null $phongTrucId Lọc theo phòng trực (nếu cán bộ được gán phòng trực)
  * @return array Danh sách phiếu mượn kèm chi tiết thiết bị
  */
-function nguoi_muon_lich_su_muon(int $nguoiMuonId): array {
+function nguoi_muon_lich_su_muon(int $nguoiMuonId, ?int $phongTrucId = null): array {
     $db = db();
+
+    $wherePt = "";
+    if ($phongTrucId !== null && $phongTrucId > 0) {
+        $wherePt = " AND pm.phong_truc_id = " . (int)$phongTrucId;
+    }
 
     // 1. Lấy danh sách phiếu mượn
     $sql = "SELECT pm.*, 
@@ -328,7 +505,7 @@ function nguoi_muon_lich_su_muon(int $nguoiMuonId): array {
             JOIN phong_hoc ph ON pm.phong_hoc_id = ph.id
             JOIN phong_truc pt ON pm.phong_truc_id = pt.id
             JOIN nhan_vien nv ON pm.nhan_vien_lap_id = nv.id
-            WHERE pm.nguoi_muon_id = ?
+            WHERE pm.nguoi_muon_id = ? $wherePt
             ORDER BY pm.thoi_gian_muon DESC";
 
     $stmt = $db->prepare($sql);

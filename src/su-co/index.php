@@ -24,8 +24,8 @@ $boLoc = [
     'den_ngay'     => trim((string)($_GET['den_ngay'] ?? '')),
 ];
 
-// Nếu là nhân viên và có gán bàn trực, cố định lọc theo bàn trực của mình
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && $phongTrucId > 0) {
+// Nếu không phải Quản trị viên và có gán phòng trực, cố định lọc theo phòng trực của mình
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && $phongTrucId > 0) {
     $boLoc['phong_truc_id'] = $phongTrucId;
 }
 

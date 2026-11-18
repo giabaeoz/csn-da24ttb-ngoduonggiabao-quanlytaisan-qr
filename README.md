@@ -1,4 +1,4 @@
-# Hệ thống Quản lý Mượn – Trả và Kiểm kê Tài sản bằng Mã QR
+# Hệ thống Quản lý Mượn - Trả và Kiểm kê Tài sản bằng Mã QR
 
 **Đề tài Đồ án Cơ sở ngành Công nghệ Thông tin**
 
@@ -110,11 +110,37 @@ quanlytaisan-qr/
 
 ## 5. Hướng dẫn cài đặt và khởi chạy hệ thống
 
-### Bước 1: Yêu cầu môi trường
+### CÁCH 1: Triển khai nhanh bằng Docker (Khuyên dùng - 1 lệnh duy nhất)
+
+Hệ thống đã được đóng gói đầy đủ môi trường gồm **PHP 8.2 Apache**, **MySQL 8.0** và **phpMyAdmin**. Database và 3 tài khoản mẫu được tự động khởi tạo khi chạy:
+
+```powershell
+# Khởi động toàn bộ hệ thống ở chế độ nền
+docker compose up -d
+```
+
+Sau khi khởi chạy:
+- **Trang web Quản lý:** [http://localhost:8088](http://localhost:8088)
+- **phpMyAdmin (Quản lý CSDL):** [http://localhost:8081](http://localhost:8081)
+- **Tài khoản đăng nhập sẵn có:**
+  - Quản trị viên: `admin` / `admin123`
+  - Quản lý: `quanly01` / `quanly123`
+  - Nhân viên trực D6: `nhanvien01` / `nhanvien123`
+
+Dừng hệ thống khi không sử dụng:
+```powershell
+docker compose down
+```
+
+---
+
+### CÁCH 2: Cài đặt thủ công bằng XAMPP (Truyền thống)
+
+#### Bước 1: Yêu cầu môi trường
 - Máy tính cài đặt **XAMPP for Windows** (PHP 8.2 trở lên, MySQL 8.0 trở lên).
 - Đảm bảo đã bật các extension trong `php.ini`: `extension=mysqli`, `extension=mbstring`, `extension=curl`.
 
-### Bước 2: Khởi tạo Cơ sở dữ liệu MySQL
+#### Bước 2: Khởi tạo Cơ sở dữ liệu MySQL
 1. Khởi động module **Apache** và **MySQL** trên XAMPP Control Panel.
 2. Mở cửa sổ dòng lệnh (PowerShell hoặc CMD) tại thư mục dự án và chạy:
 
@@ -128,7 +154,7 @@ C:\xampp\mysql\bin\mysql.exe -u root -p dacsn_qlts_qr < setup/du_lieu_mau.sql
 
 *(Hoặc mở phpMyAdmin tại `http://localhost/phpmyadmin`, chọn thẻ **Import** và lần lượt nhập hai tập tin trên).*
 
-### Bước 3: Cấu hình kết nối CSDL
+#### Bước 3: Cấu hình kết nối CSDL
 Tạo tập tin cấu hình cục bộ từ tập tin mẫu:
 
 ```powershell
@@ -137,7 +163,7 @@ Copy-Item src/app/config/config.example.php src/app/config/config.local.php
 
 Mở `src/app/config/config.local.php` và cập nhật thông tin kết nối MySQL của máy bạn (ví dụ: mật khẩu root). Tập tin này đã nằm trong `.gitignore` để không bao giờ làm lộ thông tin mật khẩu lên kho mã nguồn.
 
-### Bước 4: Chạy kiểm tra chẩn đoán môi trường
+#### Bước 4: Chạy kiểm tra chẩn đoán môi trường
 Chạy script kiểm tra để xác nhận môi trường đã sẵn sàng:
 
 ```powershell
@@ -146,7 +172,7 @@ C:\xampp\php\php.exe setup/kiem_tra_moi_truong.php
 
 Khi nhận được thông báo `KẾT QUẢ: 12 tiêu chí đạt, 0 tiêu chí chưa đạt`, hệ thống đã sẵn sàng 100%.
 
-### Bước 5: Khởi tạo 3 tài khoản mẫu mặc định
+#### Bước 5: Khởi tạo 3 tài khoản mẫu mặc định
 Tạo tài khoản thử nghiệm qua công cụ CLI với mật khẩu được mã hóa chuẩn `password_hash()`:
 
 ```powershell
@@ -160,7 +186,7 @@ C:\xampp\php\php.exe setup/tao_tai_khoan.php --username=quanly01 --role=QUAN_LY 
 C:\xampp\php\php.exe setup/tao_tai_khoan.php --username=nhanvien01 --role=NHAN_VIEN --desk=1 --password=nhanvien123
 ```
 
-### Bước 6: Khởi động máy chủ Web
+#### Bước 6: Khởi động máy chủ Web
 Chạy PHP Built-in Server tại thư mục `src`:
 
 ```powershell

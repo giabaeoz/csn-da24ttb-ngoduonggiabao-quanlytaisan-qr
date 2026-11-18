@@ -39,7 +39,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!csrf_kiem_tra()) {
         $thongBaoLoi = 'Phiên làm việc bảo mật đã hết hạn. Vui lòng tải lại trang và thử lại.';
     } elseif ($dangBiKhoaKiemKe) {
-        $thongBaoLoi = 'Bàn trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.';
+        $thongBaoLoi = 'Phòng trực hiện đang diễn ra đợt kiểm kê tài sản. Hoạt động nhận trả tạm thời bị khóa.';
     } else {
         $ketQua = tra_thuc_hien($_POST, (int)$nguoiDung['id'], $phongTrucId);
 
@@ -87,7 +87,7 @@ if ($idCanTim > 0 && $phieuHienTai === null) {
     }
 }
 
-// Lấy danh sách phiếu mượn đang chờ trả tại bàn trực để chọn nhanh
+// Lấy danh sách phiếu mượn đang chờ trả tại phòng trực để chọn nhanh
 $danhSachChoTra = tra_danh_sach_cho_xu_ly($phongTrucId > 0 ? $phongTrucId : null, 10);
 
 $tieuDeTrang = 'Tiếp nhận Trả tài sản & Báo cáo sự cố';

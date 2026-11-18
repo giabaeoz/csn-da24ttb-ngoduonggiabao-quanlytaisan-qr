@@ -65,7 +65,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     </div>
                                     <div class="small text-muted mt-1" id="viewMoTaPhu">
                                         <?php if ($taiSanChon): ?>
-                                            Bàn trực: <strong><?= e($taiSanChon['ten_phong_truc'] ?? '') ?></strong> &bull;
+                                            Phòng trực: <strong><?= e($taiSanChon['ten_phong_truc'] ?? '') ?></strong> &bull;
                                             Vị trí: <strong><?= e($taiSanChon['ma_phong'] ?? 'Kho trực') ?></strong>
                                         <?php endif; ?>
                                     </div>
@@ -86,7 +86,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                             </div>
 
                             <div class="mb-2">
-                                <label class="mo-ta-phu mb-1">Hoặc chọn nhanh từ danh mục thiết bị của bàn trực:</label>
+                                <label class="mo-ta-phu mb-1">Hoặc chọn nhanh từ danh mục thiết bị của phòng trực:</label>
                                 <select class="o-nhap" id="selectTaiSan" onchange="chonTaiSanTuSelect(this)">
                                     <option value="">-- Chọn thiết bị từ danh sách --</option>
                                     <?php foreach ($danhSachTaiSan as $ts): ?>
@@ -174,7 +174,7 @@ function hienThiTheThietBi(id, ma, ten, vitri, phongtruc) {
     document.getElementById('inputTaiSanId').value = id;
     document.getElementById('viewMaTaiSan').textContent = ma;
     document.getElementById('viewTenTaiSan').textContent = ten;
-    document.getElementById('viewMoTaPhu').innerHTML = 'Bàn trực: <strong>' + (phongtruc || 'Kho trực') + '</strong> &bull; Vị trí: <strong>' + (vitri || 'Kho trực') + '</strong>';
+    document.getElementById('viewMoTaPhu').innerHTML = 'Phòng trực: <strong>' + (phongtruc || 'Kho trực') + '</strong> &bull; Vị trí: <strong>' + (vitri || 'Kho trực') + '</strong>';
 
     document.getElementById('theThietBiChon').classList.remove('d-none');
     document.getElementById('khungChonThietBi').classList.add('d-none');

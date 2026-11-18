@@ -20,9 +20,9 @@ $ngayMuon = trim((string)($_GET['ngay_muon'] ?? ''));
 $phongTrucId = doc_so_nguyen('phong_truc_id', 0, $_GET);
 $trang = doc_so_nguyen('trang', 1, $_GET);
 
-// Nếu là nhân viên trực và chưa chọn phòng thì mặc định phòng của mình
-if ($nguoiDung['vai_tro'] === VAI_TRO_NHAN_VIEN && empty($_GET['phong_truc_id']) && !isset($_GET['tat_ca_phong'])) {
-    $phongTrucId = (int)($nguoiDung['phong_truc_id'] ?? 0);
+// Nếu không phải QUAN_TRI và có phòng trực phân công (QUAN_LY hoặc NHAN_VIEN), cố định theo phòng trực của mình
+if ($nguoiDung['vai_tro'] !== VAI_TRO_QUAN_TRI && !empty($nguoiDung['phong_truc_id'])) {
+    $phongTrucId = (int)$nguoiDung['phong_truc_id'];
 }
 
 $boLoc = [

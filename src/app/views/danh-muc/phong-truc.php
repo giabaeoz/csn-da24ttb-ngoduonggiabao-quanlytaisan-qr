@@ -102,12 +102,12 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex justify-content-end gap-1">
+                                    <div class="d-flex justify-content-end gap-2">
                                         <?php
                                         $chiTietPt = [
                                             ['nhan' => 'Mã phòng trực', 'gia_tri' => $pt['ma_phong_truc'] ?? ''],
                                             ['nhan' => 'Tên phòng trực', 'gia_tri' => $pt['ten_phong_truc'] ?? ''],
-                                            ['nhan' => 'Vị trí đặt bàn trực', 'gia_tri' => ($pt['vi_tri'] ?? '') ?: '---'],
+                                            ['nhan' => 'Vị trí đặt phòng trực', 'gia_tri' => ($pt['vi_tri'] ?? '') ?: '---'],
                                             ['nhan' => 'Nhân sự phân công', 'gia_tri' => (int)($pt['so_nhan_vien'] ?? 0) . ' nhân viên'],
                                             ['nhan' => 'Tài sản quản lý', 'gia_tri' => (int)($pt['so_tai_san'] ?? 0) . ' thiết bị'],
                                             ['nhan' => 'Trạng thái', 'gia_tri' => (int)($pt['dang_hoat_dong'] ?? 0) === 1 ? 'Đang hoạt động' : 'Tạm tắt'],

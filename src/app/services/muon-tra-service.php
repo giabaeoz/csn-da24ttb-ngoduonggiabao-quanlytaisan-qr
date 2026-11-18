@@ -41,16 +41,47 @@ function muon_kiem_tra_khoa_kiem_ke(int $phongTrucId): bool {
 }
 
 /**
+ * Tính hạn trả mặc định theo 2 buổi căn cứ vào thời gian mượn:
+ * - Buổi sáng (phát sinh từ 06:00 sáng trở đi đến trước 12:00 trưa): hạn trả tự động là 11:30 cùng ngày.
+ *   (Nếu phát sinh trong khoảng 11:30 - 11:59 khi 11:30 đã qua thì tự động chuyển sang hạn trả buổi chiều 17:30).
+ * - Buổi chiều (phát sinh từ 12:00 trưa trở đi): hạn trả tự động là 17:30 cùng ngày.
+ *   (Nếu phát sinh từ 17:30 trở đi thì chuyển sang 11:30 sáng ngày hôm sau để đảm bảo hạn trả trong tương lai).
+ *
+ * @param int|null $thoiDiemMuon Timestamp thời điểm mượn (mặc định time())
+ * @return string Chuỗi datetime chuẩn 'Y-m-d H:i:s'
+ */
+function muon_tinh_han_tra_mac_dinh(?int $thoiDiemMuon = null): string {
+    $ts = $thoiDiemMuon ?? time();
+    $ngay = date('Y-m-d', $ts);
+    $gio = (int)date('G', $ts);
+    $phut = (int)date('i', $ts);
+    $tongPhut = $gio * 60 + $phut;
+
+    if ($tongPhut < 12 * 60) {
+        if ($tongPhut < 11 * 60 + 30) {
+            return $ngay . ' 11:30:00';
+        }
+        return $ngay . ' 17:30:00';
+    }
+
+    if ($tongPhut < 17 * 60 + 30) {
+        return $ngay . ' 17:30:00';
+    }
+
+    return date('Y-m-d 11:30:00', strtotime('+1 day', $ts));
+}
+
+/**
  * Tạo mới phiếu mượn tài sản (Thực thi Transaction ACID an toàn).
  *
  * Quy trình xử lý:
- *  1. Kiểm tra khóa kiểm kê tại bàn trực.
+ *  1. Kiểm tra khóa kiểm kê tại phòng trực.
  *  2. Xác thực hoặc đăng ký nhanh hồ sơ người mượn.
  *  3. Xác thực phòng học đích (phải đang hoạt động).
  *  4. Kiểm tra danh sách thiết bị (1 - 30 thiết bị, không trùng ID trong cùng một phiếu).
  *  5. Khóa bi quan các dòng tài sản: SELECT ... FOR UPDATE ORDER BY id ASC.
  *  6. Kiểm tra điều kiện từng tài sản:
- *     - Thuộc bàn trực quản lý của nhân viên lập phiếu.
+ *     - Thuộc phòng trực quản lý của nhân viên lập phiếu.
  *     - Đang sẵn sàng (trang_thai = SAN_SANG, tinh_trang = TOT, phong_hoc_hien_tai_id IS NULL).
  *     - Không có bản ghi nào chưa trả trong chi_tiet_muon.
  *     - Tương thích với phòng học đích (khớp Hãng/Model thiết bị phòng học nếu chọn THEO_THIET_BI).
@@ -66,7 +97,7 @@ function muon_kiem_tra_khoa_kiem_ke(int $phongTrucId): bool {
  *                      - han_tra (chuỗi Y-m-d H:i:s)
  *                      - muc_dich_su_dung
  * @param int|null $nhanVienLapId ID nhân viên đang trực bàn lập phiếu
- * @param int|null $phongTrucId ID bàn trực của nhân viên
+ * @param int|null $phongTrucId ID phòng trực của nhân viên
  * @return array ['thanh_cong' => bool, 'loi' => string, 'ma_phieu' => string, 'id' => int]
  */
 function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTrucId = null): array {
@@ -79,7 +110,7 @@ function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTr
     if (muon_kiem_tra_khoa_kiem_ke($phongTrucId)) {
         return [
             'thanh_cong' => false,
-            'loi'        => 'Bàn trực hiện đang có một đợt kiểm kê tài sản đang diễn ra. Mọi hoạt động mượn tài sản tạm thời bị khóa cho đến khi chốt hoặc hủy đợt kiểm kê.',
+            'loi'        => 'Phòng trực hiện đang có một đợt kiểm kê tài sản đang diễn ra. Mọi hoạt động mượn tài sản tạm thời bị khóa cho đến khi chốt hoặc hủy đợt kiểm kê.',
             'ma_phieu'   => '',
             'id'         => 0,
         ];
@@ -88,26 +119,16 @@ function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTr
     // 2. Xác thực hoặc đăng ký nhanh người mượn ngay trên trang lập phiếu mượn
     $nguoiMuonId = (int)($duLieu['nguoi_muon_id'] ?? 0);
     if ($nguoiMuonId <= 0 && !empty($duLieu['dang_ky_nhanh']) && is_array($duLieu['dang_ky_nhanh'])) {
-        $maSoDk = trim((string)($duLieu['dang_ky_nhanh']['ma_so_truong'] ?? ''));
-        if ($maSoDk !== '') {
-            $nmCoSan = nguoi_muon_tim_theo_ma_so_truong($maSoDk);
-            if ($nmCoSan !== null) {
-                $nguoiMuonId = (int)$nmCoSan['id'];
-            }
+        $resDk = nguoi_muon_luu_khi_muon($duLieu['dang_ky_nhanh']);
+        if (!$resDk['thanh_cong']) {
+            return [
+                'thanh_cong' => false,
+                'loi'        => 'Không thể lưu thông tin người mượn: ' . $resDk['loi'],
+                'ma_phieu'   => '',
+                'id'         => 0,
+            ];
         }
-        if ($nguoiMuonId <= 0) {
-            // Nếu SĐT bị trùng với người mượn khác hoặc rỗng, vẫn cho phép tạo hồ sơ người mượn mới thuận tiện
-            $resDk = nguoi_muon_luu($duLieu['dang_ky_nhanh']);
-            if (!$resDk['thanh_cong']) {
-                return [
-                    'thanh_cong' => false,
-                    'loi'        => 'Không thể lưu thông tin người mượn: ' . $resDk['loi'],
-                    'ma_phieu'   => '',
-                    'id'         => 0,
-                ];
-            }
-            $nguoiMuonId = $resDk['id'];
-        }
+        $nguoiMuonId = (int)$resDk['id'];
     }
 
     if ($nguoiMuonId <= 0) {
@@ -129,12 +150,15 @@ function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTr
         ];
     }
 
-    // 3. Xác thực phòng học đích
+    // 3. Xác thực hoặc tự động tạo phòng học đích nếu người dùng nhập phòng mới
     $phongHocId = (int)($duLieu['phong_hoc_id'] ?? 0);
+    if ($phongHocId <= 0 && !empty($duLieu['phong_hoc_nhap'])) {
+        $phongHocId = phong_hoc_tim_hoac_tao_nhanh((string)$duLieu['phong_hoc_nhap']);
+    }
     if ($phongHocId <= 0) {
         return [
             'thanh_cong' => false,
-            'loi'        => 'Vui lòng chọn phòng học sử dụng thiết bị.',
+            'loi'        => 'Vui lòng nhập hoặc chọn phòng học sử dụng thiết bị.',
             'ma_phieu'   => '',
             'id'         => 0,
         ];
@@ -182,14 +206,10 @@ function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTr
         ];
     }
 
-    // 5. Kiểm tra hạn trả
+    // 5. Kiểm tra hạn trả (tự động chia theo 2 buổi: sáng >= 6h -> 11:30, chiều >= 12h -> 17:30)
     $hanTra = trim((string)($duLieu['han_tra'] ?? ''));
     if ($hanTra === '') {
-        // Mặc định hạn trả là 17:30 cùng ngày hoặc 4 giờ sau
-        $hanTra = date('Y-m-d 17:30:00');
-        if (strtotime($hanTra) <= time()) {
-            $hanTra = date('Y-m-d H:i:s', time() + 14400); // +4 giờ
-        }
+        $hanTra = muon_tinh_han_tra_mac_dinh();
     }
 
     $tsHanTra = strtotime($hanTra);
@@ -249,7 +269,7 @@ function muon_tao_phieu(array $duLieu, ?int $nhanVienLapId = null, ?int $phongTr
                 $db->rollback();
                 return [
                     'thanh_cong' => false,
-                    'loi'        => "Thiết bị $tenTsHienThi không thuộc quản lý của bàn trực {$ts['ten_phong_truc']}. Cán bộ chỉ được cho mượn thiết bị thuộc bàn trực của mình.",
+                    'loi'        => "Thiết bị $tenTsHienThi không thuộc quản lý của phòng trực {$ts['ten_phong_truc']}. Cán bộ chỉ được cho mượn thiết bị thuộc phòng trực của mình.",
                     'ma_phieu'   => '',
                     'id'         => 0,
                 ];
@@ -537,7 +557,7 @@ function muon_tim_theo_id(int $id): ?array {
                       ctm.tinh_trang_khi_muon AS tinh_trang_muon,
                       ctm.tinh_trang_khi_tra AS tinh_trang_tra,
                       ctm.ghi_chu AS ghi_chu_tra,
-                      ts.ma_tai_san, ts.ten_tai_san, ts.ma_qr, ts.hang_san_xuat, ts.model,
+                      ts.ma_tai_san, ts.ten_tai_san, ts.ma_qr, ts.hang_san_xuat, ts.model, ts.hinh_anh,
                       lts.ten_loai,
                       nv_tra.ho_ten AS ten_nhan_vien_nhan
                FROM chi_tiet_muon ctm
@@ -564,7 +584,7 @@ function muon_tim_theo_id(int $id): ?array {
  *  - Mã số trường của người mượn (MSSV / MSGV)
  *
  * @param string $tuKhoa Từ khóa tra cứu
- * @param int|null $phongTrucId Giới hạn trong phạm vi bàn trực (nếu có)
+ * @param int|null $phongTrucId Giới hạn trong phạm vi phòng trực (nếu có)
  * @return array|null Trả về thông tin phiếu mượn kèm chi tiết thiết bị, hoặc null nếu không tìm thấy
  */
 function tra_tim_phieu_theo_tu_khoa(string $tuKhoa, ?int $phongTrucId = null): ?array {
@@ -686,10 +706,10 @@ function tra_tim_phieu_theo_tu_khoa(string $tuKhoa, ?int $phongTrucId = null): ?
 }
 
 /**
- * Lấy danh sách các phiếu mượn đang chờ trả tại bàn trực (dùng hiển thị nhanh trong màn hình trả).
+ * Lấy danh sách các phiếu mượn đang chờ trả tại phòng trực (dùng hiển thị nhanh trong màn hình trả).
  * Ưu tiên các phiếu đã quá hạn trả lên trước để nhân viên dễ nhận diện và xử lý.
  *
- * @param int|null $phongTrucId ID bàn trực
+ * @param int|null $phongTrucId ID phòng trực
  * @param int $gioiHan Số lượng hiển thị tối đa
  * @return array
  */
@@ -743,7 +763,7 @@ function tra_danh_sach_cho_xu_ly(?int $phongTrucId = null, int $gioiHan = 15): a
  *                      - tinh_trang (mảng trạng thái khi trả: [chi_tiet_id => 'TOT' | 'HU_HONG'])
  *                      - ghi_chu (mảng ghi chú phản ánh: [chi_tiet_id => string])
  * @param int|null $nhanVienNhanId ID nhân viên tiếp nhận trả (mặc định lấy nhân viên đăng nhập)
- * @param int|null $phongTrucId ID bàn trực tiếp nhận (mặc định lấy bàn trực hiện tại)
+ * @param int|null $phongTrucId ID phòng trực tiếp nhận (mặc định lấy phòng trực hiện tại)
  * @return array ['thanh_cong' => bool, 'loi' => string, 'so_da_tra' => int, 'con_lai' => int, 'hoan_tat' => bool, 'ma_phieu' => string]
  */
 function tra_thuc_hien(array $duLieu, ?int $nhanVienNhanId = null, ?int $phongTrucId = null): array {
@@ -752,11 +772,11 @@ function tra_thuc_hien(array $duLieu, ?int $nhanVienNhanId = null, ?int $phongTr
     $nhanVienNhanId = $nhanVienNhanId ?? (int)($duLieu['nhan_vien_nhan_id'] ?? (tai_khoan_hien_tai()['id'] ?? 0));
     $phongTrucId = $phongTrucId ?? (int)($duLieu['phong_truc_id'] ?? (phong_truc_hien_tai()['id'] ?? 0));
 
-    // 1. Kiểm tra khóa kiểm kê tại bàn trực
+    // 1. Kiểm tra khóa kiểm kê tại phòng trực
     if ($phongTrucId > 0 && muon_kiem_tra_khoa_kiem_ke($phongTrucId)) {
         return [
             'thanh_cong' => false,
-            'loi'        => 'Bàn trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động nhận trả tạm thời bị khóa.',
+            'loi'        => 'Phòng trực hiện đang có đợt kiểm kê tài sản đang diễn ra. Hoạt động nhận trả tạm thời bị khóa.',
             'so_da_tra'  => 0,
             'con_lai'    => 0,
             'hoan_tat'   => false,
@@ -802,7 +822,7 @@ function tra_thuc_hien(array $duLieu, ?int $nhanVienNhanId = null, ?int $phongTr
         ];
     }
 
-    // Sắp xếp thứ tự ID tăng dần để ngăn ngừa Deadlock khi nhiều bàn trực nhận trả cùng lúc
+    // Sắp xếp thứ tự ID tăng dần để ngăn ngừa Deadlock khi nhiều phòng trực nhận trả cùng lúc
     sort($dsIdCtm, SORT_NUMERIC);
 
     $bangTinhTrang = (array)($duLieu['tinh_trang'] ?? []);
@@ -824,7 +844,7 @@ function tra_thuc_hien(array $duLieu, ?int $nhanVienNhanId = null, ?int $phongTr
         }
 
         if ($phongTrucId > 0 && (int)$phieu['phong_truc_id'] !== $phongTrucId) {
-            throw new RuntimeException('Phiếu mượn này thuộc bàn trực khác, bạn không có thẩm quyền tiếp nhận trả tại bàn trực này.');
+            throw new RuntimeException('Phiếu mượn này thuộc phòng trực khác, bạn không có thẩm quyền tiếp nhận trả tại phòng trực này.');
         }
 
         if ($phieu['trang_thai'] !== PHIEU_MUON_DANG_MUON) {

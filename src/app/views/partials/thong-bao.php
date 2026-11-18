@@ -14,25 +14,21 @@ require_once __DIR__ . '/icon.php';
 
 $thongBao = lay_thong_bao();
 if ($thongBao !== null):
-    $loaiClass = match ($thongBao['loai']) {
-        'thanh_cong' => 'alert-success',
-        'loi'        => 'alert-danger',
-        'canh_bao'   => 'alert-warning',
-        default      => 'alert-primary',
-    };
-    $bieuTuong = match ($thongBao['loai']) {
-        'thanh_cong' => 'check-circle-2',
-        'loi'        => 'alert-circle',
-        'canh_bao'   => 'alert-triangle',
-        default      => 'info',
-    };
+    $laThanhCong = ($thongBao['loai'] === 'thanh_cong');
+    $loaiClass = $laThanhCong ? 'alert-success thong-bao-xanh' : 'alert-danger thong-bao-do';
+    $bieuTuong = $laThanhCong ? 'check-circle-2' : 'alert-circle';
+    $noiDungHienThi = trim(strip_tags((string)($thongBao['noi_dung'] ?? '')));
 ?>
-<div class="alert <?= $loaiClass ?> alert-dismissible fade show shadow-sm mb-4" role="alert" id="thong-bao-he-thong">
-    <div class="d-flex align-items-center gap-2">
-        <?= icon($bieuTuong) ?>
-        <div><?= e($thongBao['noi_dung']) ?></div>
+<div class="alert <?= $loaiClass ?> thong-bao-tha-xuong alert-dismissible fade show shadow mb-3"
+     role="alert"
+     id="thong-bao-he-thong"
+     data-loai="<?= e($laThanhCong ? 'thanh_cong' : 'loi') ?>"
+     data-thoi-gian="<?= e((string)($thongBao['thoi_gian'] ?? date('H:i • d/m/Y'))) ?>">
+    <div class="d-flex align-items-center gap-2 flex-grow-1">
+        <?= icon($bieuTuong, 'bieu-tuong-md text-white flex-shrink-0') ?>
+        <div class="fw-semibold text-white"><?= e($noiDungHienThi) ?></div>
     </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Đóng"></button>
 </div>
 <?php endif; ?>
 
