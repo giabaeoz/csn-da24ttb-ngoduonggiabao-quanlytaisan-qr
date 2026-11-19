@@ -36,7 +36,7 @@ $nhanVaiTro = match ($nguoiDung['vai_tro'] ?? '') {
 $tenTrang = match ($thuMucHienTai) {
     'tai-san'     => 'Tài sản',
     'nguoi-muon'  => 'Người mượn',
-    'muon-tra'    => 'Mượn – trả',
+    'muon-tra'    => 'Mượn - trả',
     'dieu-chuyen' => 'Điều chuyển',
     'kiem-ke'     => 'Kiểm kê',
     'thong-ke'    => 'Tra cứu, thống kê',
@@ -148,11 +148,11 @@ if ($nguoiDung !== null) {
                             <div class="o-tim-kiem o-tim-kiem-topbar">
                                 <?= icon('search', 'bieu-tuong-sm text-primary') ?>
                                 <input type="text"
-                                       id="inputTimChucNang"
-                                       class="o-nhap o-nhap-tim-chuc-nang"
-                                       placeholder="Tìm chức năng..."
-                                       autocomplete="off"
-                                       aria-label="Tìm kiếm chức năng hệ thống">
+                                    id="inputTimChucNang"
+                                    class="o-nhap o-nhap-tim-chuc-nang"
+                                    placeholder="Tìm chức năng..."
+                                    autocomplete="off"
+                                    aria-label="Tìm kiếm chức năng hệ thống">
                             </div>
                             <div class="bang-goi-y-chuc-nang shadow rounded-3 d-none" id="bangGoiYChucNang">
                                 <div class="px-3 py-2 border-bottom bg-light rounded-top d-flex justify-content-between align-items-center">
@@ -165,9 +165,9 @@ if ($nguoiDung !== null) {
                                 <div class="danh-sach-goi-y-chuc-nang" id="danhSachGoiYChucNang">
                                     <?php foreach ($danhSachChucNangTimKiem as $cnItem): ?>
                                         <a href="<?= e($cnItem['url']) ?>"
-                                           data-khong-modal="1"
-                                           data-search="<?= e(mb_strtolower($cnItem['ten'] . ' ' . $cnItem['nhom'] . ' ' . $cnItem['tu_khoa'], 'UTF-8')) ?>"
-                                           class="muc-goi-y-chuc-nang text-decoration-none d-flex align-items-center gap-3 px-3 py-2">
+                                            data-khong-modal="1"
+                                            data-search="<?= e(mb_strtolower($cnItem['ten'] . ' ' . $cnItem['nhom'] . ' ' . $cnItem['tu_khoa'], 'UTF-8')) ?>"
+                                            class="muc-goi-y-chuc-nang text-decoration-none d-flex align-items-center gap-3 px-3 py-2">
                                             <div class="hop-icon-dau flex-shrink-0">
                                                 <?= icon($cnItem['icon'], 'bieu-tuong-sm') ?>
                                             </div>
@@ -188,13 +188,13 @@ if ($nguoiDung !== null) {
                         <!-- Nút thông báo nhỏ quản lý tất cả thông báo gần đây -->
                         <div class="dropdown">
                             <button class="nut-chuong-tb position-relative text-dark d-inline-flex align-items-center justify-content-center border-0 bg-transparent"
-                                    type="button"
-                                    id="nutChuongThongBao"
-                                    data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside"
-                                    aria-expanded="false"
-                                    aria-label="Thông báo gần đây"
-                                    title="Thông báo gần đây">
+                                type="button"
+                                id="nutChuongThongBao"
+                                data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside"
+                                aria-expanded="false"
+                                aria-label="Thông báo gần đây"
+                                title="Thông báo gần đây">
                                 <?= icon('bell', 'bieu-tuong') ?>
                                 <span class="cham-do-thong-bao <?= $tongThongBaoChuong > 0 ? '' : 'd-none' ?>" id="chamDoThongBao"></span>
                             </button>

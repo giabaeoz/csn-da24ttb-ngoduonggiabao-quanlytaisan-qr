@@ -4,13 +4,13 @@ services:
   # -------------------------------------------------------------
   web:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile
     container_name: qlts-web
     ports:
       - "8088:80"
     volumes:
-      - ./:/var/www/html
+      - ../:/var/www/html
     environment:
       DB_HOST: db
       DB_PORT: 3306
@@ -41,9 +41,9 @@ services:
     volumes:
       - qlts-db-data:/var/lib/mysql
       # Tự động nạp cấu trúc bảng, dữ liệu mẫu và 3 tài khoản khi chạy lần đầu
-      - ./setup/database_dacsn_qlts_qr.sql:/docker-entrypoint-initdb.d/01-database_dacsn_qlts_qr.sql:ro
-      - ./setup/du_lieu_mau.sql:/docker-entrypoint-initdb.d/02-du_lieu_mau.sql:ro
-      - ./docker/mysql/init/03-tai_khoan_mau.sql:/docker-entrypoint-initdb.d/03-tai_khoan_mau.sql:ro
+      - ../setup/database_dacsn_qlts_qr.sql:/docker-entrypoint-initdb.d/01-database_dacsn_qlts_qr.sql:ro
+      - ../setup/du_lieu_mau.sql:/docker-entrypoint-initdb.d/02-du_lieu_mau.sql:ro
+      - ./mysql/init/03-tai_khoan_mau.sql:/docker-entrypoint-initdb.d/03-tai_khoan_mau.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
       interval: 5s

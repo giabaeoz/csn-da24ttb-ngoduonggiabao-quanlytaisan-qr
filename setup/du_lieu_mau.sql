@@ -1,8 +1,11 @@
 -- =====================================================================
 -- HỆ THỐNG QUẢN LÝ MƯỢN – TRẢ VÀ KIỂM KÊ TÀI SẢN BẰNG MÃ QR (QLTS-QR)
 -- DỮ LIỆU MẪU MÔI TRƯỜNG THỰC TẾ TRƯỜNG ĐẠI HỌC
--- KHÔNG CHỨA MẬT KHẨU (TÀI KHOẢN KHỞI TẠO QUA: setup/tao_tai_khoan.php)
+-- MÃ HÓA: UTF-8 / utf8mb4
 -- =====================================================================
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 USE `dacsn_qlts_qr`;
 
@@ -69,11 +72,12 @@ INSERT INTO `loai_tai_san` (`id`, `ma_loai`, `ten_loai`, `mo_ta`, `dang_hoat_don
 -- 4. DỮ LIỆU HỒ SƠ NGƯỜI MƯỢN (Sinh viên & Giảng viên)
 -- ---------------------------------------------------------------------
 INSERT INTO `nguoi_muon` (`id`, `ma_nguoi_muon`, `ma_so_truong`, `ho_ten`, `loai_nguoi_muon`, `lop_don_vi`, `so_dien_thoai`) VALUES
-(1, 'NM-110124001', '110124001', 'Nguyễn Văn An',          'SINH_VIEN',  'DA21TTA',    '0912345671'),
-(2, 'NM-110124002', '110124002', 'Trần Thị Bích',          'SINH_VIEN',  'DA22TTB',    '0912345672'),
-(3, 'NM-110124003', '110124003', 'Lê Văn Cường',           'SINH_VIEN',  'DA23TTC',    '0912345673'),
-(4, 'NM-GV001',     'GV001',     'TS. Nguyễn Ngọc Đan Thanh', 'GIANG_VIEN', 'Khoa CNTT',  '0988112233'),
-(5, 'NM-GV002',     'GV002',     'ThS. Lê Hoàng Nam',       'GIANG_VIEN', 'Khoa Kỹ thuật', '0988445566');
+(1, 'NM-110124001', '110124008', 'Ngô Dương Gia Bảo',          'SINH_VIEN',  'DA24TTB',    '0788919073'),
+(2, 'NM-110124002', '117624033', 'Võ Minh Nhựt',              'SINH_VIEN',  'DA24TTB',    '0763872409'),
+(3, 'NM-110124003', '110124239', 'Nguyễn Thanh Liêm',           'SINH_VIEN',  'DA24TTB',    '0369082407'),
+(4, 'NM-110124004', '110124039', 'Sơn Thị Ngọc Dung',          'SINH_VIEN',  'DA24TTA',    '0912345678'),
+(5, 'NM-GV001',     'GV001',     'ThS. Nguyễn Ngọc Đan Thanh', 'GIANG_VIEN', 'Khoa CNTT',  '0988112233'),
+(6, 'NM-GV002',     'GV002',     'ThS. Lê Hoàng Nam',          'GIANG_VIEN', 'Khoa Kỹ thuật', '0988445566');
 
 -- ---------------------------------------------------------------------
 -- 5. DỮ LIỆU TÀI SẢN MẪU (Mã viết tắt ngắn gọn dễ nhớ, Mã QR = Mã tài sản)

@@ -58,7 +58,13 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4">
-                <h2 class="tieu-de-khoi mb-3">Quét QR để đối chiếu thiết bị</h2>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="tieu-de-khoi mb-0">Quét QR để đối chiếu thiết bị</h2>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="chkQuetLienTuc" checked>
+                        <label class="form-check-label small fw-semibold text-success" for="chkQuetLienTuc">Quét liên tục</label>
+                    </div>
+                </div>
                 <div class="row g-3 align-items-center">
                     <div class="col-12 col-sm-6">
                         <div class="khung-quet-camera" id="khungVideoContainer">
@@ -135,7 +141,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                 <?= icon('clipboard-check') ?>
             </div>
             <div>
-                <div class="so-lieu"><?= sprintf('%02d', $phaiKiemThucTe) ?></div>
+                <div class="so-lieu" id="kpiPhaiKiem"><?= sprintf('%02d', $phaiKiemThucTe) ?></div>
                 <div class="nhan-so-lieu">Phải kiểm thực tế</div>
             </div>
             <div class="bieu-tuong-mo-bg" aria-hidden="true">
@@ -149,7 +155,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                 <?= icon('check-circle-2') ?>
             </div>
             <div>
-                <div class="so-lieu"><?= sprintf('%02d', $daKiem) ?></div>
+                <div class="so-lieu" id="kpiDaKiem"><?= sprintf('%02d', $daKiem) ?></div>
                 <div class="nhan-so-lieu">Đã kiểm</div>
             </div>
             <div class="bieu-tuong-mo-bg" aria-hidden="true">
@@ -163,7 +169,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                 <?= icon('alert-triangle') ?>
             </div>
             <div>
-                <div class="so-lieu"><?= sprintf('%02d', $chuaKiem) ?></div>
+                <div class="so-lieu" id="kpiChuaKiem"><?= sprintf('%02d', $chuaKiem) ?></div>
                 <div class="nhan-so-lieu">Chưa kiểm</div>
             </div>
             <div class="bieu-tuong-mo-bg" aria-hidden="true">
@@ -177,7 +183,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                 <?= icon('repeat') ?>
             </div>
             <div>
-                <div class="so-lieu"><?= sprintf('%02d', $dangMuon) ?></div>
+                <div class="so-lieu" id="kpiDangMuon"><?= sprintf('%02d', $dangMuon) ?></div>
                 <div class="nhan-so-lieu">Đang mượn theo phiếu</div>
             </div>
             <div class="bieu-tuong-mo-bg" aria-hidden="true">
@@ -253,14 +259,14 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                         $ketQuaCt = (string)($ct['ket_qua'] ?? $ct['ket_qua_kiem_ke'] ?? 'CHUA_KIEM_TRA');
                         $daKiemDoi = in_array($ketQuaCt, ['TIM_THAY', 'CHUA_TIM_THAY'], true);
                     ?>
-                        <tr>
+                        <tr id="hang_chi_tiet_<?= (int)$ct['id'] ?>" data-chi-tiet-id="<?= (int)$ct['id'] ?>" data-tai-san-id="<?= (int)$ct['tai_san_id'] ?>" data-ma-tai-san="<?= e($ct['ma_tai_san'] ?? '') ?>">
                             <td>
                                 <div class="fw-semibold text-dark">
                                     <span class="font-monospace text-primary"><?= e($ct['ma_tai_san'] ?? '') ?></span> - <?= e($ct['ten_tai_san'] ?? '') ?>
                                 </div>
                                 <div class="mo-ta-phu">Phòng quản lý: <?= e($dot['ten_phong_truc'] ?? '') ?></div>
                             </td>
-                            <td>
+                            <td class="cot-doi-chieu">
                                 <?php if ($laDangMuon): ?>
                                     <span class="huy-hieu huy-hieu-chinh">Đang mượn</span>
                                 <?php elseif ($ketQuaCt === 'TIM_THAY'): ?>
@@ -271,7 +277,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                                     <span class="huy-hieu huy-hieu-xam">Chưa kiểm</span>
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td class="cot-tinh-trang">
                                 <?php if ($laDangMuon): ?>
                                     <span class="text-phu">Theo phiếu mượn</span>
                                 <?php elseif (!$daKiemDoi): ?>
@@ -284,7 +290,7 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                                     <span class="text-success fw-medium">Bình thường</span>
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td class="cot-ghi-chu">
                                 <?php if (!empty($ct['ghi_chu'])): ?>
                                     <?= e($ct['ghi_chu']) ?>
                                 <?php elseif ($laDangMuon && !empty($ct['ma_phieu_muon_hien_tai'])): ?>
@@ -467,6 +473,32 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
 <script>
     const DS_CHI_TIET_KIEM_KE = <?= json_encode($danhSachChiTiet, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
 
+    function phatAmThanhBip(thanhCong = true) {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const audioCtx = new AudioCtx();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            if (thanhCong) {
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // 880Hz (A5)
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.12);
+            } else {
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime); // 300Hz (trầm cảnh báo)
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            }
+        } catch (e) {}
+    }
+
     function moModalGhiNhan(ct) {
         document.getElementById('gn_chi_tiet_id').value = ct.id;
         document.getElementById('gn_tai_san_id').value = ct.tai_san_id;
@@ -505,8 +537,134 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
         }
     }
 
-    // Quét hoặc nhập mã thiết bị: tra cứu qua API kiểm kê để hỗ trợ cả mã mới (MC-01) và tem QR cũ, mở ngay hộp thoại ghi nhận
-    async function xuLyThemMaThietBi(maQuetTrucTiep) {
+    // Cập nhật số liệu KPI đợt kiểm kê theo thời gian thực
+    function capNhatKpi(tk) {
+        if (!tk) return;
+        const dm = parseInt(tk.so_dang_muon || 0);
+        const pkt = Math.max(0, parseInt(tk.tong_so_sach || 0) - dm);
+        const dk = parseInt(tk.so_tim_thay || 0) + parseInt(tk.so_chua_tim_thay || 0);
+        const ck = parseInt(tk.so_con_lai_can_kiem || 0);
+
+        const elPhaiKiem = document.getElementById('kpiPhaiKiem');
+        const elDaKiem = document.getElementById('kpiDaKiem');
+        const elChuaKiem = document.getElementById('kpiChuaKiem');
+        const elDangMuon = document.getElementById('kpiDangMuon');
+
+        if (elPhaiKiem) elPhaiKiem.textContent = String(pkt).padStart(2, '0');
+        if (elDaKiem) elDaKiem.textContent = String(dk).padStart(2, '0');
+        if (elChuaKiem) elChuaKiem.textContent = String(ck).padStart(2, '0');
+        if (elDangMuon) elDangMuon.textContent = String(dm).padStart(2, '0');
+    }
+
+    // Cập nhật hiển thị dòng thiết bị trong bảng đối chiếu mà không cần tải lại trang
+    function capNhatHangSauGhiNhan(chiTietId, ketQua, tinhTrang, ghiChu, ctObj = null) {
+        const hang = document.getElementById('hang_chi_tiet_' + chiTietId) || document.querySelector(`tr[data-chi-tiet-id="${chiTietId}"]`);
+        if (!hang) return;
+
+        const cotDoiChieu = hang.querySelector('.cot-doi-chieu');
+        const cotTinhTrang = hang.querySelector('.cot-tinh-trang');
+        const cotGhiChu = hang.querySelector('.cot-ghi-chu');
+        const cotThaoTac = hang.querySelector('.cot-thao-tac');
+
+        if (cotDoiChieu) {
+            if (ketQua === 'TIM_THAY') {
+                cotDoiChieu.innerHTML = '<span class="huy-hieu huy-hieu-thanh-cong">Có mặt</span>';
+            } else if (ketQua === 'CHUA_TIM_THAY') {
+                cotDoiChieu.innerHTML = '<span class="huy-hieu huy-hieu-nguy-hiem">Chưa tìm thấy</span>';
+            } else {
+                cotDoiChieu.innerHTML = '<span class="huy-hieu huy-hieu-xam">Chưa kiểm</span>';
+            }
+        }
+
+        if (cotTinhTrang) {
+            if (ketQua === 'CHUA_TIM_THAY') {
+                cotTinhTrang.innerHTML = '<span class="text-danger">Không tìm thấy</span>';
+            } else if (tinhTrang === 'HU_HONG') {
+                cotTinhTrang.innerHTML = '<span class="text-danger fw-semibold">Hỏng</span>';
+            } else {
+                cotTinhTrang.innerHTML = '<span class="text-success fw-medium">Bình thường</span>';
+            }
+        }
+
+        if (cotGhiChu) {
+            cotGhiChu.textContent = ghiChu ? ghiChu : '-';
+        }
+
+        if (cotThaoTac) {
+            const btn = cotThaoTac.querySelector('button');
+            if (btn) {
+                btn.className = 'btn-vien-thuoc btn-vien-thuoc-phu text-success';
+                btn.textContent = 'Đã lưu (Sửa)';
+                if (ctObj) {
+                    btn.onclick = function() { moModalGhiNhan(ctObj); };
+                }
+            }
+        }
+
+        hang.classList.add('table-success');
+        setTimeout(() => {
+            hang.classList.remove('table-success');
+        }, 1800);
+        hang.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Xử lý gửi biểu mẫu ghi nhận trong modal bằng AJAX để không làm dừng camera hoặc tải lại trang
+    document.getElementById('modalGhiNhan')?.querySelector('form')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        chuanBiLuuGhiNhan();
+
+        const form = this;
+        const btnSubmit = form.querySelector('button[type="submit"]');
+        if (btnSubmit) btnSubmit.disabled = true;
+
+        const formData = new FormData(form);
+        try {
+            const res = await fetch('<?= url("api/kiem-ke.php?hanh_dong=ghi_nhan") ?>', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const json = await res.json();
+            if (json.thanh_cong) {
+                const ctId = document.getElementById('gn_chi_tiet_id').value;
+                const kq = document.getElementById('gn_ket_qua').value;
+                const tt = document.getElementById('gn_tinh_trang_thuc_te').value;
+                const gc = document.getElementById('gn_ghi_chu').value;
+                const tenTs = document.getElementById('gn_ten_thiet_bi').textContent;
+                const maTs = document.getElementById('gn_ma_tai_san').textContent;
+
+                capNhatHangSauGhiNhan(ctId, kq, tt, gc);
+                if (json.thong_ke) {
+                    capNhatKpi(json.thong_ke);
+                }
+
+                const modalInst = bootstrap.Modal.getInstance(document.getElementById('modalGhiNhan'));
+                if (modalInst) modalInst.hide();
+
+                if (typeof window.hienPopupQuetThietBi === 'function') {
+                    window.hienPopupQuetThietBi({
+                        loai: kq === 'TIM_THAY' ? (tt === 'HU_HONG' ? 'canh_bao' : 'thanh_cong') : 'loi',
+                        tieuDe: kq === 'TIM_THAY' ? (tt === 'HU_HONG' ? 'Ghi nhận: Hư hỏng' : 'Đã ghi nhận: Có mặt') : 'Ghi nhận: Chưa tìm thấy',
+                        maTaiSan: maTs,
+                        tenTaiSan: tenTs
+                    });
+                }
+                phatAmThanhBip(true);
+            } else {
+                alert(json.loi || 'Lỗi khi lưu kết quả kiểm kê.');
+            }
+        } catch (err) {
+            form.submit();
+        } finally {
+            if (btnSubmit) btnSubmit.disabled = false;
+        }
+    });
+
+    // Quét hoặc nhập mã thiết bị: tra cứu qua API kiểm kê, tự động ghi nhận khi bật quét liên tục
+    async function xuLyThemMaThietBi(maQuetTrucTiep, laQuetCamera = false) {
         const inputEl = document.getElementById('ma_quet_nhap');
         const errEl = document.getElementById('thongBaoQuetLoi');
         if (errEl) errEl.classList.add('d-none');
@@ -519,24 +677,113 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
             const res = await fetch(urlTraCuu, { credentials: 'same-origin' });
             const json = await res.json();
 
-            if (json.thanh_cong && json.chi_tiet) {
-                const ct = json.chi_tiet;
-                if (ct.trang_thai_so_sach === 'DANG_MUON') {
-                    if (errEl) {
-                        errEl.textContent = 'Thiết bị ' + (ct.ma_tai_san || ma) + ' đang được mượn theo phiếu, không cần kiểm thực tế.';
-                        errEl.classList.remove('d-none');
-                    }
-                    return;
+            if (!json.thanh_cong || !json.chi_tiet) {
+                const msgLoi = json.thong_diep || json.loi || ('Không tìm thấy thiết bị khớp với mã "' + ma + '".');
+                if (errEl) {
+                    errEl.textContent = msgLoi;
+                    errEl.classList.remove('d-none');
                 }
-                if (inputEl) inputEl.value = '';
-                moModalGhiNhan(ct);
+                if (typeof window.hienPopupQuetThietBi === 'function') {
+                    window.hienPopupQuetThietBi({
+                        loai: 'loi',
+                        tieuDe: 'Không tìm thấy',
+                        maTaiSan: ma.toUpperCase(),
+                        tenTaiSan: msgLoi
+                    });
+                }
+                phatAmThanhBip(false);
                 return;
             }
 
-            if (errEl) {
-                errEl.textContent = json.thong_diep || json.loi || ('Không tìm thấy thiết bị khớp với mã "' + ma + '".');
-                errEl.classList.remove('d-none');
+            const ct = json.chi_tiet;
+            if (inputEl) inputEl.value = '';
+
+            // Nếu thiết bị đang trong trạng thái Đang mượn theo sổ sách
+            if (ct.trang_thai_so_sach === 'DANG_MUON') {
+                const msgDm = 'Thiết bị ' + (ct.ma_tai_san || ma) + ' đang được mượn theo phiếu, không cần kiểm thực tế.';
+                if (errEl) {
+                    errEl.textContent = msgDm;
+                    errEl.classList.remove('d-none');
+                }
+                if (typeof window.hienPopupQuetThietBi === 'function') {
+                    window.hienPopupQuetThietBi({
+                        loai: 'canh_bao',
+                        tieuDe: 'Đang mượn theo phiếu',
+                        maTaiSan: ct.ma_tai_san,
+                        tenTaiSan: ct.ten_tai_san
+                    });
+                }
+                phatAmThanhBip(false);
+                return;
             }
+
+            const cheDoQuetLienTuc = document.getElementById('chkQuetLienTuc')?.checked ?? true;
+
+            // Chế độ quét liên tục qua camera: Tự động ghi nhận "Có mặt - Tốt" ngay lập tức không ngắt quãng
+            if (laQuetCamera && cheDoQuetLienTuc) {
+                // Nếu thiết bị đã được đối chiếu Có mặt trước đó
+                if (ct.ket_qua === 'TIM_THAY') {
+                    if (typeof window.hienPopupQuetThietBi === 'function') {
+                        window.hienPopupQuetThietBi({
+                            loai: 'canh_bao',
+                            tieuDe: 'Đã đối chiếu trước đó',
+                            maTaiSan: ct.ma_tai_san,
+                            tenTaiSan: ct.ten_tai_san
+                        });
+                    }
+                    phatAmThanhBip(true);
+                    capNhatHangSauGhiNhan(ct.id, 'TIM_THAY', ct.tinh_trang_thuc_te || 'TOT', ct.ghi_chu || '', ct);
+                    return;
+                }
+
+                // Gửi API ghi nhận Có mặt trực tiếp
+                const formData = new FormData();
+                formData.append('csrf_token', '<?= csrf_token() ?>');
+                formData.append('dot_kiem_ke_id', '<?= (int)$dot["id"] ?>');
+                formData.append('chi_tiet_id', ct.id);
+                formData.append('ket_qua', 'TIM_THAY');
+                formData.append('tinh_trang_thuc_te', 'TOT');
+                formData.append('ghi_chu', '');
+
+                const resGhiNhan = await fetch('<?= url("api/kiem-ke.php?hanh_dong=ghi_nhan") ?>', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const jsonGn = await resGhiNhan.json();
+
+                if (jsonGn.thanh_cong) {
+                    phatAmThanhBip(true);
+                    ct.ket_qua = 'TIM_THAY';
+                    ct.tinh_trang_thuc_te = 'TOT';
+                    if (typeof window.hienPopupQuetThietBi === 'function') {
+                        window.hienPopupQuetThietBi({
+                            loai: 'thanh_cong',
+                            tieuDe: 'Đã ghi nhận: Có mặt',
+                            maTaiSan: ct.ma_tai_san,
+                            tenTaiSan: ct.ten_tai_san
+                        });
+                    }
+                    capNhatHangSauGhiNhan(ct.id, 'TIM_THAY', 'TOT', '', ct);
+                    if (jsonGn.thong_ke) {
+                        capNhatKpi(jsonGn.thong_ke);
+                    }
+                } else {
+                    phatAmThanhBip(false);
+                    const errGn = jsonGn.loi || 'Không thể lưu ghi nhận.';
+                    if (errEl) {
+                        errEl.textContent = errGn;
+                        errEl.classList.remove('d-none');
+                    }
+                }
+                return;
+            }
+
+            // Nếu nhập thủ công hoặc tắt chế độ quét liên tục: Mở modal để chọn tình trạng / ghi chú
+            moModalGhiNhan(ct);
         } catch (err) {
             if (errEl) {
                 errEl.textContent = 'Lỗi kết nối máy chủ khi tra cứu mã QR.';
@@ -548,13 +795,16 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
     document.getElementById('ma_quet_nhap')?.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            xuLyThemMaThietBi();
+            xuLyThemMaThietBi('', false);
         }
     });
 
     // Camera
     let streamCamera = null;
     let dangQuet = false;
+    let maVuaQuet = '';
+    let thoiGianVuaQuet = 0;
+
     const videoEl = document.getElementById('videoQuetCamera');
     const canvasEl = document.getElementById('canvasQuetCamera');
     const overlayEl = document.getElementById('overlayCamera');
@@ -574,18 +824,29 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
                 selCamera.appendChild(opt);
             });
         } catch (e) {}
+        // Tự động mở camera khi vào trang kiểm kê
+        await batCamera(true);
     }
     khoiTaoCamera();
+
+    if (selCamera) {
+        selCamera.addEventListener('change', async function() {
+            if (dangQuet) {
+                dungCamera();
+            }
+            await batCamera(false);
+        });
+    }
 
     async function batTatCamera() {
         if (dangQuet) {
             dungCamera();
         } else {
-            await batCamera();
+            await batCamera(false);
         }
     }
 
-    async function batCamera() {
+    async function batCamera(tuDong = false) {
         const devId = selCamera ? selCamera.value : '';
         const constraints = {
             video: devId ? {
@@ -608,7 +869,9 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
-            alert('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            if (!tuDong) {
+                alert('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            }
         }
     }
 
@@ -624,7 +887,9 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
         if (nhanNut) nhanNut.textContent = 'Bật camera';
         if (btnCamera) btnCamera.classList.replace('btn-danger', 'btn-phu');
     }
+    window.dungCamera = dungCamera;
 
+    // Vòng lặp quét QR liên tục không ngắt quãng
     function quetVongLap() {
         if (!dangQuet) return;
         if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
@@ -638,8 +903,22 @@ $chuaKiem = (int)($thongKe['so_con_lai_can_kiem'] ?? 0);
             });
 
             if (code && code.data) {
-                dungCamera();
-                xuLyThemMaThietBi(code.data);
+                const bayGio = Date.now();
+                // Chống quét lặp cùng 1 mã trong 2 giây khi giữ camera trước tem
+                if (code.data === maVuaQuet && (bayGio - thoiGianVuaQuet) < 2000) {
+                    requestAnimationFrame(quetVongLap);
+                    return;
+                }
+
+                maVuaQuet = code.data;
+                thoiGianVuaQuet = bayGio;
+
+                xuLyThemMaThietBi(code.data, true);
+
+                // Quét liên tục: Tiếp tục quét thiết bị tiếp theo sau 1.2s mà KHÔNG tắt camera
+                setTimeout(() => {
+                    if (dangQuet) requestAnimationFrame(quetVongLap);
+                }, 1200);
                 return;
             }
         }

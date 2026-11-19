@@ -59,12 +59,36 @@ if ($taiSan !== null) {
     }
 
     $phongHocDichId = doc_so_nguyen('phong_hoc_id', 0, $_GET);
-    $tuongThich = null;
+    $maPhongDich = trim((string)($_GET['ma_phong'] ?? ''));
+    $phongHoc = null;
+
     if ($phongHocDichId > 0) {
         $phongHoc = phong_hoc_tim_theo_id($phongHocDichId);
-        if ($phongHoc !== null) {
-            $tuongThich = tai_san_kiem_tra_tuong_thich($taiSan, $phongHoc);
+    }
+
+    if ($phongHoc === null && $maPhongDich !== '') {
+        $maTach = strtoupper(trim(preg_split('/[\(\-]/', $maPhongDich)[0] ?? $maPhongDich));
+        $maUpper = strtoupper($maPhongDich);
+        $dbPh = db();
+        $stmtTimPh = $dbPh->prepare("SELECT * FROM phong_hoc WHERE UPPER(ma_phong) = ? OR UPPER(ten_phong) = ? LIMIT 1");
+        $stmtTimPh->bind_param('ss', $maTach, $maUpper);
+        $stmtTimPh->execute();
+        $phongHoc = $stmtTimPh->get_result()->fetch_assoc() ?: null;
+        $stmtTimPh->close();
+
+        if ($phongHoc === null) {
+            $phongHoc = [
+                'id'             => 0,
+                'ma_phong'       => $maTach !== '' ? $maTach : $maUpper,
+                'ten_phong'      => $maPhongDich,
+                'thiet_bi_phong' => [],
+            ];
         }
+    }
+
+    $tuongThich = null;
+    if ($phongHoc !== null) {
+        $tuongThich = tai_san_kiem_tra_tuong_thich($taiSan, $phongHoc);
     }
 
     phan_hoi_json([

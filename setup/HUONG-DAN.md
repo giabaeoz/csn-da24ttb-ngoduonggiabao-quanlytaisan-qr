@@ -10,7 +10,7 @@
 Chỉ cần máy tính đã cài đặt **Docker Desktop**, mở PowerShell tại thư mục dự án và chạy:
 
 ```powershell
-docker compose up -d
+docker compose -f docker/docker-compose.yml up -d
 ```
 
 - **Hệ thống Web:** [http://localhost:8088](http://localhost:8088)

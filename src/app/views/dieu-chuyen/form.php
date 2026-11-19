@@ -252,12 +252,48 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
 <script src="<?= url('assets/vendor/jsqr/jsQR.js') ?>"></script>
 <script>
     const danhSachThietBi = [];
+    const DS_PHONG_HOC_DC = <?= json_encode(array_map(fn($p) => [
+        'id' => (int)$p['id'],
+        'ma_phong' => (string)$p['ma_phong'],
+        'ten_phong' => (string)$p['ten_phong'],
+        'thiet_bi_phong' => !empty($p['thiet_bi_phong'])
+            ? (is_string($p['thiet_bi_phong']) ? (json_decode($p['thiet_bi_phong'], true) ?: []) : $p['thiet_bi_phong'])
+            : [],
+    ], $danhSachPhongHoc), JSON_UNESCAPED_UNICODE) ?>;
+
+    function layPhongDenHienTai() {
+        const selDen = document.getElementById('phong_hoc_den_id');
+        const idDen = parseInt(selDen ? selDen.value : '0', 10);
+        if (!idDen) return null;
+        return DS_PHONG_HOC_DC.find(p => p.id === idDen) || null;
+    }
 
     function doiPhongDi(sel) {
+        capNhatBangThietBi();
         capNhatPreview();
     }
 
     function doiPhongDen(sel) {
+        const phongDen = layPhongDenHienTai();
+        if (phongDen && danhSachThietBi.length > 0 && typeof window.kiemTraTuongThichThietBiPhong === 'function') {
+            for (let i = 0; i < danhSachThietBi.length; i++) {
+                const ts = danhSachThietBi[i];
+                const kq = window.kiemTraTuongThichThietBiPhong(ts, phongDen);
+                if (!kq.tuong_thich) {
+                    hienLoiQuet(kq.ly_do);
+                    if (typeof window.hienPopupQuetThietBi === 'function') {
+                        window.hienPopupQuetThietBi({
+                            loai: 'khong_tuong_thich',
+                            tieuDe: `Không tương thích phòng ${phongDen.ma_phong}`,
+                            maTaiSan: ts.ma_tai_san,
+                            tenTaiSan: ts.ten_tai_san
+                        });
+                    }
+                    break;
+                }
+            }
+        }
+        capNhatBangThietBi();
         capNhatPreview();
     }
 
@@ -283,17 +319,69 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     async function traCuuVaThem(ma) {
         thongBaoLoiQuet.classList.add('d-none');
         try {
-            const res = await fetch('<?= url("api/tra-cuu-qr.php") ?>?ma=' + encodeURIComponent(ma) + '&hanh_dong=DIEU_CHUYEN');
+            const phongDen = layPhongDenHienTai();
+            let urlTraCuu = '<?= url("api/tra-cuu-qr.php") ?>?ma=' + encodeURIComponent(ma) + '&hanh_dong=DIEU_CHUYEN';
+            if (phongDen && phongDen.id > 0) {
+                urlTraCuu += '&phong_hoc_id=' + encodeURIComponent(phongDen.id);
+            }
+
+            const res = await fetch(urlTraCuu);
             const json = await res.json();
 
             if (!json.thanh_cong) {
-                hienLoiQuet(json.thong_diep || 'Không tìm thấy thiết bị hợp lệ.');
+                const msgLoi = json.thong_diep || 'Không tìm thấy thiết bị hợp lệ.';
+                hienLoiQuet(msgLoi);
+                if (typeof window.hienPopupQuetThietBi === 'function') {
+                    const tsLoi = json.du_lieu || null;
+                    window.hienPopupQuetThietBi({
+                        loai: 'loi',
+                        tieuDe: tsLoi ? 'Không sẵn sàng' : 'Không tìm thấy',
+                        maTaiSan: tsLoi ? tsLoi.ma_tai_san : ma.toUpperCase(),
+                        tenTaiSan: tsLoi ? tsLoi.ten_tai_san : ''
+                    });
+                }
                 return;
             }
 
             const ts = json.du_lieu;
+            if (!ts || !ts.id) {
+                hienLoiQuet('Mã QR không phải là thiết bị tài sản hợp lệ.');
+                return;
+            }
+
             if (danhSachThietBi.some(item => item.id === ts.id)) {
-                hienLoiQuet(`Thiết bị [${ts.ma_tai_san}] đã có trong danh sách.`);
+                const msgTrung = `Thiết bị [${ts.ma_tai_san}] đã có trong danh sách.`;
+                hienLoiQuet(msgTrung);
+                if (typeof window.hienPopupQuetThietBi === 'function') {
+                    window.hienPopupQuetThietBi({
+                        loai: 'canh_bao',
+                        tieuDe: 'Đã có trong danh sách',
+                        maTaiSan: ts.ma_tai_san,
+                        tenTaiSan: ts.ten_tai_san
+                    });
+                }
+                inputMaQuet.value = '';
+                return;
+            }
+
+            // Kiểm tra tương thích ngay với Phòng đến (nếu đã chọn Phòng đến)
+            let kqTuongThich = json.kiem_tra_tuong_thich || null;
+            if (!kqTuongThich && phongDen && typeof window.kiemTraTuongThichThietBiPhong === 'function') {
+                kqTuongThich = window.kiemTraTuongThichThietBiPhong(ts, phongDen);
+            }
+            if (kqTuongThich && kqTuongThich.tuong_thich === false) {
+                const maDen = phongDen ? phongDen.ma_phong : '';
+                const msgKhongTt = kqTuongThich.ly_do || `Thiết bị [${ts.ma_tai_san}] không tương thích với phòng đích ${maDen}.`;
+                hienLoiQuet(msgKhongTt);
+                if (typeof window.hienPopupQuetThietBi === 'function') {
+                    window.hienPopupQuetThietBi({
+                        loai: 'khong_tuong_thich',
+                        tieuDe: `Không tương thích phòng ${maDen}`,
+                        maTaiSan: ts.ma_tai_san,
+                        tenTaiSan: ts.ten_tai_san
+                    });
+                }
+                inputMaQuet.value = '';
                 return;
             }
 
@@ -308,18 +396,34 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             inputMaQuet.value = '';
             capNhatBangThietBi();
             capNhatPreview();
+
+            if (typeof window.hienPopupQuetThietBi === 'function') {
+                window.hienPopupQuetThietBi({
+                    loai: 'thanh_cong',
+                    tieuDe: 'Đã quét thiết bị thành công',
+                    maTaiSan: ts.ma_tai_san,
+                    tenTaiSan: ts.ten_tai_san
+                });
+            }
         } catch (e) {
             hienLoiQuet('Lỗi kết nối máy chủ.');
         }
     }
 
     function hienLoiQuet(msg) {
+        if (typeof window.hienPopupQuetThietBi === 'function') {
+            thongBaoLoiQuet.classList.add('d-none');
+            return;
+        }
         thongBaoLoiQuet.textContent = msg;
         thongBaoLoiQuet.classList.remove('d-none');
     }
 
     function boThietBi(idx) {
         danhSachThietBi.splice(idx, 1);
+        if (danhSachThietBi.length === 0) {
+            thongBaoLoiQuet.classList.add('d-none');
+        }
         capNhatBangThietBi();
         capNhatPreview();
     }
@@ -337,6 +441,8 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         }
 
         tbody.innerHTML = '';
+        const phongDen = layPhongDenHienTai();
+
         danhSachThietBi.forEach((ts, idx) => {
             const inp = document.createElement('input');
             inp.type = 'hidden';
@@ -347,13 +453,32 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             const maPhongTs = ts.ma_phong_hien_tai || ts.ma_phong_phu_hop || '';
             const phongHt = maPhongTs ? `Phòng hiện tại: ${maPhongTs}` : 'Phòng trực (Linh hoạt)';
 
+            const kqTt = (phongDen && typeof window.kiemTraTuongThichThietBiPhong === 'function')
+                ? window.kiemTraTuongThichThietBiPhong(ts, phongDen)
+                : { tuong_thich: true, da_chon_phong: false, ly_do: '' };
+
+            let htmlTinhTrang = 'Bình thường';
+            let htmlCanhBao = '';
+            if (kqTt.da_chon_phong) {
+                if (kqTt.tuong_thich) {
+                    htmlTinhTrang = `<span class="huy-hieu huy-hieu-thanh-cong">Tương thích ${escapeHtml(phongDen.ma_phong)}</span>`;
+                } else {
+                    htmlTinhTrang = `<span class="huy-hieu huy-hieu-nguy-hiem">Không tương thích</span>`;
+                    htmlCanhBao = `<div class="text-danger chu-nho-11 fw-semibold mt-1">${escapeHtml(kqTt.ly_do)}</div>`;
+                }
+            }
+
             const tr = document.createElement('tr');
+            if (!kqTt.tuong_thich) {
+                tr.className = 'hang-khong-tuong-thich';
+            }
             tr.innerHTML = `
             <td>
                 <div class="fw-semibold text-dark">${escapeHtml(ts.ma_tai_san)} - ${escapeHtml(ts.ten_tai_san)}</div>
                 <div class="mo-ta-phu">${escapeHtml(phongHt)}</div>
+                ${htmlCanhBao}
             </td>
-            <td>Bình thường</td>
+            <td>${htmlTinhTrang}</td>
             <td class="text-end cot-thao-tac">
                 <button type="button" class="btn-vien-thuoc btn-vien-thuoc-nguy-hiem" onclick="boThietBi(${idx})">Bỏ</button>
             </td>
@@ -386,8 +511,14 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         }
         document.getElementById('pvTongCongThietBi').textContent = `Tổng cộng: ${danhSachThietBi.length} thiết bị`;
 
+        const phongDen = layPhongDenHienTai();
+        let tatCaTuongThich = true;
+        if (phongDen && danhSachThietBi.length > 0 && typeof window.kiemTraTuongThichThietBiPhong === 'function') {
+            tatCaTuongThich = danhSachThietBi.every(ts => window.kiemTraTuongThichThietBiPhong(ts, phongDen).tuong_thich);
+        }
+
         const btnSubmit = document.getElementById('btnXacNhanDieuChuyen');
-        const hopLe = (maDi !== '---') && (maDen !== '---') && (maDi !== maDen) && (lyDo !== '---') && daCamKet && (danhSachThietBi.length > 0);
+        const hopLe = (maDi !== '---') && (maDen !== '---') && (maDi !== maDen) && (lyDo !== '---') && daCamKet && (danhSachThietBi.length > 0) && tatCaTuongThich;
         btnSubmit.disabled = !hopLe;
     }
 
@@ -413,19 +544,29 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                 selCamera.appendChild(opt);
             });
         } catch (e) {}
+        await batCamera(true);
     }
     khoiTaoCamera();
+
+    if (selCamera) {
+        selCamera.addEventListener('change', async function() {
+            if (dangQuet) {
+                dungCamera();
+            }
+            await batCamera(false);
+        });
+    }
 
     async function batTatCamera() {
         if (dangQuet) {
             dungCamera();
         } else {
-            await batCamera();
+            await batCamera(false);
         }
     }
 
-    async function batCamera() {
-        const devId = selCamera.value;
+    async function batCamera(tuDong = false) {
+        const devId = selCamera ? selCamera.value : '';
         const constraints = {
             video: devId ? {
                 deviceId: {
@@ -447,7 +588,9 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
             btnCamera.classList.replace('btn-phu', 'btn-danger');
             requestAnimationFrame(quetVongLap);
         } catch (e) {
-            hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            if (!tuDong) {
+                hienLoiQuet('Không thể mở camera. Vui lòng cấp quyền hoặc nhập mã thủ công.');
+            }
         }
     }
 
@@ -463,6 +606,7 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         if (nhanNut) nhanNut.textContent = 'Bật camera';
         btnCamera.classList.replace('btn-danger', 'btn-phu');
     }
+    window.dungCamera = dungCamera;
 
     function quetVongLap() {
         if (!dangQuet) return;

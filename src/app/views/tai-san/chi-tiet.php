@@ -144,13 +144,18 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
                         <div class="col-12 col-sm-6">
                             <div class="text-secondary small chu-nho-11 fw-semibold text-uppercase">Vị trí hiện tại:</div>
                             <div class="fw-semibold text-dark mt-1 fs-6">
-                                <?php if (!empty($taiSan['ma_phong_hien_tai'])): ?>
+                                <?php $vtChiTiet = tai_san_thong_tin_vi_tri($taiSan); ?>
+                                <?php if ($vtChiTiet['la_dang_muon']): ?>
                                     <span class="text-warning-emphasis">
-                                        <?= icon('map-pin', 'bieu-tuong-sm text-warning') ?> Đang dùng tại <strong>Phòng <?= e($taiSan['ma_phong_hien_tai']) ?></strong>
+                                        <?= icon('map-pin', 'bieu-tuong-sm text-warning') ?> Đang mượn tại <strong><?= e($vtChiTiet['ten_hien_thi']) ?></strong>
+                                    </span>
+                                <?php elseif ($vtChiTiet['la_co_dinh']): ?>
+                                    <span class="text-primary-emphasis">
+                                        <?= icon('home', 'bieu-tuong-sm text-primary') ?> Cố định tại <strong><?= e($vtChiTiet['ten_hien_thi']) ?></strong>
                                     </span>
                                 <?php else: ?>
                                     <span class="text-success">
-                                        <?= icon('check-circle-2', 'bieu-tuong-sm text-success') ?> Đang lưu tại <strong>Phòng trực <?= e($taiSan['ma_phong_truc']) ?></strong>
+                                        <?= icon('check-circle-2', 'bieu-tuong-sm text-success') ?> Đang lưu tại <strong><?= e($vtChiTiet['ten_hien_thi']) ?></strong>
                                     </span>
                                 <?php endif; ?>
                             </div>

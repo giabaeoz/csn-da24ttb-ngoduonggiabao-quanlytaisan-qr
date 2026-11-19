@@ -146,6 +146,67 @@ function tai_san_tim_theo_id(int $id): ?array {
     return $row ?: null;
 }
 
+if (!function_exists('tai_san_thong_tin_vi_tri')) {
+    /**
+     * Xác định thông tin vị trí hiển thị của tài sản theo quy tắc nghiệp vụ.
+     *
+     * @param array<string, mixed> $ts
+     * @return array{loai: string, ma_phong: string, ten_hien_thi: string, mo_ta: string, la_dang_muon: bool, la_co_dinh: bool}
+     */
+    function tai_san_thong_tin_vi_tri(array $ts): array {
+        $dangMuon = ($ts['trang_thai'] ?? '') === TRANG_THAI_DANG_MUON;
+        $maPhongHienTai = trim((string)($ts['ma_phong_hien_tai'] ?? ''));
+        $maPhongPhuHop = trim((string)($ts['ma_phong_phu_hop'] ?? ''));
+        $maPhongTruc = trim((string)($ts['ma_phong_truc'] ?? ''));
+        $tenPhongTruc = trim((string)($ts['ten_phong_truc'] ?? ''));
+        if ($tenPhongTruc === '' && $maPhongTruc !== '') {
+            $tenPhongTruc = 'Phòng trực ' . $maPhongTruc;
+        }
+
+        if ($dangMuon && $maPhongHienTai !== '') {
+            return [
+                'loai'         => 'PHONG_MUON',
+                'ma_phong'     => $maPhongHienTai,
+                'ten_hien_thi' => 'P. ' . $maPhongHienTai,
+                'mo_ta'        => 'Đang mượn tại phòng ' . $maPhongHienTai,
+                'la_dang_muon' => true,
+                'la_co_dinh'   => false,
+            ];
+        }
+
+        if ($maPhongPhuHop !== '') {
+            return [
+                'loai'         => 'PHONG_CO_DINH',
+                'ma_phong'     => $maPhongPhuHop,
+                'ten_hien_thi' => 'P. ' . $maPhongPhuHop,
+                'mo_ta'        => 'Cố định tại phòng ' . $maPhongPhuHop,
+                'la_dang_muon' => false,
+                'la_co_dinh'   => true,
+            ];
+        }
+
+        if ($maPhongHienTai !== '') {
+            return [
+                'loai'         => 'PHONG_MUON',
+                'ma_phong'     => $maPhongHienTai,
+                'ten_hien_thi' => 'P. ' . $maPhongHienTai,
+                'mo_ta'        => 'Tại phòng ' . $maPhongHienTai,
+                'la_dang_muon' => $dangMuon,
+                'la_co_dinh'   => false,
+            ];
+        }
+
+        return [
+            'loai'         => 'PHONG_TRUC',
+            'ma_phong'     => $maPhongTruc,
+            'ten_hien_thi' => $tenPhongTruc ?: ($maPhongTruc ? 'Phòng trực ' . $maPhongTruc : 'Phòng trực'),
+            'mo_ta'        => 'Lưu tại ' . ($tenPhongTruc ?: 'phòng trực'),
+            'la_dang_muon' => false,
+            'la_co_dinh'   => false,
+        ];
+    }
+}
+
 /**
  * Chuẩn hóa chuỗi mã quét/nhập tay để nhận diện cả mã mới (MC-01, MC01) lẫn tem QR cũ (QR-D6-MC0001, MC-0001).
  */

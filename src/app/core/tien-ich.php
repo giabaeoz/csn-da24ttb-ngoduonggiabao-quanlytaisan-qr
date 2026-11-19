@@ -342,5 +342,72 @@ function dinh_dang_phan_tram(float $tyLe, int $chuSoThapPhan = 1): string {
     return number_format($tyLe, $chuSoThapPhan, ',', '.') . '%';
 }
 
+/**
+ * Xác định thông tin vị trí hiển thị của tài sản theo quy tắc nghiệp vụ:
+ * - Nếu đang có giao dịch mượn (trang_thai = DANG_MUON): Vị trí là phòng mượn (ma_phong_hien_tai).
+ * - Nếu là tài sản cố định phòng (có ma_phong_phu_hop hoặc phong_hoc_phu_hop_id): Vị trí hiển thị luôn là phòng học cố định.
+ * - Nếu là tài sản linh hoạt khác: Vị trí là phòng trực quản lý.
+ *
+ * @param array<string, mixed> $ts
+ * @return array{loai: string, ma_phong: string, ten_hien_thi: string, mo_ta: string, la_dang_muon: bool, la_co_dinh: bool}
+ */
+function tai_san_thong_tin_vi_tri(array $ts): array {
+    $dangMuon = ($ts['trang_thai'] ?? '') === 'DANG_MUON';
+    $maPhongHienTai = trim((string)($ts['ma_phong_hien_tai'] ?? ''));
+    $maPhongPhuHop = trim((string)($ts['ma_phong_phu_hop'] ?? ''));
+    $maPhongTruc = trim((string)($ts['ma_phong_truc'] ?? ''));
+    $tenPhongTruc = trim((string)($ts['ten_phong_truc'] ?? ''));
+    if ($tenPhongTruc === '' && $maPhongTruc !== '') {
+        $tenPhongTruc = 'Phòng trực ' . $maPhongTruc;
+    }
+
+    // 1. Đang có giao dịch mượn: Hiển thị phòng mượn
+    if ($dangMuon && $maPhongHienTai !== '') {
+        return [
+            'loai'         => 'PHONG_MUON',
+            'ma_phong'     => $maPhongHienTai,
+            'ten_hien_thi' => 'P. ' . $maPhongHienTai,
+            'mo_ta'        => 'Đang mượn tại phòng ' . $maPhongHienTai,
+            'la_dang_muon' => true,
+            'la_co_dinh'   => false,
+        ];
+    }
+
+    // 2. Tài sản cố định phòng: Luôn hiển thị vị trí phòng học đó
+    if ($maPhongPhuHop !== '') {
+        return [
+            'loai'         => 'PHONG_CO_DINH',
+            'ma_phong'     => $maPhongPhuHop,
+            'ten_hien_thi' => 'P. ' . $maPhongPhuHop,
+            'mo_ta'        => 'Cố định tại phòng ' . $maPhongPhuHop,
+            'la_dang_muon' => false,
+            'la_co_dinh'   => true,
+        ];
+    }
+
+    // 3. Nếu có mã phòng hiện tại (dù trường hợp ngoại lệ)
+    if ($maPhongHienTai !== '') {
+        return [
+            'loai'         => 'PHONG_MUON',
+            'ma_phong'     => $maPhongHienTai,
+            'ten_hien_thi' => 'P. ' . $maPhongHienTai,
+            'mo_ta'        => 'Tại phòng ' . $maPhongHienTai,
+            'la_dang_muon' => $dangMuon,
+            'la_co_dinh'   => false,
+        ];
+    }
+
+    // 4. Tài sản linh hoạt: Ở tại vị trí phòng trực
+    return [
+        'loai'         => 'PHONG_TRUC',
+        'ma_phong'     => $maPhongTruc,
+        'ten_hien_thi' => $tenPhongTruc ?: ($maPhongTruc ? 'Phòng trực ' . $maPhongTruc : 'Phòng trực'),
+        'mo_ta'        => 'Lưu tại ' . ($tenPhongTruc ?: 'phòng trực'),
+        'la_dang_muon' => false,
+        'la_co_dinh'   => false,
+    ];
+}
+
+
 
 

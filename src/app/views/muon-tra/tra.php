@@ -414,6 +414,14 @@ if ($thietBiVuaQuet !== '') {
             }
             capNhatPreviewTra();
             hienThongBaoQuet(`Đã quét nhận thiết bị [${ma}].`, 'thanh-cong');
+            if (typeof window.hienPopupQuetThietBi === 'function') {
+                window.hienPopupQuetThietBi({
+                    loai: 'thanh_cong',
+                    tieuDe: 'Đã quét nhận trả thiết bị',
+                    maTaiSan: cb.getAttribute('data-ma') || ma,
+                    tenTaiSan: cb.getAttribute('data-ten') || ''
+                });
+            }
             return;
         }
 

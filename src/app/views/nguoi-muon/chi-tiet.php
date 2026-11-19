@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Giao diện Hồ sơ chi tiết Người mượn & Toàn bộ Lịch sử Mượn trả - Chuẩn Design System
+ * Giao diện Hồ sơ chi tiết Người mượn & Toàn bộ Lịch sử Mượn trả - Chuẩn Design System hài hòa
  */
 
 declare(strict_types=1);
@@ -18,10 +18,20 @@ if (!defined('APP_KHOI_DONG')) {
 
 $tieuDeTrang = 'Hồ sơ người mượn: ' . ($nguoiMuon['ho_ten'] ?? '');
 require dirname(__DIR__) . '/layout/dau-trang.php';
+
+$soDangMuon = (int)($nguoiMuon['so_thiet_bi_dang_muon'] ?? 0);
+$chuVietTat = function_exists('chu_cai_dau_ho_ten') ? chu_cai_dau_ho_ten((string)($nguoiMuon['ho_ten'] ?? 'NM')) : 'NM';
+$laGiangVien = ($nguoiMuon['loai_nguoi_muon'] ?? '') === 'GIANG_VIEN';
 ?>
 
-<div class="thanh-cong-cu-trang">
+<div class="thanh-cong-cu-trang mb-3">
     <div>
+        <nav aria-label="breadcrumb" class="d-none d-md-block mb-1">
+            <ol class="breadcrumb small mb-0">
+                <li class="breadcrumb-item"><a href="<?= url('nguoi-muon/index.php') ?>" class="text-decoration-none text-muted">Người mượn</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Hồ sơ chi tiết</li>
+            </ol>
+        </nav>
         <h1 class="tieu-de-trang mb-0">Hồ sơ người mượn: <?= e($nguoiMuon['ho_ten']) ?></h1>
     </div>
     <div class="d-flex align-items-center gap-2">
@@ -36,70 +46,115 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
     </div>
 </div>
 
-<div class="the-noi-dung p-4 mb-4">
-    <div class="row align-items-center">
-        <div class="col-12 col-md-8">
-            <div class="d-flex align-items-center gap-3 mb-2">
-                <div class="hop-icon-trang rounded-circle">
-                    <?= icon('users') ?>
+<div class="card border-0 shadow-sm rounded-3 mb-4 bg-white overflow-hidden">
+    <div class="card-body p-4">
+        <!-- Hàng đầu: Thông tin định danh & Trạng thái -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 pb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar-nguoi-muon rounded-3 text-white fw-bold d-flex align-items-center justify-content-center shadow-sm"
+                     style="width: 56px; height: 56px; font-size: 20px; background: linear-gradient(135deg, #1768D8 0%, #0F4FB5 100%); flex-shrink: 0;">
+                    <?= e($chuVietTat) ?>
                 </div>
                 <div>
-                    <h3 class="tieu-de-khoi mb-1"><?= e($nguoiMuon['ho_ten']) ?></h3>
-                    <div class="text-secondary small">
-                        Mã số trường: <strong><?= e($nguoiMuon['ma_so_truong']) ?></strong> &bull; Mã hệ thống: <?= e($nguoiMuon['ma_nguoi_muon']) ?>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <h2 class="h4 fw-bold text-dark mb-0"><?= e($nguoiMuon['ho_ten']) ?></h2>
+                        <?php if ($laGiangVien): ?>
+                            <span class="badge rounded-pill px-2.5 py-1 text-white" style="background-color: #4B49C8; font-size: 12px;">
+                                <?= icon('user-check', 'bieu-tuong-sm me-1 text-white') ?> Giảng viên
+                            </span>
+                        <?php else: ?>
+                            <span class="badge rounded-pill px-2.5 py-1 text-white" style="background-color: #1768D8; font-size: 12px;">
+                                <?= icon('user', 'bieu-tuong-sm me-1 text-white') ?> Sinh viên
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 text-muted small flex-wrap">
+                        <span>Mã trường: <strong class="text-dark font-monospace bg-light px-2 py-0.5 rounded border"><?= e($nguoiMuon['ma_so_truong']) ?></strong></span>
+                        <span class="text-secondary-subtle">&bull;</span>
+                        <span>Mã hệ thống: <span class="font-monospace"><?= e($nguoiMuon['ma_nguoi_muon']) ?></span></span>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-3 mt-3 pt-3 border-top small">
-                <div class="col-sm-4 d-flex align-items-center gap-2">
-                    <span class="text-primary"><?= icon('users', 'bieu-tuong-sm') ?></span>
-                    <span class="text-muted">Đối tượng:</span>
-                    <strong class="text-primary">
-                        <?= $nguoiMuon['loai_nguoi_muon'] === 'GIANG_VIEN' ? 'Giảng viên' : 'Sinh viên' ?>
-                    </strong>
-                </div>
-                <div class="col-sm-4 d-flex align-items-center gap-2">
-                    <span class="text-primary"><?= icon('home', 'bieu-tuong-sm') ?></span>
-                    <span class="text-muted">Lớp / Khoa:</span>
-                    <strong class="text-dark"><?= e($nguoiMuon['lop_don_vi'] ?: '-') ?></strong>
-                </div>
-                <div class="col-sm-4 d-flex align-items-center gap-2">
-                    <span class="text-primary"><?= icon('phone', 'bieu-tuong-sm') ?></span>
-                    <span class="text-muted">Số điện thoại:</span>
-                    <strong class="text-dark"><?= e($nguoiMuon['so_dien_thoai'] ?: '-') ?></strong>
-                </div>
-            </div>
-        </div>
+            <!-- Cụm trạng thái mượn và nút thao tác -->
+            <div class="d-flex flex-wrap align-items-center gap-2 ms-md-auto">
+                <?php if ($soDangMuon > 0): ?>
+                    <span class="huy-hieu-tt huy-hieu-tt-canh-bao px-3 py-2 fw-semibold">
+                        <?= icon('clock', 'bieu-tuong-sm') ?>
+                        <span>Đang giữ <?= $soDangMuon ?> thiết bị</span>
+                    </span>
+                <?php else: ?>
+                    <span class="huy-hieu-tt huy-hieu-tt-thanh-cong px-3 py-2 fw-semibold">
+                        <?= icon('check-circle-2', 'bieu-tuong-sm') ?>
+                        <span>Không giữ thiết bị nào</span>
+                    </span>
+                <?php endif; ?>
 
-        <div class="col-12 col-md-4 mt-3 mt-md-0 text-md-end border-start-md ps-md-4">
-            <div class="text-secondary small mb-1">Trạng thái:</div>
-            <?php if ((int)$nguoiMuon['so_thiet_bi_dang_muon'] > 0): ?>
-                <div class="huy-hieu-tt huy-hieu-tt-canh-bao px-3 py-2 mb-2 d-inline-flex">
-                    <?= icon('clock') ?>
-                    <span>Đang giữ <?= (int)$nguoiMuon['so_thiet_bi_dang_muon'] ?> thiết bị</span>
-                </div>
-            <?php else: ?>
-                <div class="huy-hieu-tt huy-hieu-tt-thanh-cong px-3 py-2 mb-2 d-inline-flex">
-                    <?= icon('check-circle-2') ?>
-                    <span>Không giữ thiết bị nào</span>
-                </div>
-            <?php endif; ?>
-
-            <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
-                <div>
-                    <a href="<?= url('muon-tra/muon.php?ma_so=' . urlencode($nguoiMuon['ma_so_truong'])) ?>" class="btn btn-sm btn-chinh">
+                <?php if (co_quyen('nghiep_vu_muon_tra')): ?>
+                    <a href="<?= url('muon-tra/muon.php?ma_so=' . urlencode((string)$nguoiMuon['ma_so_truong'])) ?>" class="btn btn-chinh">
                         <?= icon('plus', 'bieu-tuong-sm') ?>
                         <span>Lập phiếu mượn</span>
                     </a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Hàng 3 khối thông tin chi tiết -->
+        <div class="row g-3 pt-3">
+            <div class="col-12 col-sm-4">
+                <div class="p-3 rounded-3 bg-light border border-light-subtle d-flex align-items-center gap-3 h-100">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" 
+                         style="width: 42px; height: 42px; background-color: var(--the-xanh); flex-shrink: 0;">
+                        <?= icon('building', 'bieu-tuong-md') ?>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Lớp / Đơn vị</div>
+                        <div class="fw-semibold text-dark fs-6"><?= e($nguoiMuon['lop_don_vi'] ?: '---') ?></div>
+                    </div>
                 </div>
-            <?php endif; ?>
+            </div>
+
+            <div class="col-12 col-sm-4">
+                <div class="p-3 rounded-3 bg-light border border-light-subtle d-flex align-items-center gap-3 h-100">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-success" 
+                         style="width: 42px; height: 42px; background-color: var(--the-la); flex-shrink: 0;">
+                        <?= icon('phone', 'bieu-tuong-md') ?>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Số điện thoại</div>
+                        <div class="fw-semibold text-dark fs-6">
+                            <?php if (!empty($nguoiMuon['so_dien_thoai'])): ?>
+                                <a href="tel:<?= e($nguoiMuon['so_dien_thoai']) ?>" class="text-dark text-decoration-none hover-primary">
+                                    <?= e($nguoiMuon['so_dien_thoai']) ?>
+                                </a>
+                            <?php else: ?>
+                                <span class="text-muted">---</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-4">
+                <div class="p-3 rounded-3 bg-light border border-light-subtle d-flex align-items-center gap-3 h-100">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 42px; height: 42px; background-color: var(--the-tim); color: var(--bieu-tuong-tim); flex-shrink: 0;">
+                        <?= icon('repeat', 'bieu-tuong-md') ?>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Lịch sử mượn trả</div>
+                        <div class="fw-semibold text-dark fs-6">
+                            <span class="text-primary fw-bold"><?= count($lichSuMuon) ?></span> lượt mượn thiết bị
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="the-noi-dung mb-4">
-    <div class="the-noi-dung-dau d-flex justify-content-between align-items-center">
+<div class="card border-0 shadow-sm rounded-3 mb-4 bg-white overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
         <h3 class="tieu-de-khoi mb-0 d-flex align-items-center gap-2">
             <span class="text-primary"><?= icon('clock', 'bieu-tuong-md') ?></span>
             <span>Lịch sử mượn trả tài sản</span>
@@ -109,105 +164,134 @@ require dirname(__DIR__) . '/layout/dau-trang.php';
         </span>
     </div>
 
-    <div class="the-noi-dung-than p-0">
+    <div class="card-body p-0">
         <?php if (empty($lichSuMuon)): ?>
-            <div class="text-center py-4 text-muted">
-                Người mượn này chưa từng phát sinh giao dịch mượn thiết bị nào trên hệ thống.
+            <div class="text-center py-5">
+                <?= minh_hoa_hop_trong('Người mượn này chưa từng phát sinh giao dịch mượn thiết bị nào trên hệ thống.') ?>
             </div>
         <?php else: ?>
             <div class="accordion accordion-flush" id="accordionLichSu">
                 <?php foreach ($lichSuMuon as $idx => $pm): ?>
                     <div class="accordion-item border-bottom">
                         <h2 class="accordion-header" id="heading_<?= $pm['id'] ?>">
-                            <button class="accordion-button <?= $idx > 0 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_<?= $pm['id'] ?>" aria-expanded="<?= $idx === 0 ? 'true' : 'false' ?>">
-                                <div class="d-flex flex-wrap align-items-center justify-content-between w-100 pe-3 gap-2">
-                                    <div>
-                                        <span class="badge bg-light text-primary border font-monospace me-2">
+                            <button class="accordion-button <?= $idx > 0 ? 'collapsed' : '' ?> py-3 px-4" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse_<?= $pm['id'] ?>" 
+                                    aria-expanded="<?= $idx === 0 ? 'true' : 'false' ?>">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between w-100 pe-3 gap-3">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="badge bg-light text-primary border font-monospace px-2.5 py-1">
                                             <?= e($pm['ma_phieu_muon'] ?? $pm['ma_phieu'] ?? '') ?>
                                         </span>
-                                        <span class="fw-semibold text-dark">
-                                            <?= e($pm['ten_phong'] ?? '') ?> (<?= e($pm['ma_phong'] ?? '') ?>)
+                                        <span class="fw-bold text-dark d-inline-flex align-items-center gap-1">
+                                            <?= icon('home', 'bieu-tuong-sm text-secondary') ?>
+                                            <span><?= e($pm['ten_phong'] ?? '') ?></span>
+                                            <span class="badge bg-secondary-subtle text-secondary fw-normal font-monospace ms-1"><?= e($pm['ma_phong'] ?? '') ?></span>
                                         </span>
-                                        <span class="text-muted small ms-2">
-                                            &bull; Phòng trực: <?= e($pm['ten_phong_truc'] ?? '') ?>
+                                        <span class="text-muted small ms-2 d-none d-md-inline">
+                                            &bull; <?= icon('map-pin', 'bieu-tuong-sm text-muted me-1') ?><?= e($pm['ten_phong_truc'] ?? '') ?>
                                         </span>
                                     </div>
-                                    <div class="small d-flex align-items-center gap-2">
-                                        <span class="text-muted me-2">
-                                            Mượn lúc: <strong><?= dinh_dang_ngay_gio($pm['thoi_gian_muon']) ?></strong>
+                                    <div class="small d-flex align-items-center gap-3">
+                                        <span class="text-muted d-inline-flex align-items-center gap-1">
+                                            <?= icon('calendar', 'bieu-tuong-sm text-muted') ?>
+                                            <span>Mượn lúc: <strong class="text-dark"><?= dinh_dang_ngay_gio($pm['thoi_gian_muon']) ?></strong></span>
                                         </span>
                                         <?php if ($pm['trang_thai'] === 'DA_TRA'): ?>
                                             <span class="huy-hieu-tt huy-hieu-tt-thanh-cong"><?= icon('check-circle-2') ?> <span>Đã trả đủ</span></span>
                                         <?php else: ?>
-                                            <span class="huy-hieu-tt huy-hieu-tt-chinh"><?= icon('repeat') ?> <span>Đang mượn</span></span>
+                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao"><?= icon('repeat') ?> <span>Đang mượn</span></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                             </button>
                         </h2>
                         <div id="collapse_<?= $pm['id'] ?>" class="accordion-collapse collapse <?= $idx === 0 ? 'show' : '' ?>" data-bs-parent="#accordionLichSu">
-                            <div class="accordion-body bg-light p-3">
-                                <div class="row g-2 mb-2 small text-muted">
-                                    <div class="col-sm-4">
-                                        Hạn trả dự kiến: <strong class="text-danger"><?= dinh_dang_ngay_gio($pm['han_tra']) ?></strong>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        Cán bộ lập phiếu: <strong class="text-dark"><?= e($pm['ten_nhan_vien_lap'] ?? '') ?></strong>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        Mục đích: <strong class="text-dark"><?= e(($pm['muc_dich_su_dung'] ?? $pm['ghi_chu'] ?? '') ?: 'Giảng dạy / học tập') ?></strong>
+                            <div class="accordion-body bg-light p-3 p-md-4">
+                                <div class="p-3 bg-white rounded-3 mb-3 border">
+                                    <div class="row g-2 small text-muted">
+                                        <div class="col-12 col-md-4 d-flex align-items-center gap-1">
+                                            <?= icon('clock', 'bieu-tuong-sm text-danger') ?>
+                                            <span>Hạn trả dự kiến:</span>
+                                            <strong class="text-danger"><?= dinh_dang_ngay_gio($pm['han_tra']) ?></strong>
+                                        </div>
+                                        <div class="col-12 col-md-4 d-flex align-items-center gap-1">
+                                            <?= icon('user', 'bieu-tuong-sm text-primary') ?>
+                                            <span>Cán bộ lập phiếu:</span>
+                                            <strong class="text-dark"><?= e($pm['ten_nhan_vien_lap'] ?? '---') ?></strong>
+                                        </div>
+                                        <div class="col-12 col-md-4 d-flex align-items-center gap-1">
+                                            <?= icon('clipboard-check', 'bieu-tuong-sm text-secondary') ?>
+                                            <span>Mục đích:</span>
+                                            <strong class="text-dark"><?= e(($pm['muc_dich_su_dung'] ?? $pm['ghi_chu'] ?? '') ?: 'Giảng dạy / học tập') ?></strong>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="table-responsive bg-white rounded border">
-                                    <table class="bang-du-lieu mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Mã tài sản (QR)</th>
-                                                <th>Tên tài sản</th>
-                                                <th>Tình trạng khi mượn</th>
-                                                <th>Thời gian trả</th>
-                                                <th>Tình trạng khi trả</th>
-                                                <th>Cán bộ nhận</th>
+                                <div class="table-responsive bg-white rounded-3 border">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr class="text-secondary small">
+                                                <th class="ps-3 py-2.5">Mã tài sản (QR)</th>
+                                                <th class="py-2.5">Tên tài sản</th>
+                                                <th class="py-2.5">Tình trạng lúc mượn</th>
+                                                <th class="py-2.5">Thời gian trả</th>
+                                                <th class="py-2.5">Tình trạng khi trả</th>
+                                                <th class="pe-3 py-2.5">Cán bộ nhận</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php foreach ($pm['chi_tiet'] as $ct): ?>
                                                 <tr>
-                                                    <td class="font-monospace fw-semibold text-primary">
-                                                        <?= e($ct['ma_tai_san']) ?>
-                                                    </td>
-                                                    <td class="fw-medium">
-                                                        <?= e($ct['ten_tai_san']) ?>
+                                                    <td class="ps-3 text-nowrap">
+                                                        <span class="badge bg-light text-primary border font-monospace px-2 py-1">
+                                                            <?= e($ct['ma_tai_san']) ?>
+                                                        </span>
                                                     </td>
                                                     <td>
+                                                        <span class="fw-semibold text-dark"><?= e($ct['ten_tai_san']) ?></span>
+                                                    </td>
+                                                    <td class="text-nowrap">
                                                         <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">
                                                             <?= icon('check-circle-2') ?>
                                                             <span><?= e(TEN_TINH_TRANG[$ct['tinh_trang_khi_muon']] ?? $ct['tinh_trang_khi_muon']) ?></span>
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td class="text-nowrap">
                                                         <?php if ($ct['thoi_gian_tra'] !== null): ?>
-                                                            <span class="text-success fw-semibold"><?= dinh_dang_ngay_gio($ct['thoi_gian_tra']) ?></span>
+                                                            <span class="text-success small fw-semibold d-inline-flex align-items-center gap-1">
+                                                                <?= icon('check', 'bieu-tuong-sm text-success') ?>
+                                                                <?= dinh_dang_ngay_gio($ct['thoi_gian_tra']) ?>
+                                                            </span>
                                                         <?php else: ?>
-                                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao"><?= icon('clock') ?> <span>Chưa trả</span></span>
+                                                            <span class="huy-hieu-tt huy-hieu-tt-canh-bao">
+                                                                <?= icon('clock') ?>
+                                                                <span>Chưa trả</span>
+                                                            </span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td>
-                                                        <?php if ($ct['tinh_trang_khi_tra'] !== null): ?>
+                                                    <td class="text-nowrap">
+                                                        <?php if ($ct['thoi_gian_tra'] !== null): ?>
                                                             <?php if ($ct['tinh_trang_khi_tra'] === 'HU_HONG'): ?>
-                                                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem"><?= icon('alert-triangle') ?> <span>Hư hỏng</span></span>
+                                                                <span class="huy-hieu-tt huy-hieu-tt-nguy-hiem">
+                                                                    <?= icon('alert-triangle') ?>
+                                                                    <span>Hư hỏng</span>
+                                                                </span>
                                                                 <?php if (!empty($ct['ghi_chu_tra']) || !empty($ct['ghi_chu'])): ?>
-                                                                    <div class="text-danger small fst-italic"><?= e($ct['ghi_chu_tra'] ?? $ct['ghi_chu'] ?? '') ?></div>
+                                                                    <div class="text-danger small fst-italic mt-0.5"><?= e($ct['ghi_chu_tra'] ?? $ct['ghi_chu'] ?? '') ?></div>
                                                                 <?php endif; ?>
                                                             <?php else: ?>
-                                                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong"><?= icon('check-circle-2') ?> <span>Tốt</span></span>
+                                                                <span class="huy-hieu-tt huy-hieu-tt-thanh-cong">
+                                                                    <?= icon('check-circle-2') ?>
+                                                                    <span>Tốt</span>
+                                                                </span>
                                                             <?php endif; ?>
                                                         <?php else: ?>
                                                             <span class="text-muted">-</span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td>
+                                                    <td class="pe-3 text-nowrap text-muted small">
                                                         <?= e($ct['ten_nhan_vien_nhan'] ?: '-') ?>
                                                     </td>
                                                 </tr>

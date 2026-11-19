@@ -284,7 +284,7 @@
         // Nếu khối tiêu đề đầu trang trong modal chỉ chứa tiêu đề (đã đưa lên thanh modal-header)
         // và nút Quay lại, ẩn nút Quay lại trên đầu hoặc ẩn cả hàng tiêu đề trùng lặp
         if (tieuDeEl) {
-            const hangDau = tieuDeEl.closest('.d-flex.justify-content-between');
+            const hangDau = tieuDeEl.closest('.thanh-cong-cu-trang, .d-flex.justify-content-between');
             if (hangDau) {
                 const nutQuayLaiDau = hangDau.querySelectorAll('a[data-dong-modal="1"]');
                 nutQuayLaiDau.forEach(function (btn) { btn.remove(); });
@@ -872,3 +872,219 @@ async function fetchWithCsrf(url, options = {}) {
 
     return fetch(url, options);
 }
+
+/**
+ * Kiểm tra tính tương thích giữa thiết bị và phòng học ngay tại trình duyệt (khớp 100% logic tầng Service).
+ *
+ * @param {object} taiSan Thông tin thiết bị (pham_vi_tuong_thich, hang_san_xuat, model, phong_tuong_thich...)
+ * @param {object|null} phongHoc Thông tin phòng học (id, ma_phong, ten_phong, thiet_bi_phong...)
+ * @returns {{tuong_thich: boolean, da_chon_phong: boolean, ly_do: string}}
+ */
+window.kiemTraTuongThichThietBiPhong = function (taiSan, phongHoc) {
+    if (!taiSan || !phongHoc || (!phongHoc.id && !phongHoc.ma_phong)) {
+        return {
+            tuong_thich: true,
+            da_chon_phong: false,
+            ly_do: 'Chưa chọn phòng học.'
+        };
+    }
+
+    const maPhongDich = String(phongHoc.ma_phong || '').trim();
+    const phamVi = String(taiSan.pham_vi_tuong_thich || 'LINH_HOAT').trim();
+
+    // 1. Phạm vi linh hoạt
+    if (phamVi === 'LINH_HOAT') {
+        return {
+            tuong_thich: true,
+            da_chon_phong: true,
+            ly_do: `Tương thích phòng ${maPhongDich} (Thiết bị dùng linh hoạt cho mọi phòng học).`
+        };
+    }
+
+    // 2. Phạm vi theo phòng chỉ định
+    if (phamVi === 'THEO_PHONG') {
+        let dsPhong = [];
+        if (taiSan.phong_tuong_thich) {
+            if (Array.isArray(taiSan.phong_tuong_thich)) {
+                dsPhong = taiSan.phong_tuong_thich;
+            } else if (typeof taiSan.phong_tuong_thich === 'string') {
+                try {
+                    const parsed = JSON.parse(taiSan.phong_tuong_thich);
+                    if (Array.isArray(parsed)) dsPhong = parsed;
+                } catch (e) {}
+            }
+        }
+        const khopPhong = dsPhong.some(function (p) {
+            return String(p || '').trim().toUpperCase() === maPhongDich.toUpperCase();
+        });
+        if (khopPhong) {
+            return {
+                tuong_thich: true,
+                da_chon_phong: true,
+                ly_do: `Tương thích: Phòng ${maPhongDich} nằm trong danh sách phòng chỉ định của thiết bị.`
+            };
+        }
+        return {
+            tuong_thich: false,
+            da_chon_phong: true,
+            ly_do: `Không tương thích với phòng ${maPhongDich}. Thiết bị này chỉ dùng cố định cho phòng: ${dsPhong.join(', ') || 'chỉ định'}.`
+        };
+    }
+
+    // 3. Phạm vi theo Hãng & Model thiết bị cố định của phòng học
+    if (phamVi === 'THEO_THIET_BI') {
+        const hangTs = String(taiSan.hang_san_xuat || '').trim();
+        const modelTs = String(taiSan.model || '').trim();
+
+        if (!hangTs) {
+            return {
+                tuong_thich: true,
+                da_chon_phong: true,
+                ly_do: `Tương thích phòng ${maPhongDich} (Không giới hạn hãng sản xuất cụ thể).`
+            };
+        }
+
+        let dsTbPhong = [];
+        if (phongHoc.thiet_bi_phong) {
+            if (Array.isArray(phongHoc.thiet_bi_phong)) {
+                dsTbPhong = phongHoc.thiet_bi_phong;
+            } else if (typeof phongHoc.thiet_bi_phong === 'string') {
+                try {
+                    const parsed = JSON.parse(phongHoc.thiet_bi_phong);
+                    if (Array.isArray(parsed)) dsTbPhong = parsed;
+                } catch (e) {}
+            }
+        }
+
+        if (!Array.isArray(dsTbPhong) || dsTbPhong.length === 0) {
+            return {
+                tuong_thich: true,
+                da_chon_phong: true,
+                ly_do: `Phòng học ${maPhongDich} cho phép mượn thiết bị linh hoạt.`
+            };
+        }
+
+        for (let i = 0; i < dsTbPhong.length; i++) {
+            const tb = dsTbPhong[i] || {};
+            const hangTb = String(tb.hang || '').trim();
+            const modelTb = String(tb.model || '').trim();
+
+            if (hangTb.toLowerCase() === hangTs.toLowerCase()) {
+                if (modelTs !== '' && modelTb !== '') {
+                    if (modelTb.toLowerCase() === modelTs.toLowerCase()) {
+                        return {
+                            tuong_thich: true,
+                            da_chon_phong: true,
+                            ly_do: `Tương thích phòng ${maPhongDich}: Khớp hoàn hảo với ${tb.ten || 'thiết bị'} (${hangTb} ${modelTb}).`
+                        };
+                    }
+                } else {
+                    return {
+                        tuong_thich: true,
+                        da_chon_phong: true,
+                        ly_do: `Tương thích phòng ${maPhongDich}: Cùng hãng ${hangTb} với ${tb.ten || 'thiết bị'} của phòng.`
+                    };
+                }
+            }
+        }
+
+        return {
+            tuong_thich: false,
+            da_chon_phong: true,
+            ly_do: `Thiết bị này (Hãng: ${hangTs}${modelTs ? ', Model: ' + modelTs : ''}) không tương thích với bất kỳ thiết bị cố định nào tại phòng ${maPhongDich}.`
+        };
+    }
+
+    return {
+        tuong_thich: true,
+        da_chon_phong: true,
+        ly_do: 'Tương thích với phòng học.'
+    };
+};
+
+/**
+ * Hiển thị Popup cân đối 2 dòng ở giữa trên màn hình báo kết quả quét QR thiết bị.
+ */
+window.hienPopupQuetThietBi = function (tuyChon) {
+    const opts = tuyChon || {};
+    const loai = opts.loai || 'thanh_cong';
+    const tieuDe = opts.tieuDe || (loai === 'thanh_cong' ? 'Đã quét thiết bị thành công' : 'Thiết bị không hợp lệ');
+    const maTaiSan = String(opts.maTaiSan || '').trim();
+    const tenTaiSan = String(opts.tenTaiSan || '').trim();
+    const thoiGian = opts.thoiGian || (loai === 'thanh_cong' ? 2500 : 3800);
+
+    let container = document.getElementById('khungPopupQuetMini');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'khungPopupQuetMini';
+        container.className = 'khung-popup-quet-mini';
+        container.setAttribute('aria-live', 'polite');
+        document.body.appendChild(container);
+    }
+
+    container.innerHTML = '';
+
+    const classLoai = {
+        thanh_cong: 'popup-quet-thanh-cong',
+        khong_tuong_thich: 'popup-quet-khong-tuong-thich',
+        canh_bao: 'popup-quet-canh-bao',
+        loi: 'popup-quet-loi'
+    }[loai] || 'popup-quet-thanh-cong';
+
+    const iconName = {
+        thanh_cong: 'check-circle-2',
+        khong_tuong_thich: 'alert-circle',
+        canh_bao: 'alert-triangle',
+        loi: 'alert-circle'
+    }[loai] || 'check-circle-2';
+
+    const spriteHref = (document.querySelector('svg.bieu-tuong use')?.getAttribute('href') || 'assets/icons/sprite.svg').split('#')[0];
+
+    const popup = document.createElement('div');
+    popup.className = 'popup-quet-mini ' + classLoai;
+    popup.innerHTML = `
+        <div class="popup-quet-icon">
+            <svg class="bieu-tuong" aria-hidden="true" focusable="false"><use href="${spriteHref}#${iconName}"/></svg>
+        </div>
+        <div class="popup-quet-noi-dung">
+            <div class="popup-quet-tieu-de"></div>
+            <div class="popup-quet-thiet-bi d-none">
+                <span class="popup-quet-ma d-none"></span>
+                <span class="popup-quet-ten d-none"></span>
+            </div>
+        </div>
+        <button type="button" class="popup-quet-dong" aria-label="Đóng">
+            <svg class="bieu-tuong bieu-tuong-sm" aria-hidden="true" focusable="false"><use href="${spriteHref}#x"/></svg>
+        </button>
+    `;
+
+    popup.querySelector('.popup-quet-tieu-de').textContent = tieuDe;
+
+    if (maTaiSan || tenTaiSan) {
+        const tbRow = popup.querySelector('.popup-quet-thiet-bi');
+        tbRow.classList.remove('d-none');
+        if (maTaiSan) {
+            const maEl = popup.querySelector('.popup-quet-ma');
+            maEl.textContent = maTaiSan;
+            maEl.classList.remove('d-none');
+        }
+        if (tenTaiSan) {
+            const tenEl = popup.querySelector('.popup-quet-ten');
+            tenEl.textContent = tenTaiSan;
+            tenEl.classList.remove('d-none');
+        }
+    }
+
+    function dongPopup() {
+        if (!popup || popup.dataset.daDong === '1') return;
+        popup.dataset.daDong = '1';
+        popup.classList.add('dang-an');
+        setTimeout(function () {
+            if (popup.parentNode) popup.remove();
+        }, 180);
+    }
+
+    popup.querySelector('.popup-quet-dong').addEventListener('click', dongPopup);
+    setTimeout(dongPopup, thoiGian);
+    container.appendChild(popup);
+};

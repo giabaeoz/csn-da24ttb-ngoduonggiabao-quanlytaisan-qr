@@ -116,7 +116,7 @@ Hệ thống đã được đóng gói đầy đủ môi trường gồm **PHP 8
 
 ```powershell
 # Khởi động toàn bộ hệ thống ở chế độ nền
-docker compose up -d
+docker compose -f docker/docker-compose.yml up -d
 ```
 
 Sau khi khởi chạy:
@@ -129,7 +129,7 @@ Sau khi khởi chạy:
 
 Dừng hệ thống khi không sử dụng:
 ```powershell
-docker compose down
+docker compose -f docker/docker-compose.yml down
 ```
 
 ---

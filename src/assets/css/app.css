@@ -278,7 +278,7 @@ h3,
   z-index: 2;
 }
 
-.menu-nhom + .menu-nhom {
+.menu-nhom+.menu-nhom {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -535,10 +535,23 @@ h3,
 }
 
 @keyframes hieuUngChuong {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.2) rotate(-14deg); }
-  50% { transform: scale(1.2) rotate(14deg); }
-  75% { transform: scale(1.1) rotate(-8deg); }
+
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.2) rotate(-14deg);
+  }
+
+  50% {
+    transform: scale(1.2) rotate(14deg);
+  }
+
+  75% {
+    transform: scale(1.1) rotate(-8deg);
+  }
 }
 
 .nut-chuong-tb.chuong-rung {
@@ -701,7 +714,7 @@ h3,
   color: var(--mau-chinh);
 }
 
-/* Nút chuyển tab màu xanh trực quan (Mượn – trả, Điều chuyển, Kiểm kê) */
+/* Nút chuyển tab màu xanh trực quan (Mượn - trả, Điều chuyển, Kiểm kê) */
 .btn-tab-xanh {
   display: inline-flex;
   align-items: center;
@@ -909,17 +922,17 @@ textarea:focus-visible {
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.input-group > .form-control,
-.input-group > .form-select,
-.input-group > .o-nhap {
+.input-group>.form-control,
+.input-group>.form-select,
+.input-group>.o-nhap {
   width: 1%;
   flex: 1 1 auto;
 }
 
-.input-group-sm > .form-control,
-.input-group-sm > .form-select,
-.input-group-sm > .btn,
-.input-group-sm > .input-group-text {
+.input-group-sm>.form-control,
+.input-group-sm>.form-select,
+.input-group-sm>.btn,
+.input-group-sm>.input-group-text {
   min-height: 36px;
   font-size: 13.5px;
 }
@@ -2007,8 +2020,8 @@ textarea.o-nhap {
 /* 4. Nhãn thông tin (Label) trong thẻ chi tiết không bị co ép rớt dòng */
 .nhan-thong-tin,
 .nhan-truong,
-.the-noi-dung-than .d-flex.justify-content-between > span:first-child,
-.the-noi-dung-than .d-flex.justify-content-between > div:first-child {
+.the-noi-dung-than .d-flex.justify-content-between>span:first-child,
+.the-noi-dung-than .d-flex.justify-content-between>div:first-child {
   white-space: nowrap !important;
   flex-shrink: 0;
 }
@@ -2051,3 +2064,216 @@ textarea.o-nhap {
   padding-top: 0.375rem !important;
   padding-bottom: 0.375rem !important;
 }
+
+/* ==========================================================================
+   10. POPUP MINI KẾT QUẢ QUÉT QR THIẾT BỊ (GIỮA TRÊN MÀN HÌNH - CÂN ĐỐI 2 DÒNG)
+   Đồng bộ phong cách .the-so-lieu & .hop-icon-dau của hệ thống
+   ========================================================================== */
+
+.khung-popup-quet-mini {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1095;
+  pointer-events: none;
+  max-width: calc(100vw - 24px);
+}
+
+@keyframes popupQuetTruotXuong {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.popup-quet-mini {
+  pointer-events: auto;
+  background-color: var(--nen-the);
+  border: 1px solid var(--vien);
+  border-left: 4px solid var(--thanh-cong);
+  border-radius: var(--bo-the);
+  padding: 10px 14px 10px 12px;
+  box-shadow: 0 8px 24px rgba(16, 62, 140, 0.14), 0 2px 6px rgba(16, 62, 140, 0.06);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 290px;
+  max-width: min(440px, calc(100vw - 24px));
+  animation: popupQuetTruotXuong 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.popup-quet-mini.dang-an {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.96);
+}
+
+.popup-quet-mini.popup-quet-thanh-cong {
+  border-left-color: #12B76A;
+}
+
+.popup-quet-mini.popup-quet-khong-tuong-thich,
+.popup-quet-mini.popup-quet-loi {
+  border-left-color: #F04438;
+}
+
+.popup-quet-mini.popup-quet-canh-bao {
+  border-left-color: #F79009;
+}
+
+.popup-quet-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.popup-quet-thanh-cong .popup-quet-icon {
+  background-color: var(--the-la);
+  color: var(--bieu-tuong-la);
+}
+
+.popup-quet-khong-tuong-thich .popup-quet-icon,
+.popup-quet-loi .popup-quet-icon {
+  background-color: var(--the-do);
+  color: var(--bieu-tuong-do);
+}
+
+.popup-quet-canh-bao .popup-quet-icon {
+  background-color: var(--the-cam);
+  color: var(--bieu-tuong-cam);
+}
+
+.popup-quet-noi-dung {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.popup-quet-tieu-de {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.popup-quet-thanh-cong .popup-quet-tieu-de {
+  color: var(--hh-la-chu);
+}
+
+.popup-quet-khong-tuong-thich .popup-quet-tieu-de,
+.popup-quet-loi .popup-quet-tieu-de {
+  color: var(--hh-do-chu);
+}
+
+.popup-quet-canh-bao .popup-quet-tieu-de {
+  color: var(--hh-vang-chu);
+}
+
+.popup-quet-thiet-bi {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.popup-quet-ma {
+  display: inline-flex;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: var(--bo-vien-thuoc);
+  background-color: var(--hh-xanh);
+  color: var(--hh-xanh-chu);
+  flex-shrink: 0;
+}
+
+.popup-quet-khong-tuong-thich .popup-quet-ma,
+.popup-quet-loi .popup-quet-ma {
+  background-color: var(--hh-do);
+  color: var(--hh-do-chu);
+}
+
+.popup-quet-canh-bao .popup-quet-ma {
+  background-color: var(--hh-vang);
+  color: var(--hh-vang-chu);
+}
+
+.popup-quet-ten {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mau-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-quet-dong {
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: none;
+  color: var(--chu-phu);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.popup-quet-dong:hover {
+  color: var(--mau-navy);
+  background-color: var(--nen-tieu-de-bang);
+}
+
+.hang-khong-tuong-thich {
+  background-color: #FEF2F2 !important;
+}
+
+.hang-khong-tuong-thich td {
+  background-color: #FEF2F2 !important;
+}
+
+/* ==========================================================================
+   Tối ưu giao diện Hồ sơ người mượn & Modal tương tác
+   ========================================================================== */
+
+#modalTuongTacBody .thanh-cong-cu-trang {
+  display: none !important;
+}
+
+.avatar-nguoi-muon {
+  user-select: none;
+  font-family: var(--bs-body-font-family);
+  letter-spacing: 0.5px;
+}
+
+.hover-primary:hover {
+  color: var(--mau-chinh) !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #F0F6FF;
+  color: var(--mau-navy);
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: rgba(23, 104, 216, 0.25);
+}
+

@@ -253,10 +253,22 @@ $viTriKetThuc = ($trang - 1) * 15 + count($danhSachTaiSan);
                                 <span class="text-secondary"><?= e($ts['ten_loai']) ?></span>
                             </td>
                             <td class="text-nowrap">
-                                <?php if (!empty($ts['ma_phong_hien_tai'])): ?>
-                                    <span class="huy-hieu huy-hieu-chinh">P. <?= e($ts['ma_phong_hien_tai']) ?></span>
+                                <?php $vt = tai_san_thong_tin_vi_tri($ts); ?>
+                                <?php if ($vt['la_dang_muon']): ?>
+                                    <span class="huy-hieu huy-hieu-canh-bao" title="Đang có giao dịch mượn tại <?= e($vt['ten_hien_thi']) ?>">
+                                        <?= icon('map-pin', 'bieu-tuong-sm') ?>
+                                        <span><?= e($vt['ten_hien_thi']) ?></span>
+                                    </span>
+                                <?php elseif ($vt['la_co_dinh']): ?>
+                                    <span class="huy-hieu huy-hieu-chinh" title="Tài sản cố định tại <?= e($vt['ten_hien_thi']) ?>">
+                                        <?= icon('home', 'bieu-tuong-sm') ?>
+                                        <span><?= e($vt['ten_hien_thi']) ?></span>
+                                    </span>
                                 <?php else: ?>
-                                    <span class="text-secondary">Phòng trực <?= e($ts['ma_phong_truc'] ?? '') ?></span>
+                                    <span class="text-secondary small d-inline-flex align-items-center gap-1" title="Linh hoạt lưu tại phòng trực">
+                                        <?= icon('archive', 'bieu-tuong-sm text-muted') ?>
+                                        <span><?= e($vt['ten_hien_thi']) ?></span>
+                                    </span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-nowrap">
